@@ -1,0 +1,41 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Account beheer - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>Accounts</h1>
+
+            <p><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_create') }}" class="btn btn-info">Nieuw</a></p>
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Gebruikersnaam</th>
+                            <th>Naam</th>
+                            <th>E-mail</th>
+                            <th width="50">&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+{% for account in accounts.results %}
+                        <tr>
+                            <td>{{ account.username }}</td>
+                            <td>{{ account.naam }}</td>
+                            <td>
+                                {{ account.email }}
+                                <a href="mailto:{{ account.email }}"><span class="glyphicon glyphicon-envelope"></span></a>
+                            </td>
+                            <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_edit', {'id': account.id}) }}"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                        </tr>
+{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

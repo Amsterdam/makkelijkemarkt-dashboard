@@ -1,0 +1,19 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Dagvergunningen - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>Dagvergunningen</h1>
+
+            <p>Selecteer een markt a.u.b.</p>
+
+            {% for markt in markten.results %}
+                <p><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': markt.id, 'dag': dag}) }}">{{ markt.naam }}</a></p>
+            {% endfor %}
+
+        </div>
+    </div>
+{% endblock %}

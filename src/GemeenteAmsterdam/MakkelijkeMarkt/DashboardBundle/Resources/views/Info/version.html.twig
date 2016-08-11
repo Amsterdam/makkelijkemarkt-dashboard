@@ -1,0 +1,25 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Account beheer - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <div class="jumbotron">
+                <h1>Makkelijke Markt</h1>
+                <p>Dashboard versie <strong>{{ dashboardVersion }}</strong> / API version <strong>{{ apiVersion.version }}</strong></p>
+                <p>API locatie: <strong>{{ apiUrl }}</strong></p>
+            </div>
+
+            <p class="lead text-center">
+                Gemaakt door Johan Groenen, Kamiel Naaktgeboren, Maarten de Keizer, Maarten Geraets, Yvonne de Mey
+            </p>
+
+            <p class="text-center">
+                met de hulp van Assetic, Backbone, Bootstrap, Doctrine, Guzzle, jQuery, Monolog, Nelmio API doc, Swiftmailer, Symfony, Twig
+            </p>
+
+        </div>
+    </div>
+{% endblock %}

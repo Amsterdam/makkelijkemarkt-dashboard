@@ -1,0 +1,34 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Lijsten - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>Lijsten</h1>
+            <h4><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_index_met_dag', {'dag': vorigeMaandag|date('Y-m-d')}) }}" class="btn btn-info">&lt;</a> {{ maandag|date('d-m-Y') }} - {{ zondag|date('d-m-Y') }} <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_index_met_dag', {'dag': volgendeMaandag|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a></h4>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Markt</th>
+                        <th colspan="2">Week</th>
+                        <th colspan="2">Weekend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for markt in markten.results %}
+                    <tr>
+                        <td>{{ markt.naam }}</td>
+                        <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_lijst_weeklijstsollicitantenpdf', {'marktId': markt.id, 'dag': maandag|date('Y-m-d')}) }}" target="_blank" class="btn btn-primary">Sollicitanten</a></td>
+                        <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_lijst_weeklijstvasteplaatsenpdf', {'marktId': markt.id, 'dag': maandag|date('Y-m-d')}) }}" target="_blank" class="btn btn-primary">Vaste plaatsen</a></td>
+                        <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_lijst_alijstpdf', {'marktId': markt.id, 'dag': maandag|date('Y-m-d')}) }}" target="_blank" class="btn btn-primary">A-lijst</a></td>
+                        <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_lijst_blijstpdf', {'marktId': markt.id, 'dag': maandag|date('Y-m-d')}) }}" target="_blank" class="btn btn-primary">B-lijst</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

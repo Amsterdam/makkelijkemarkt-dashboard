@@ -1,0 +1,60 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Scan Speed - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1><span class="glyphicon glyphicon-dashboard"></span> Scan Speed</h1>
+
+            <p>Selecteer markt, dag, account/toezichthouder, pauze detectie tijd (in sec):</p>
+            {{ form(form, { 'style': 'inline' }) }}
+
+            {% if periods is defined %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="col-md-2">Start</th>
+                            <th class="col-md-2">Eind</th>
+                            <th class="col-md-2">Duur</th>
+                            <th class="col-md-2">Aantal gescand</th>
+                            <th class="col-md-2">Gem. tijd per scan</th>
+                            <th class="col-md-2">Scans per uur</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for period in periods %}
+                            <tr>
+                                <td>{{ period.start|date('d-m-Y H:i:s') }}</td>
+                                <td>{{ period.end|date('H:i:s') }}</td>
+                                <td class="text-right">{{ period.duration }} sec.</td>
+                                <td class="text-right">{{ period.scans }}</td>
+                                <td class="text-right">
+                                    {% if period.avgTimePerScan == -1 %}
+                                        -
+                                    {% else %}
+                                        {{ period.avgTimePerScan|round(2, 'ceil') }} sec.
+                                    {% endif %}
+                                </td>
+                                <td class="text-right">
+                                    {% if period.avgTimePerScan == -1 %}
+                                        -
+                                    {% else %}
+                                        {{ period.avgScansPerHour|round(2, 'floor') }} scans/uur
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% if loop.last == false %}
+                            <tr>
+                                <td colspan="6">(pauze)</td>
+                            </tr>
+                        {% endif %}
+                        {% endfor  %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

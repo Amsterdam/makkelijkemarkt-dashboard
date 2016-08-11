@@ -1,0 +1,22 @@
+
+parameters:
+  markt_api.url: http://dev-makkelijkemarkt-api.datalabamsterdam.nl/app_dev.php/api/
+  markt_api_guzzle.options:
+    base_uri: %markt_api.url%
+    http_errors: false
+    verify: %markt_api.guzzle.verify%
+  
+services:
+  markt_api:
+    class: GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\MarktApi
+    arguments:
+      - '@markt_api_guzzle'
+      - '@security.context'
+  markt_api_guzzle:
+    class: GuzzleHttp\Client
+    arguments:
+      - %markt_api_guzzle.options%
+  pdf_lijst:
+    class: GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\PdfLijstService
+    arguments:
+      - '@service_container'

@@ -1,0 +1,15 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Bewerk lineair plan - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>Aanpassen lineair plan</h1>
+
+            {{ form(form) }}
+
+        </div>
+    </div>
+{% endblock %}

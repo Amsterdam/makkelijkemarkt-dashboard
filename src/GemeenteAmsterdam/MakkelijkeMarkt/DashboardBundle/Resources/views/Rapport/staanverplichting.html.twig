@@ -1,0 +1,80 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Rapport: Staanverplichting - {{ parent() }}{% endblock %}
+
+{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>Rapport: Staanverplichting</h1>
+
+            <form method="get" class="row form">
+                <div class="form-group col-sm-3">
+                    <label for="marktId">Markt</label>
+                    <select class="form-control" name="marktId" id="marktId">
+                        {% for markt in markten.results %}
+                            <option value="{{ markt.id }}" {{ markt.id == marktId ? 'selected' }}>{{ markt.naam }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="dagStart">Begin datum (yyyy-mm-dd)</label>
+                    <input type="text" class="form-control" name="dagStart" id="dagStart" value="{{ dagStart }}">
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="dagEind">Eind datum (yyyy-mm-dd)</label>
+                    <input type="text" class="form-control" name="dagEind" value="{{ dagEind }}">
+                </div>
+                <div class="form-group col-sm-3">
+                    <label for="vergunningType">Vergunning type</label>
+                    <select class="form-control" name="vergunningType">
+                        {% for key, type in vergunningTypes %}
+                            <option value="{{ key }}" {{ key == vergunningType ? 'selected' }}>{{ type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-sm-3">
+                    <button class="btn btn-primary">Rapport</button>
+                </div>
+            </form>
+
+            {% if rapport is not empty %}
+            <h2>Rapport: Staan verplichting {{ markt.naam }} voor periode {{ dagStart|date('d-m-Y') }} t/m {{ dagEind|date('d-m-Y') }}</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Erkenningsnummer</th>
+                        <th colspan="2">Koopman</th>
+                        <th>Status</th>
+                        <th>Aantal actieve dagvergunningen in periode</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in rapport.output %}
+                        <tr>
+                            <td>{{ record.erkenningsnummer }}</td>
+                            <td>
+                                {% if record.koopman is not empty %}
+                                    <img src="{{ record.koopman.fotoUrl }}" alt="" width="50">
+                                {% else %}
+                                    Onbekend
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if record.koopman is not empty %}
+                                    {{ record.koopman.voorletters }} {{ record.koopman.achternaam }}
+                                {% endif %}
+                            </td>
+                            <td><span class="label label-{{ attribute(statusLabelClass, record.status|default('?')) }}">{{ record.status }}</span></td>
+                            <td>{{ record.aantalDagvergunningenUitgegeven }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Koopmannen - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>Koopmannen</h1>
+
+            <form class="form-inline" method="get" action="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_index') }}">
+                <div class="form-group">
+                    <label for="q">Zoeken</label>
+                    <input type="text" class="form-control" name="q" id="q" value="{{ q }}">
+                </div>
+                <div class="form-group">
+                    <label for="erkenningsnummer">Erkenningsnummer</label>
+                    <input type="text" class="form-control" name="erkenningsnummer" id="erkenningsnummer" value="{{ erkenningsnummer }}">
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select class="form-control" name="status" id="status">
+                        <option value="-1" {{ status == -1 ? 'selected' : '' }}>Alle</option>
+                        <option value="0" {{ status == 0 ? 'selected' : '' }}>Alleen doorgehaald</option>
+                        <option value="1" {{ status == 1 ? 'selected' : '' }}>Alleen actief</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-default">Zoeken</button>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Erkenningsnummer</th>
+                            <th>Voorletters</th>
+                            <th>Achternaam</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+{% for koopman in koopmannen.results %}
+                        <tr>
+                            <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id}) }}">{{ koopman.erkenningsnummer }}</a></td>
+                            <td>{{ koopman.voorletters }}</td>
+                            <td>{{ koopman.achternaam }}</td>
+                            <td>{% if koopman.status != 'Actief' %}<span class="label label-danger">Doorgehaald</span>{% endif %}</td>
+                        </tr>
+{% else %}
+                        <tr>
+                            <td colspan="3">Geen resultaten gevonden</td>
+                        </tr>
+{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+<nav>
+    <ul class="pager">
+{% set basicParameters = {'q': q, 'erkenningsnummer': erkenningsnummer} %}
+{% if pageNumber > 0 %}
+        <li class="previous"><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_index', {'page': pageNumber - 1}|merge(basicParameters)) }}"><span aria-hidden="true">&larr;</span> Vorige</a></li>
+{% else %}
+        <li class="previous disabled"><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_index', {'page': 0}|merge(basicParameters)) }}"><span aria-hidden="true">&larr;</span> Vorige</a></li>
+{% endif %}
+        <li>pagina {{ pageNumber + 1 }} van {{ (koopmannen.fullListLength / pageSize)|round(0, 'ceil') }}</li>
+{% if (pageNumber + 1) < ( ((koopmannen.fullListLength / pageSize)|round(0, 'ceil')) ) %}
+        <li class="next"><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_index', {'page': pageNumber + 1}|merge(basicParameters)) }}"><span aria-hidden="true">&rarr;</span> Volgende</a></li>
+{% else %}
+        <li class="next disabled"><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_index', {'page': pageNumber}|merge(basicParameters)) }}"><span aria-hidden="true">&rarr;</span> Volgende</a></li>
+{% endif %}
+    </ul>
+</nav>
+
+        </div>
+    </div>
+{% endblock %}
