@@ -1,0 +1,24 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}BTW Jaar - BTW beheer - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>BTW Jaar</h1>
+
+            {{ form(form) }}
+
+        </div>
+    </div>
+{% endblock %}

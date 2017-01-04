@@ -1,6 +1,6 @@
 {
     "name": "gemeenteamsterdam/makkelijkemarkt-dashboard",
-    "license": "mit",
+    "license": "MPLv2",
     "type": "project",
     "autoload": {
         "psr-4": {
@@ -69,7 +69,7 @@
                 "name": "jquery/jquery",
                 "version": "1.11.1",
                 "dist": {
-                    "url": "http://code.jquery.com/jquery-1.11.1.js",
+                    "url": "https://code.jquery.com/jquery-1.11.1.js",
                     "type": "file"
                 }
             }

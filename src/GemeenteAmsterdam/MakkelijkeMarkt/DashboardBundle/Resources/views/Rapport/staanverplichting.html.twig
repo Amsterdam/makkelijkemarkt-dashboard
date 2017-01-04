@@ -1,8 +1,36 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% block title %}Rapport: Staanverplichting - {{ parent() }}{% endblock %}
 
 {% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
+
+{% block scripts %}
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.js') }}"></script>
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.date.js') }}"></script>
+
+    <script type="application/javascript">
+        var startdatumPicker = $('#dagStart').pickadate({
+            formatSubmit: 'yyyy-mm-dd'
+        });
+        var einddatumPicker = $('#dagEind').pickadate({
+            formatSubmit: 'yyyy-mm-dd'
+        });
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.css') }}" rel="stylesheet" media="screen">
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.date.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
 
 {% block document %}
     <div class="row">
@@ -20,12 +48,12 @@
                     </select>
                 </div>
                 <div class="form-group col-sm-3">
-                    <label for="dagStart">Begin datum (yyyy-mm-dd)</label>
+                    <label for="dagStart">Begin datum</label>
                     <input type="text" class="form-control" name="dagStart" id="dagStart" value="{{ dagStart }}">
                 </div>
                 <div class="form-group col-sm-3">
-                    <label for="dagEind">Eind datum (yyyy-mm-dd)</label>
-                    <input type="text" class="form-control" name="dagEind" value="{{ dagEind }}">
+                    <label for="dagEind">Eind datum</label>
+                    <input type="text" class="form-control" name="dagEind" id="dagEind" value="{{ dagEind }}">
                 </div>
                 <div class="form-group col-sm-3">
                     <label for="vergunningType">Vergunning type</label>

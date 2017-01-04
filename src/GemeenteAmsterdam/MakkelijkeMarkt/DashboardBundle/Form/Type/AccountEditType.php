@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Form\Type;
 
@@ -15,9 +24,7 @@ class AccountEditType extends AbstractType
             ->add('naam', 'text', [])
             ->add('email', 'email', [])
             ->add('username', 'text', ['label' => 'Gebruikersnaam'])
-            ->add('password', 'password', ['required' => false, 'label' => 'PIN code (alleen invoeren als wachtwoord gewijzigd moet worden)', 'constraints' => [
-                new Assert\Type(['type' => 'digit', 'message' => 'De PIN code mag alleen uit cijfers bestaan'])
-            ]])
+            ->add('password', 'password', ['required' => false, 'label' => 'Wachtwoord'])
             ->add('role', 'choice', [
                 'choices' => Roles::all(),
                 'label'   => 'Rol'

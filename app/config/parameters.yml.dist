@@ -15,3 +15,4 @@ parameters:
     
     markt_api.url: http://ENV-makkelijkemarkt-api.datalabamsterdam.nl/api/
     markt_api.guzzle.verify: true
+    mm_app_key: testkey

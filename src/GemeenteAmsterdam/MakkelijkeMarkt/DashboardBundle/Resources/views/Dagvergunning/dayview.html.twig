@@ -1,8 +1,43 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
 
 {% block title %}{{ selectedMarkt.naam }} / {{ dag|date('d-m-Y') }} - {{ parent() }}{% endblock %}
+
+
+{% block scripts %}
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.js') }}"></script>
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.date.js') }}"></script>
+
+    <script type="application/javascript">
+        var startdatumPicker = $('#datum').pickadate({
+            formatSubmit: 'yyyy-mm-dd',
+            hiddenName:   true
+        });
+
+        $('#save').click(function() {
+            var startDatum = startdatumPicker.pickadate('picker').get('select', 'yyyy-mm-dd');
+            var url = '{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview_zonder_args') }}' + '{{ selectedMarkt.id }}' + '/' + startDatum;
+            if (startDatum.length > 0) {
+                window.open(url, "_self");
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.css') }}" rel="stylesheet" media="screen">
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.date.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
 
 {% block document %}
 
@@ -35,6 +70,15 @@
 
         </div>
     </div>
+    <br />
+    <div class="form-inline">
+        <div class="form-group">
+            <input type="text" name="datum" class="form-control" id="datum" placeholder="Datum" data-value="{% if dag is defined %}{{ dag|date('Y/m/d') }}{% endif %}">
+        </div>
+        <div class="form-group">
+            <button type="submit" id="save" name="save" class="btn btn-primary">Selecteer</button>
+        </div>
+    </div>
 
     <div class="row">
         <div class="col-xs-3">
@@ -43,12 +87,12 @@
                 Vaste plaats houders <span class="label label-primary">{{ attribute(stats, 'status.vpl') }}</span><br>
                 Voorkeurskaart houders <span class="label label-info">{{ attribute(stats, 'status.vkk') }}</span><br>
                 Sollicitanten <span class="label label-success">{{ attribute(stats, 'status.soll') }}</span><br>
-                Lottelingen <span class="label label-warning">{{ attribute(stats, 'status.lot') }}</span><br>
+                Standwerker / overig <span class="label label-warning">{{ attribute(stats, 'status.lot') }}</span><br>
                 {% if attribute(stats, 'status.?') > 0 %}<p>ONBEKEND <span class="label label-danger">{{ attribute(stats, 'status.?') }}</span>{% endif %}
             </p>
             <p>
                 Totaal actief <span class="label label-default">{{ attribute(stats, 'total') }}</span><br>
-                {% if attribute(stats, 'doorgehaald') > 0 %}Doorgehaald <span class="label label-danger">{{ attribute(stats, 'doorgehaald') }}</span>{% endif %}
+                {% if attribute(stats, 'doorgehaald') > 0 %}Verwijderd <span class="label label-danger">{{ attribute(stats, 'doorgehaald') }}</span>{% endif %}
             </p>
         </div>
         <div class="col-xs-3">
@@ -65,8 +109,12 @@
         <div class="col-xs-3">
             <h4>Kramen</h4>
             <p>
-                Aantal 3m kramen <strong>{{ attribute(stats, 'meters.aantal_3m') }} x</strong><br>
-                Aantal 4m kramen <strong>{{ attribute(stats, 'meters.aantal_4m') }} x</strong><br>
+                {% set drieM = attribute(stats, 'meters.aantal_3m') %}
+                {% set vierM = attribute(stats, 'meters.aantal_4m') %}
+                {% set totaalM = drieM + vierM %}
+                Aantal 3m kramen <strong>{{ drieM }} x</strong><br>
+                Aantal 4m kramen <strong>{{ vierM }} x</strong><br>
+                Totaal aantal kramen <strong>{{ totaalM }} x</strong><br>
                 Aantal extra meters <strong>{{ attribute(stats, 'meters.aantal_1m') }} x</strong>
             </p>
             <p>
@@ -87,7 +135,7 @@
 {% if multipleOnSameMarktet|length > 0%}
     <div class="row">
         <div class="col-xs-12">
-            <div class="alert alert-warning" role="alert"><strong>Oeps!</strong> Op deze markt zijn meerdere dagvergunningen voor dezelfde koopman actief. Mogelijk moet één van de dagvergunningen nog doorgehaald worden.</div>
+            <div class="alert alert-warning" role="alert"><strong>Oeps!</strong> Op deze markt zijn meerdere dagvergunningen voor dezelfde koopman actief. Mogelijk moet één van de dagvergunningen nog verwijderd worden.</div>
         </div>
     </div>
 {% endif %}
@@ -125,7 +173,7 @@
                                     Erkenningsnummer: {{ dagvergunning.koopman.erkenningsnummer }}
                                     <br>
                                     Sollicitatienummer: {% if dagvergunning.sollicitatie is not empty %}{{ dagvergunning.sollicitatie.sollicitatieNummer }} /{% endif %}
-                                    <span class="label label-{{ attribute(statusLabelClass, dagvergunning.status) }}">{{ dagvergunning.status }}</span>
+                                    <span class="label label-{{ attribute(statusLabelClass, dagvergunning.status) }}">{% if dagvergunning.status != 'lot' %}{{ dagvergunning.status }}{% else %}overig{% endif %}</span>
                                 {% endif %}
                                 {% if attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) is defined %}
                                     <div class="alert alert-warning" role="alert">Er {{ attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) == 2 ? 'is' : 'zijn' }} nog <strong>{{ attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) - 1 }}</strong> andere {{ attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) == 2 ? 'dagvergunning' : 'dagvergunningen' }} op deze markt voor deze koopman actief.</div>
@@ -149,7 +197,7 @@
                                 {% if dagvergunning.registratieAccount is not empty %}door {{ dagvergunning.registratieAccount.naam }}{% endif %}
                                 <br>
                                 {% if dagvergunning.doorgehaald %}
-                                    <span class="label label-danger">Doorgehaald</span>
+                                    <span class="label label-danger">Verwijderd</span>
                                     {{ dagvergunning.doorgehaaldDatumtijd }}
                                     {% if dagvergunning.doorgehaaldAccount is not empty %}door {{ dagvergunning.doorgehaaldAccount.naam }}{% endif %}
                                     <br>

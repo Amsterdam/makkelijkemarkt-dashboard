@@ -1,0 +1,45 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}BTW - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>BTW</h1>
+
+            <p><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_btw_createorupdate') }}" class="btn btn-info">Nieuw</a></p>
+
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Jaar</th>
+                        <th>Hoog tarief</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in btw.results %}
+                        <tr>
+                            <td>{{ item.jaar }}</td>
+                            <td>{{ item.hoog }}</td>
+                            <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_btw_createorupdate_jaar', {'jaar': item.jaar}) }}"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

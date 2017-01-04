@@ -12,6 +12,7 @@ services:
     arguments:
       - '@markt_api_guzzle'
       - '@security.context'
+      - '%mm_app_key%'
   markt_api_guzzle:
     class: GuzzleHttp\Client
     arguments:
@@ -20,3 +21,11 @@ services:
     class: GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\PdfLijstService
     arguments:
       - '@service_container'
+  pdf_barcode:
+    class: GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\PdfBarcodeService
+    arguments:
+      - '@service_container'
+  pdf_factuur:
+      class: GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\PdfFactuurService
+      arguments:
+        - '@service_container'
