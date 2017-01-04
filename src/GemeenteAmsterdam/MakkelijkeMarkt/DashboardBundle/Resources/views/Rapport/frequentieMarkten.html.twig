@@ -1,0 +1,44 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Frequentie - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Markt</th>
+                    <th>Type</th>
+                    <th>Plaatsbezetting</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for markt in markten.results %}
+                    <tr>
+                        <td>{{ markt.naam }}</td>
+                        <td>{{ markt.soort }}</td>
+                        {% set url = "" %}
+                        {% if markt.soort == 'dag' %}{% set url = path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_frequentiemarktendag', {'marktId': markt.id}) %}{% endif %}
+                        {% if markt.soort == 'week' %}{% set url = path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_frequentiemarktenweek', {'marktId': markt.id}) %}{% endif %}
+                        <td><a href="{{ url }}" class="btn btn-primary">VPL/VKK</a>
+                            <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_frequentiemarktensoll', {'marktId': markt.id}) }}" class="btn btn-primary">Sollicitanten</a>
+                            <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_aanwezigheid', {'marktId': markt.id}) }}" class="btn btn-primary">Aanwezigheid</a>
+                            <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_invoer', {'marktId': markt.id}) }}" class="btn btn-primary">Invoer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
@@ -75,6 +84,31 @@ class LijstController extends Controller
     }
 
     /**
+     * @Route("/lijsten/barcode/{marktId}/{dag}")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     */
+    public function lijstBarcodePdfAction($marktId,$dag) {
+        $pdfService = $this->get('pdf_barcode');
+        $maandag = new \DateTime($dag);
+        $tweeMaandenTerug = clone $maandag;
+        $tweeMaandenTerug->modify('-2 months');
+        $zondag = clone $maandag;
+        $zondag->modify('+6 days');
+
+        $marktApi = $this->get('markt_api');
+
+        $markt = $marktApi->getMarkt($marktId);
+
+        $parts = array(
+            'Personen'  => $marktApi->getLijstenMetDatum($marktId,array('vpl','soll','vkk'),$tweeMaandenTerug, $maandag)
+        );
+
+        $pdf = $pdfService->generate($markt->naam, 'Barcode lijst ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
+        $pdf->Output('barcode_lijst.pdf', 'I');
+        die;
+    }
+
+    /**
      * @Route("/lijsten/week/vasteplaatsen/{marktId}/{dag}")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
@@ -118,8 +152,6 @@ class LijstController extends Controller
 
         $parts = array(
             'Personen'  => array_merge(
-                $marktApi->getLijstenMetDatum($marktId,array('vpl'),$maandag, $donderdag),
-                $marktApi->getLijstenMetDatum($marktId,array('vkk'),$maandag, $donderdag),
                 $marktApi->getLijstenMetDatum($marktId,array('soll'),$maandag, $donderdag)
                 ),
         );
@@ -149,8 +181,6 @@ class LijstController extends Controller
 
         $personenAlijst = $marktApi->getLijstenMetDatum($marktId,array('soll','vpl','vkk'),$maandag, $donderdag);
         $laatsteMaanden = array_merge(
-                $marktApi->getLijstenMetDatum($marktId,array('vpl'),$tweeMaandenTerug, $zondag),
-                $marktApi->getLijstenMetDatum($marktId,array('vkk'),$tweeMaandenTerug, $zondag),
                 $marktApi->getLijstenMetDatum($marktId,array('soll'),$tweeMaandenTerug, $zondag)
         );
 

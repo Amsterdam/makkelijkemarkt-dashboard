@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service;
 
@@ -34,6 +43,7 @@ class PdfLijstService
 
         $this->pdf->SetPrintHeader(false);
         $this->pdf->SetPrintFooter(false);
+        $this->pdf->SetAutoPageBreak(false, 0);
 
         $this->pdf->AddPage();
 
@@ -63,12 +73,31 @@ class PdfLijstService
 
         foreach ($parts as $title => $sollicitaties) {
             if (count($sollicitaties)) {
-                $cols = array_chunk($sollicitaties, ceil(count($sollicitaties) / 2));
+                $i = 0;
+                $col = 0;
+                $pb = 1;
+                $p = 0;
+                $page = [];
+                $cols = [[], []];
+                foreach ($sollicitaties as $sollicitatie) {
+                    $cols[$col][] = $sollicitatie;
+                    $i++;
+                    if ((0 === $p && 34 === $i) || (0 != $p && 44 === $i)) {
+                        $col = 0 === $col ? 1 : 0;
+                        $i = 0;
+                        $pb = 0 === $pb ? 1 : 0;
+                        if ($pb) {
+                            $page[$p] = $cols;
+                            $cols = [[], []];
+                            $p++;
+                        }
+                    }
+                }
+                $page[] = $cols;
             } else {
-                $cols = array(
-                    array()
-                );
+                $page = [];
             }
+
             if ($firstPage) {
                 $firstPage = false;
             } else {
@@ -82,19 +111,25 @@ class PdfLijstService
             $this->pdf->SetFont($fontname, '', 12);
 
             $even = false;
-            for ($i=0;$i<count($cols[0]);$i++) {
-                if ($even) {
-                    $this->pdf->SetFillColor(237,237,237);
-                    $even = false;
-                } else {
-                    $this->pdf->SetFillColor(255,255,255);
-                    $even = true;
+            foreach ($page as $key => $cols) {
+                if (0 !== $key) {
+                    $this->pdf->AddPage();
                 }
-                $this->addSollicitatie($cols[0][$i]);
-                if (isset($cols[1][$i])) {
-                    $this->addSollicitatie($cols[1][$i], true);
-                } else {
-                    $this->pdf->Cell(90,6,'',0, 0,'',true);
+                for ($i = 0; $i < count($cols[0]); $i++) {
+                    if ($even) {
+                        $this->pdf->SetFillColor(237, 237, 237);
+                        $even = false;
+                    } else {
+                        $this->pdf->SetFillColor(255, 255, 255);
+                        $even = true;
+                    }
+                    $this->addSollicitatie($cols[0][$i]);
+                    if (isset($cols[1][$i])) {
+                        $this->addSollicitatie($cols[1][$i], true);
+                    } else {
+                        $this->pdf->Cell(90, 6, '', 0, 0, '', true);
+                        $this->pdf->Ln();
+                    }
                 }
             }
         }

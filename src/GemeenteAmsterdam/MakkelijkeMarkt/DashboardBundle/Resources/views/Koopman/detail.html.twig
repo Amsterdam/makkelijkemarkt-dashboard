@@ -1,8 +1,45 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
 
 {% block title %}{{ koopman.voorletters }} {{ koopman.achternaam }} - Koopman detail - {{ parent() }}{% endblock %}
+
+{% block scripts %}
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.js') }}"></script>
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.date.js') }}"></script>
+
+    <script type="application/javascript">
+        var startdatumPicker = $('#startdatum').pickadate({
+            formatSubmit: 'yyyy/mm/dd'
+        });
+        var einddatumPicker = $('#einddatum').pickadate({
+            formatSubmit: 'yyyy/mm/dd'
+        });
+
+        $('#downloadOverzicht').click(function() {
+            var startDatum = startdatumPicker.pickadate('picker').get('select', 'yyyy-mm-dd');
+            var eindDatum  = einddatumPicker.pickadate('picker').get('select', 'yyyy-mm-dd');
+            var url = '{{ path('factuur_blank') }}' + '{{ koopman.id }}' + '/' + startDatum + '/' + eindDatum;
+            if (startDatum.length > 0 && eindDatum.length > 0) {
+                window.open(url);
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.css') }}" rel="stylesheet" media="screen">
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.date.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
 
 {% block document %}
     <div class="row">
@@ -20,12 +57,26 @@
                 <strong>Status</strong>
                     {% if koopman.status == 'Actief' %}
                         <span class="label label-success">Actief</span>
+                    {% elseif koopman.status == 'Vervanger' %}
+                        <span class="label label-warning">Vervanger</span>
                     {% else %}
                         <span class="label label-danger">Doorgehaald</span>
                     {% endif %}
                 <br>
             </p>
 
+            <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': startDate|date('Y-m-d'), 'endDate': endDate|date('Y-m-d')}) }}" target="_blank" class="btn btn-primary">Factuur overzicht laatste kwartaal</a>
+
+            <br /><br />
+            <div class="form-inline">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="startdatum" placeholder="Startdatum" data-value="">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-control" id="einddatum" placeholder="Einddatum" data-value="">
+                </div>
+                <button id="downloadOverzicht" type="submit" class="btn btn-primary">Downloaden</button>
+            </div>
             <h2>Sollicitaties</h2>
 
             <table class="table">
@@ -90,7 +141,12 @@
 {% for dagvergunning in dagvergunningen.results %}
                         <tr>
                             <td>
-                                {{ dagvergunning.markt.naam }}
+                                {{ dagvergunning.markt.naam }}<br />
+                                Vervanger: {% if null == dagvergunning.vervanger %}geen{% else %}
+                                    <br /> Erkenningsnummer: {{ dagvergunning.vervanger.erkenningsnummer }}
+                                    <br /> Voorletters: {{ dagvergunning.vervanger.voorletters }}
+                                    <br /> Achternaam: {{ dagvergunning.vervanger.achternaam }}
+                                {% endif %}
                             </td>
                             <td>
                                 {{ dagvergunning.aanwezig|replace('_', ' ') }}
@@ -107,10 +163,41 @@
                             </td>
                             <td>
                                 {% if dagvergunning.factuur is not null %}
-                                    {% for product in dagvergunning.factuur.producten %}
-                                        &euro;{{ product.bedrag }} x {{ product.aantal }} - {{ product.naam }}<br />
-                                    {% endfor %}
-                                    Totaal: &euro;{{ dagvergunning.factuur.totaal }}
+                                    <table class="table">
+                                        <thead>
+                                        <tr>
+                                            <th>&sigma;</th>
+                                            <th>BTW</th>
+                                            <th>%</th>
+                                            <th>Ex</th>
+                                            <th>#</th>
+                                            <th>&euro;</th>
+                                            <th>Product</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for product in dagvergunning.factuur.producten %}
+                                                <tr>
+                                                    <td>&euro;{{ product.totaal_inclusief }}</td>
+                                                    <td>&euro;{{ product.btw_totaal }}</td>
+                                                    <td>{{ product.btw_percentage }}%</td>
+                                                    <td>&euro;{{ product.totaal }}</td>
+                                                    <td>{{ product.aantal }}</td>
+                                                    <td>&euro;{{ product.bedrag }}</td>
+                                                    <td>{{ product.naam }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr>
+                                                <td>&euro;{{ dagvergunning.factuur.totaal }}</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>Totaal</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 {% endif %}
                             </td>
                             <td>
@@ -118,7 +205,7 @@
                                 {% if dagvergunning.registratieAccount is not empty %}door {{ dagvergunning.registratieAccount.naam }}{% endif %}
                                 <br>
                                 {% if dagvergunning.doorgehaald %}
-                                    <span class="label label-danger">Doorgehaald</span>
+                                    <span class="label label-danger">Verwijderd</span>
                                     {{ dagvergunning.doorgehaaldDatumtijd }}
                                     {% if dagvergunning.doorgehaaldAccount is not empty %}door {{ dagvergunning.doorgehaaldAccount.naam }}{% endif %}
                                     <br>

@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
@@ -49,11 +58,54 @@ class KoopmanController extends Controller
         $size = 30;
         $dagvergunningen = $this->get('markt_api')->getDagvergunningen(['koopmanId' => $koopman->id], $page * $size, $size);
 
+        $lastQuarter = new \DateTime();
+        $lastQuarter->modify('-3 months');
+
+        list($startDate , $endDate) = $this->getQuarter($lastQuarter);
+
         return [
-            'koopman' => $koopman,
+            'koopman'         => $koopman,
             'dagvergunningen' => $dagvergunningen,
-            'pageNumber' => $page,
-            'pageSize' => $size,
+            'pageNumber'      => $page,
+            'pageSize'        => $size,
+            'startDate'       => $startDate,
+            'endDate'         => $endDate
         ];
+    }
+
+    /**
+     * @Route("/koopmannen/factuur/{id}/{startDate}/{endDate}")
+     * @Route("/koopmannen/factuur/", name="factuur_blank")
+     * @Security("has_role('ROLE_ADMIN')")
+     */
+    public function factuurOverzichtAction(Request $request, $id, $startDate, $endDate)
+    {
+        $api = $this->get('markt_api');
+
+        $sDate = new \DateTime($startDate);
+        $eDate = new \DateTime($endDate);
+
+        $koopman = $api->getKoopman($id);
+        $dagvergunningen = $api->getDagvergunningenByDate($id, $sDate, $eDate);
+
+        $pdfService = $this->get('pdf_factuur');
+
+
+        $pdf = $pdfService->generate($koopman, $dagvergunningen, $sDate, $eDate);
+        $pdf->Output('factuur_' . $koopman->erkenningsnummer . '_' . $sDate->format('d-m-Y') . '_'  . $eDate->format('d-m-Y') . '.pdf', 'I');
+        die;
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return \DateTime[]
+     */
+    protected function getQuarter(\DateTime $date) {
+        $startMonth = 1 + (ceil($date->format('m') / 3) - 1) * 3;
+        $startDate = new \DateTime($date->format('Y') . '-' . $startMonth . '-' . '01');
+        $endDate = clone $startDate;
+        $endDate->modify('+2 months');
+        $endDate->modify('last day of this month');
+        return [$startDate, $endDate];
     }
 }

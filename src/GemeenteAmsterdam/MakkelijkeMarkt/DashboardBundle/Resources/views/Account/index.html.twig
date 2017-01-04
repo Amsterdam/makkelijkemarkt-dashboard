@@ -1,3 +1,12 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% block title %}Account beheer - {{ parent() }}{% endblock %}
@@ -17,6 +26,7 @@
                             <th>Gebruikersnaam</th>
                             <th>Naam</th>
                             <th>E-mail</th>
+                            <th>Status</th>
                             <th width="50">&nbsp;</th>
                         </tr>
                     </thead>
@@ -29,6 +39,7 @@
                                 {{ account.email }}
                                 <a href="mailto:{{ account.email }}"><span class="glyphicon glyphicon-envelope"></span></a>
                             </td>
+                            <td>{% if account.locked %}<a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_unlock', {'id': account.id}) }}">Geblokkeerd</a>{% else %}Actief{% endif %}</td>
                             <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_edit', {'id': account.id}) }}"><span class="glyphicon glyphicon-pencil"></span></a></td>
                         </tr>
 {% endfor %}
