@@ -6,13 +6,11 @@ services:
     ports:
     - "80:80"
     environment:
-      SYMFONY__MM_DASHBOARD__MAILER__TRANSPORT: "smtp"
-      SYMFONY__MM_DASHBOARD__MAILER__HOST: "localhost"
-      SYMFONY__MM_DASHBOARD__MAILER__USER: ""
-      SYMFONY__MM_DASHBOARD__MAILER__PASSWORD: ""
-      SYMFONY__MM_DASHBOARD__MAILER__PORT: "25"
-      SYMFONY__MM_DASHBOARD__MAILER__ENCRYPTION: "ssl" # null, ssl, tls
-      SYMFONY__MM_DASHBOARD__MAIL__FROM: "service@website-domain"
-      SYMFONY__MM_DASHBOARD__MAIL__CC: "service@website-domain"
-      SYMFONY__MM_DASHBOARD__SECRET: "insecure" # random
-      SYMFONY__MM_DASHBOARD__API_URL: http://localhost:8080/api/1.1.0/
+      MM_DASHBOARD__MAILER__TRANSPORT: "smtp"
+      MM_DASHBOARD__MAILER__HOST: "localhost"
+      MM_DASHBOARD__MAILER__USER: ""
+      MM_DASHBOARD__MAILER__PASSWORD: ""
+      MM_DASHBOARD__MAILER__PORT: "25"
+      MM_DASHBOARD__MAILER__ENCRYPTION: "ssl" # null, ssl, tls
+      MM_DASHBOARD__SECRET: "insecure" # random
+      MM_DASHBOARD__API_URL: http://localhost:8080/api/1.1.0/
