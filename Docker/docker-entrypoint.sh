@@ -12,8 +12,6 @@ parameters:
   mailer_password: ${MM_DASHBOARD__MAILER__PASSWORD}
   mailer_port: ${MM_DASHBOARD__MAILER__PORT}
   mailer_encryption: ${MM_DASHBOARD__MAILER__ENCRYPTION}
-  mail_from: ${MM_DASHBOARD__MAIL__FROM}
-  mail_cc: ${MM_DASHBOARD__MAIL__CC}
   secret: ${MM_DASHBOARD__SECRET}
   markt_api.url: ${MM_DASHBOARD__API_URL}
   markt_api.guzzle.verify: true
