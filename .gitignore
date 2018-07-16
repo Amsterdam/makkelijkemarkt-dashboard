@@ -20,4 +20,3 @@ syntax: regexp
 syntax: regexp
 ^web/js$
 .idea
-app/cache/*
