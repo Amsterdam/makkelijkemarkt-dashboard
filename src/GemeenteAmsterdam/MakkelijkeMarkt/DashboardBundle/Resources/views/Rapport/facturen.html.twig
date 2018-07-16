@@ -1,6 +1,34 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% block title %}Rapport: Facturen{% endblock %}
+
+{% block scripts %}
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.js') }}"></script>
+    <script src="{{ asset('bundles/dashboard/pickadate/lib/compressed/picker.date.js') }}"></script>
+
+    <script type="application/javascript">
+        var startdatumPicker = $('#vanaf').pickadate({
+            formatSubmit: 'yyyy-mm-dd'
+        });
+        var einddatumPicker = $('#tot').pickadate({
+            formatSubmit: 'yyyy-mm-dd'
+        });
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.css') }}" rel="stylesheet" media="screen">
+    <link href="{{ asset('bundles/dashboard/pickadate/lib/compressed/themes/default.date.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
 
 {% block document %}
 <h1>Facturen</h1>
@@ -17,11 +45,11 @@
             </select>
         </div>
         <div class="form-group col-sm-3">
-            <label for="vanaf">Vanaf (yyyy-mm-dd)</label>
+            <label for="vanaf">Vanaf</label>
             <input id="vanaf" type="text" class="datepicker form-control" name="vanaf" value="{{ vanaf }}">
         </div>
         <div class="form-group col-sm-3">
-            <label for="tot">Tot (yyyy-mm-dd)</label>
+            <label for="tot">Tot</label>
             <input id="tot" type="text" class="datepicker form-control" name="tot" value="{{ tot }}">
         </div>
         <br />

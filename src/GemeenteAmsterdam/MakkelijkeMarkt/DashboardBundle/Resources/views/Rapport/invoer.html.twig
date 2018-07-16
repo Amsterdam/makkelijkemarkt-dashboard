@@ -1,0 +1,38 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Invoer - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <h1>Frequentie dagmarkt - {{ markt.naam }}</h1>
+    <h4><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_invoer_datum', {'marktId': markt.id, 'datum': lastQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&lt;</a> {{ startDate|date('d-m-Y') }} - {{ endDate|date('d-m-Y') }} {% if today > endDate %}<a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_invoer_datum', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>{% endif %}</h4>
+
+    <h2>Invoer rapportage per koopman</h2>
+    {% for koopman in koopmannen %}
+        <h3>{{ koopman.erkenningsnummer }}. {{ koopman.achternaam }}, {{ koopman.voorletters }}</h3>
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Type</th>
+                <th>Aantal</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for type, aantal in koopman.options %}
+                <tr>
+                    <td>{{ type }}</td>
+                    <td>{{ aantal }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+{% endblock %}

@@ -1,6 +1,17 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% block title %}Koopmannen - {{ parent() }}{% endblock %}
+
+{% set statusLabelClass = {'?': 'danger', 'Verwijderd': 'danger', 'Vervanger': 'warning', 'Wachter': 'info', 'Actief': 'success'} %}
 
 {% block document %}
     <div class="row">
@@ -9,23 +20,28 @@
             <h1>Koopmannen</h1>
 
             <form class="form-inline" method="get" action="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_index') }}">
-                <div class="form-group">
-                    <label for="q">Zoeken</label>
+                <div class="form-group" style="width: 180px;">
+                    <label for="q">Naam</label>
                     <input type="text" class="form-control" name="q" id="q" value="{{ q }}">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="width: 180px;">
                     <label for="erkenningsnummer">Erkenningsnummer</label>
                     <input type="text" class="form-control" name="erkenningsnummer" id="erkenningsnummer" value="{{ erkenningsnummer }}">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="width: 180px;">
                     <label for="status">Status</label>
                     <select class="form-control" name="status" id="status">
                         <option value="-1" {{ status == -1 ? 'selected' : '' }}>Alle</option>
                         <option value="0" {{ status == 0 ? 'selected' : '' }}>Alleen doorgehaald</option>
                         <option value="1" {{ status == 1 ? 'selected' : '' }}>Alleen actief</option>
+                        <option value="2" {{ status == 2 ? 'selected' : '' }}>Alleen wachter</option>
+                        <option value="3" {{ status == 3 ? 'selected' : '' }}>Alleen vervanger</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-default">Zoeken</button>
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <button type="submit" class="form-control btn btn-primary">Zoeken</button>
+                </div>
             </form>
 
             <div class="table-responsive">
@@ -44,7 +60,7 @@
                             <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id}) }}">{{ koopman.erkenningsnummer }}</a></td>
                             <td>{{ koopman.voorletters }}</td>
                             <td>{{ koopman.achternaam }}</td>
-                            <td>{% if koopman.status != 'Actief' %}<span class="label label-danger">Doorgehaald</span>{% endif %}</td>
+                            <td><span class="label label-{{ statusLabelClass[koopman.status] }}">{{ koopman.status }}</span></td>
                         </tr>
 {% else %}
                         <tr>

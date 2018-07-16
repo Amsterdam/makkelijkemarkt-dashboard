@@ -14,7 +14,7 @@ namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service;
 use GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller\KoopmanController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class PdfLijstService
+class PdfBarcodeService
 {
     /**
      * @var ContainerInterface
@@ -25,6 +25,11 @@ class PdfLijstService
      * @var \TCPDF $pdf
      */
     protected $pdf;
+
+    /**
+     * @var int
+     */
+    protected $lastY;
 
     public function __construct($container)
     {
@@ -82,7 +87,7 @@ class PdfLijstService
                 foreach ($sollicitaties as $sollicitatie) {
                     $cols[$col][] = $sollicitatie;
                     $i++;
-                    if ((0 === $p && 34 === $i) || (0 != $p && 44 === $i)) {
+                    if ((0 === $p && 7 === $i) || (0 != $p && 9 === $i)) {
                         $col = 0 === $col ? 1 : 0;
                         $i = 0;
                         $pb = 0 === $pb ? 1 : 0;
@@ -130,12 +135,50 @@ class PdfLijstService
                         $this->pdf->Cell(90, 6, '', 0, 0, '', true);
                         $this->pdf->Ln();
                     }
+                    $this->lastY = $this->pdf->GetY();
+                    $this->addBarcode($cols[0][$i]);
+                    if (isset($cols[1][$i])) {
+                        $this->addBarcode($cols[1][$i], true);
+                    } else {
+                        $this->pdf->Cell(90, 6, '', 0, 0, '', true);
+                        $this->pdf->Ln();
+                    }
                 }
             }
         }
 
 
         return $this->pdf;
+    }
+
+    protected function addBarcode($sollicitatie, $break=false) {
+        $koopman = $sollicitatie->koopman;
+
+        $style = array(
+            'position' => '',
+            'align' => 'C',
+            'stretch' => false,
+            'fitwidth' => true,
+            'cellfitalign' => '',
+            'border' => false,
+            'hpadding' => 'auto',
+            'vpadding' => 'auto',
+            'fgcolor' => array(0,0,0),
+            'bgcolor' => false, //array(255,255,255),
+            'text' => false,
+            'font' => 'helvetica',
+            'fontsize' => 8,
+            'stretchtext' => 4
+        );
+
+        if (!$break) {
+            $this->lastY = $this->pdf->GetY();
+        }
+
+        $this->pdf->write1DBarcode($koopman->erkenningsnummer, 'C39', ($break ? 100 : 10), $this->lastY, '', 18, 0.4, $style, 'N');
+        if ($break) {
+            $this->pdf->Ln();
+        }
     }
 
     protected function addSollicitatie($sollicitatie, $break=false) {

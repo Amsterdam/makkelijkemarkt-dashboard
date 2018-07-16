@@ -10,6 +10,12 @@ security:
     encoders:
         GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Security\User: plaintext
 
+    role_hierarchy:
+        ROLE_SERVICE: ~
+        ROLE_USER: ~
+        ROLE_ADMIN: [ROLE_USER, ROLE_SENIOR]
+        ROLE_SENIOR: [ROLE_USER]
+
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:

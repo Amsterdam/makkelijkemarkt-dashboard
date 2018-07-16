@@ -11,11 +11,10 @@
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Enum;
 
-class VergunningTypes
+class ActiveStates
 {
-    const soll = 'Sollicitant';
-    const vpl  = 'Vaste plaats';
-    const vkk  = 'Voorkeurskaart';
+    const ROLE_ACTIVE   = '1';
+    const ROLE_INACTIVE = '0';
 
     public static function all() {
         $object = new self();

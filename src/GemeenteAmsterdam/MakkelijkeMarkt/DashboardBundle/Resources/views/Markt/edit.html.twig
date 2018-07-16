@@ -1,0 +1,30 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}{{ markt.naam }} - Markt beheer - {{ parent() }}{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>{{ markt.naam }}</h1>
+
+<div class="btn-toolbar" role="toolbar" aria-label="...">
+    <div class="btn-group" role="group">
+        <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_markt_index') }}" class="btn btn-default">Terug naar overzicht</a>
+    </div>
+</div>
+
+            {{ form(form) }}
+
+        </div>
+    </div>
+{% endblock %}
