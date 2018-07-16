@@ -14,4 +14,4 @@ services:
       MM_DASHBOARD__MAILER__ENCRYPTION: "ssl" # null, ssl, tls
       MM_DASHBOARD__SECRET: "insecure" # random
       MM_DASHBOARD__API_URL: http://localhost:8080/api/1.1.0/
-      MM_DASHBOARD__API_APP_KEY: "insecure"
+      MM_API__APP_KEY: "insecure"
