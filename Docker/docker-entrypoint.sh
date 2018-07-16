@@ -16,6 +16,7 @@ parameters:
   markt_api.url: ${MM_DASHBOARD__API_URL}
   markt_api.guzzle.verify: true
   mm_app_key: ${MM_DASHBOARD__APP_KEY}
+  session_cookie_only_secure_connection: true
 EOF
 
 php composer.phar install
