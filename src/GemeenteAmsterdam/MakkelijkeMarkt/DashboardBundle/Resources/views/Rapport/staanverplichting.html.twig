@@ -1,8 +1,38 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% block title %}Rapport: Staanverplichting - {{ parent() }}{% endblock %}
 
 {% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
+
+{% block scripts %}
+    <script src="{{ asset('bundles/dashboard/rome/rome.min.js') }}"></script>
+
+    <script type="application/javascript">
+        rome(jQuery('[name="dagStart"]').get(0), {
+            'time': false,
+            'weekStart': 1,
+            'inputFormat': 'DD-MM-YYYY',
+        });
+        rome(jQuery('[name="dagEind"]').get(0), {
+            'time': false,
+            'weekStart': 1,
+            'inputFormat': 'DD-MM-YYYY',
+        });
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('bundles/dashboard/rome/rome.min.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
 
 {% block document %}
     <div class="row">
@@ -20,12 +50,12 @@
                     </select>
                 </div>
                 <div class="form-group col-sm-3">
-                    <label for="dagStart">Begin datum (yyyy-mm-dd)</label>
-                    <input type="text" class="form-control" name="dagStart" id="dagStart" value="{{ dagStart }}">
+                    <label for="dagStart">Begin datum</label>
+                    <input type="text" class="form-control" name="dagStart" id="dagStart" value="{{ dagStart|date('d-m-Y') }}">
                 </div>
                 <div class="form-group col-sm-3">
-                    <label for="dagEind">Eind datum (yyyy-mm-dd)</label>
-                    <input type="text" class="form-control" name="dagEind" value="{{ dagEind }}">
+                    <label for="dagEind">Eind datum</label>
+                    <input type="text" class="form-control" name="dagEind" id="dagEind" value="{{ dagEind|date('d-m-Y') }}">
                 </div>
                 <div class="form-group col-sm-3">
                     <label for="vergunningType">Vergunning type</label>
@@ -42,19 +72,25 @@
 
             {% if rapport is not empty %}
             <h2>Rapport: Staan verplichting {{ markt.naam }} voor periode {{ dagStart|date('d-m-Y') }} t/m {{ dagEind|date('d-m-Y') }}</h2>
+            <p><a class="btn btn-info" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_staanverplichting', {'format': 'excel', 'marktId': markt.id, 'dagStart': dagStart|date('d-m-Y'), 'dagEind': dagEind|date('d-m-Y'), 'vergunningType': vergunningType}) }}">Download Excel</a></p>
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Erkenningsnummer</th>
-                        <th colspan="2">Koopman</th>
+                        <th>Sollicitatienummer</th>
                         <th>Status</th>
-                        <th>Aantal actieve dagvergunningen in periode</th>
+                        <th colspan="3">Koopman</th>
+                        <th class="text-right">Aantal actieve dagvergunningen in periode</th>
+                        <th class="text-right">Waarvan zelf aanwezig</th>
+                        <th class="text-right">Waarvan <abbr title="vervanger met of zonder toestemming, onbekend of niet aanwezig">andere</abbr> aanwezigheid</th>
+                        <th class="text-right">Percentage aanwezig</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for record in rapport.output %}
                         <tr>
-                            <td>{{ record.erkenningsnummer }}</td>
+                            <td>{{ record.sollicitatie.sollicitatieNummer }}</td>
+                            <td><span class="label label-{{ attribute(statusLabelClass, record.sollicitatie.status|default('?')) }}">{{ record.sollicitatie.status }}</span></td>
+                            <td>{{ record.koopman.erkenningsnummer }}</td>
                             <td>
                                 {% if record.koopman is not empty %}
                                     <img src="{{ record.koopman.fotoUrl }}" alt="" width="50">
@@ -67,8 +103,17 @@
                                     {{ record.koopman.voorletters }} {{ record.koopman.achternaam }}
                                 {% endif %}
                             </td>
-                            <td><span class="label label-{{ attribute(statusLabelClass, record.status|default('?')) }}">{{ record.status }}</span></td>
-                            <td>{{ record.aantalDagvergunningenUitgegeven }}</td>
+                            <td class="text-right">{{ record.aantalActieveDagvergunningen }}</td>
+                            <td class="text-right">{{ record.aantalActieveDagvergunningenZelfAanwezig }}</td>
+                            <td class="text-right">{{ record.aantalActieveDagvergunningenNietZelfAanwezig }}</td>
+                            <td class="text-right">
+                                {% if record.aantalActieveDagvergunningen > 0 %}
+                                    {{ record.percentageAanwezig * 100 }} %
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': record.koopman.id, 'marktId': markt.id, 'dagvergunningenStartDatum': dagStart|date('d-m-Y'), 'dagvergunningenEindDatum': dagEind|date('d-m-Y'), 'tab': 'dagvergunningen'}) }}">details</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

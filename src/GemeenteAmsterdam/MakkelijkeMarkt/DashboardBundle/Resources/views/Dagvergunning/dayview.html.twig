@@ -1,38 +1,77 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
 {% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
 
 {% block title %}{{ selectedMarkt.naam }} / {{ dag|date('d-m-Y') }} - {{ parent() }}{% endblock %}
 
+
+{% block scripts %}
+    <script src="{{ asset('bundles/dashboard/rome/rome.min.js') }}"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('[name="datum"]').attr('init-value', jQuery('[name="datum"]').val());
+            rome(jQuery('[name="datum"]').get(0), {
+                'time': false,
+                'weekStart': 1,
+                'inputFormat': 'DD-MM-YYYY',
+            }).on('hide', function () {
+                if (jQuery('[name="datum"]').attr('init-value') != jQuery('[name="datum"]').val()) {
+                    jQuery('.open-datepicker span').removeClass('glyphicon-calendar').addClass('glyphicon-refresh');
+                    jQuery('[name="datum"]').closest('form').submit();
+                }
+            });
+            jQuery('.open-datepicker').click(function (event) {
+                event.preventDefault();
+                rome.find(jQuery('[name="datum"]').get(0)).show();
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('bundles/dashboard/rome/rome.min.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
+
 {% block document %}
 
     <div class="row">
         <div class="col-xs-12">
-
-            <div class="btn-toolbar" role="toolbar" aria-label="...">
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ selectedMarkt.naam }}
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        {% for markt in markten.results %}
-                        <li><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': markt.id, 'dag': dag|date('Y-m-d')}) }}">{{ markt.naam }}</a></li>
-                        {% endfor %}
-                    </ul>
+            <form action="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_index') }}" method="GET">
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-btn">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ selectedMarkt.naam }}
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for markt in markten.results %}
+                                    <li><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': markt.id, 'dag': dag|date('Y-m-d')}) }}">{{ markt.naam }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <span class="input-group-addon open-datepicker"><span class="glyphicon glyphicon-calendar"></span></span>
+                        <input type="hidden" name="marktId" value="{{ selectedMarkt.id }}">
+                        <input type="text" name="datum" class="form-control" value="{{ dag|date('d-m-Y') }}">
+                        <span class="input-group-btn">
+                            {% if (dag|date('Ymd') != vandaag|date('Ymd')) %}
+                                <a class="btn btn-success" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': selectedMarkt.id, 'dag': vandaag|date('Y-m-d')}) }}"><span class="glyphicon glyphicon-map-marker"></span> vandaag</a>
+                            {% endif %}
+                            <a class="btn btn-default" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': selectedMarkt.id, 'dag': gisteren|date('Y-m-d')}) }}"><span class="glyphicon glyphicon-arrow-left"></span> vorige</a>
+                            <a class="btn btn-default" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': selectedMarkt.id, 'dag': morgen|date('Y-m-d')}) }}">volgende <span class="glyphicon glyphicon-arrow-right"></span></a>
+                        </span>
+                    </div>
                 </div>
-                <div class="btn-group" role="group" aria-label="...">
-                    <a class="btn btn-default" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': selectedMarkt.id, 'dag': gisteren|date('Y-m-d')}) }}">vorige</a>
-                    <a class="btn btn-default" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': selectedMarkt.id, 'dag': dag|date('Y-m-d')}) }}">{{ dag|date('d-m-Y') }}</a>
-                    <a class="btn btn-default" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': selectedMarkt.id, 'dag': morgen|date('Y-m-d')}) }}">volgende</a>
-                </div>
-                {% if (dag|date('Ymd') != vandaag|date('Ymd')) %}
-                <div class="btn-group" role="group" aria-label="...">
-                    <a class="btn btn-success" href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'marktId': selectedMarkt.id, 'dag': vandaag|date('Y-m-d')}) }}">naar vandaag</a>
-                </div>
-                {% endif %}
-            </div>
-
+            </form>
         </div>
     </div>
 
@@ -43,12 +82,12 @@
                 Vaste plaats houders <span class="label label-primary">{{ attribute(stats, 'status.vpl') }}</span><br>
                 Voorkeurskaart houders <span class="label label-info">{{ attribute(stats, 'status.vkk') }}</span><br>
                 Sollicitanten <span class="label label-success">{{ attribute(stats, 'status.soll') }}</span><br>
-                Lottelingen <span class="label label-warning">{{ attribute(stats, 'status.lot') }}</span><br>
+                Standwerker / overig <span class="label label-warning">{{ attribute(stats, 'status.lot') }}</span><br>
                 {% if attribute(stats, 'status.?') > 0 %}<p>ONBEKEND <span class="label label-danger">{{ attribute(stats, 'status.?') }}</span>{% endif %}
             </p>
             <p>
                 Totaal actief <span class="label label-default">{{ attribute(stats, 'total') }}</span><br>
-                {% if attribute(stats, 'doorgehaald') > 0 %}Doorgehaald <span class="label label-danger">{{ attribute(stats, 'doorgehaald') }}</span>{% endif %}
+                {% if attribute(stats, 'doorgehaald') > 0 %}Verwijderd <span class="label label-danger">{{ attribute(stats, 'doorgehaald') }}</span>{% endif %}
             </p>
         </div>
         <div class="col-xs-3">
@@ -65,8 +104,12 @@
         <div class="col-xs-3">
             <h4>Kramen</h4>
             <p>
-                Aantal 3m kramen <strong>{{ attribute(stats, 'meters.aantal_3m') }} x</strong><br>
-                Aantal 4m kramen <strong>{{ attribute(stats, 'meters.aantal_4m') }} x</strong><br>
+                {% set drieM = attribute(stats, 'meters.aantal_3m') %}
+                {% set vierM = attribute(stats, 'meters.aantal_4m') %}
+                {% set totaalM = drieM + vierM %}
+                Aantal 3m kramen <strong>{{ drieM }} x</strong><br>
+                Aantal 4m kramen <strong>{{ vierM }} x</strong><br>
+                Totaal aantal kramen <strong>{{ totaalM }} x</strong><br>
                 Aantal extra meters <strong>{{ attribute(stats, 'meters.aantal_1m') }} x</strong>
             </p>
             <p>
@@ -87,7 +130,7 @@
 {% if multipleOnSameMarktet|length > 0%}
     <div class="row">
         <div class="col-xs-12">
-            <div class="alert alert-warning" role="alert"><strong>Oeps!</strong> Op deze markt zijn meerdere dagvergunningen voor dezelfde koopman actief. Mogelijk moet één van de dagvergunningen nog doorgehaald worden.</div>
+            <div class="alert alert-warning" role="alert"><strong>Oeps!</strong> Op deze markt zijn meerdere dagvergunningen voor dezelfde koopman actief. Mogelijk moet één van de dagvergunningen nog verwijderd worden.</div>
         </div>
     </div>
 {% endif %}
@@ -125,14 +168,21 @@
                                     Erkenningsnummer: {{ dagvergunning.koopman.erkenningsnummer }}
                                     <br>
                                     Sollicitatienummer: {% if dagvergunning.sollicitatie is not empty %}{{ dagvergunning.sollicitatie.sollicitatieNummer }} /{% endif %}
-                                    <span class="label label-{{ attribute(statusLabelClass, dagvergunning.status) }}">{{ dagvergunning.status }}</span>
+                                    <span class="label label-{{ attribute(statusLabelClass, dagvergunning.status) }}">{% if dagvergunning.status != 'lot' %}{{ dagvergunning.status }}{% else %}overig{% endif %}</span>
                                 {% endif %}
                                 {% if attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) is defined %}
                                     <div class="alert alert-warning" role="alert">Er {{ attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) == 2 ? 'is' : 'zijn' }} nog <strong>{{ attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) - 1 }}</strong> andere {{ attribute(multipleOnSameMarktet, dagvergunning.erkenningsnummer) == 2 ? 'dagvergunning' : 'dagvergunningen' }} op deze markt voor deze koopman actief.</div>
                                 {% endif %}
                             </td>
                             <td>
-                                {{ dagvergunning.aanwezig|replace('_', ' ') }}
+                                <strong>{{ dagvergunning.aanwezig|replace('_', ' ') }}</strong>
+                                {% if dagvergunning.vervanger is defined and dagvergunning.vervanger is not empty %}
+                                    <br>
+                                    Vervanger:
+                                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': dagvergunning.vervanger.id}) }}">{{ dagvergunning.vervanger.voorletters }} {{ dagvergunning.vervanger.achternaam }}</a>
+                                    <br>
+                                    Erkenningsnumer: {{ dagvergunning.vervanger.erkenningsnummer }}
+                                {% endif %}
                             <td>
                                 {% if dagvergunning.aantal3MeterKramen > 0 %}{{ dagvergunning.aantal3MeterKramen }} x 3 meter<br>{% endif %}
                                 {% if dagvergunning.aantal4MeterKramen > 0 %}{{ dagvergunning.aantal4MeterKramen }} x 4 meter<br>{% endif %}
@@ -145,16 +195,15 @@
                                 Reiniging: {{ dagvergunning.reiniging ? 'ja' : 'nee' }}
                             </td>
                             <td>
-                                {{ dagvergunning.registratieDatumtijd }}
-                                {% if dagvergunning.registratieAccount is not empty %}door {{ dagvergunning.registratieAccount.naam }}{% endif %}
-                                <br>
+                                {{ dagvergunning.registratieDatumtijd }}<br>
+                                {% if dagvergunning.registratieAccount is not empty %}door: {{ dagvergunning.registratieAccount.naam }}<br>{% endif %}
                                 {% if dagvergunning.doorgehaald %}
-                                    <span class="label label-danger">Doorgehaald</span>
+                                    <span class="label label-danger">Verwijderd</span>
                                     {{ dagvergunning.doorgehaaldDatumtijd }}
                                     {% if dagvergunning.doorgehaaldAccount is not empty %}door {{ dagvergunning.doorgehaaldAccount.naam }}{% endif %}
                                     <br>
                                 {% endif %}
-                                Invoer via: {{ dagvergunning.erkenningsnummerInvoerMethode }}<br>
+                                via: {{ dagvergunning.erkenningsnummerInvoerMethode }}<br>
                                 {% if dagvergunning.notitie is not empty %}
                                     <span class="glyphicon glyphicon-comment"></span> {{ dagvergunning.notitie }}
                                 {% endif %}
