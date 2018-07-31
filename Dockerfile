@@ -36,6 +36,6 @@ RUN rm /etc/nginx/conf.d/default.conf \
 WORKDIR /app
 
 RUN curl -sS https://getcomposer.org/installer | php \
-	&& php composer.phar install --prefer-dist --no-scripts
+	&& php composer.phar install --prefer-dist --no-scripts --no-interaction --no-ansi
 
 CMD /app/docker-entrypoint.sh

@@ -701,7 +701,7 @@
             "version": "1.11.1",
             "dist": {
                 "type": "file",
-                "url": "http://code.jquery.com/jquery-1.11.1.js",
+                "url": "https://code.jquery.com/jquery-1.11.1.js",
                 "reference": null,
                 "shasum": null
             },
