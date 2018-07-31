@@ -15,5 +15,7 @@ parameters:
     
     markt_api.url: http://ENV-makkelijkemarkt-api.datalabamsterdam.nl/api/
     markt_api.guzzle.verify: true
-    mm_app_key: ~
-    session_cookie_only_secure_connection: true
+    mm_app_key: testkey
+    
+    # Set true when using https
+    session_cookie_only_secure_connection: false

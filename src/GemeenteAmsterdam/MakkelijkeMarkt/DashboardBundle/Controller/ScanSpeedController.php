@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
@@ -15,33 +24,34 @@ class ScanSpeedController extends Controller
     /**
      * @Route("/scan-speed")
      * @Template()
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_SENIOR')")
      */
     public function indexAction(Request $request)
     {
         /* @var $api \GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\MarktApi */
         $api = $this->get('markt_api');
-        $accounts = [];
-        foreach ($api->getAccounts()['results'] as $account) {
-            $accounts[$account->id] = $account->naam;
-        }
-        $markten = [];
-        foreach ($api->getMarkten()['results'] as $markt) {
-            $markten[$markt->id] = $markt->naam;
-        }
-        $settings = (object) [
-            'marktId' => null,
-            'dag' => new \DateTime(),
-            'accountId' => null,
-            'pauseDetect' => 60*5
-        ];
+        $accounts = $api->getAccounts()['results'];
+        $markten = $api->getMarkten()['results'];
 
-        $form = $this->createForm(new ScanSpeedSelectorType($markten, $accounts), $settings, ['method' => 'GET']);
+        $marktId   = $request->query->get('markt');
+        $accountId = $request->query->get('account');
+        $datum     = $request->query->get('datum');
+        $pauze     = $request->query->get('pauze');
 
-        $form->handleRequest($request);
+        if (!is_null($marktId) && !is_null($accountId) && !is_null($datum) && !is_null($pauze)) {
+            $settings = (object) [
+                'marktId' => null,
+                'dag' => new \DateTime(),
+                'accountId' => null,
+                'pauseDetect' => 60*5
+            ];
 
-        if ($form->isValid() && $form->isSubmitted()) {
-            $dagvergunningen = $api->getDagvergunningen(['marktId' => $settings->marktId, 'dag' => $settings->dag->format('Y-m-d'), 'accountId' => $settings->accountId, 'doorgehaald' => -1], 0, 10000);
+            $dagvergunningen = $api->getDagvergunningen([
+                'marktId'   => $marktId,
+                'dag'       => $datum,
+                'accountId' => $accountId,
+                'doorgehaald' => -1
+            ], 0, 10000);
 
             $periods = new ArrayCollection();
             $currentPeriod = null;
@@ -79,10 +89,24 @@ class ScanSpeedController extends Controller
 
             }
 
-            return ['form' => $form->createView(), 'periods' => $periods];
+            return [
+                'accounts'  => $accounts,
+                'accountId' => $accountId,
+                'markten'   => $markten,
+                'marktId'   => $marktId,
+                'datum'     => $datum,
+                'pauze'     => $pauze,
+                'periods'   => $periods
+            ];
 
         }
 
-        return ['form' => $form->createView()];
+        $pauze = null === $pauze ? 300 : $pauze;
+
+        return [
+            'accounts' => $accounts,
+            'markten'  => $markten,
+            'pauze'    => $pauze
+        ];
     }
 }

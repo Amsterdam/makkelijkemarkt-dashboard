@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
@@ -139,7 +148,9 @@ class TariefplanController extends Controller
                 'toeslagBedrijfsafvalPerMeter' => $tariefPlanObject->lineairplan->toeslagBedrijfsafvalPerMeter,
                 'toeslagKrachtstroomPerAansluiting' => $tariefPlanObject->lineairplan->toeslagKrachtstroomPerAansluiting,
                 'promotieGeldenPerMeter' => $tariefPlanObject->lineairplan->promotieGeldenPerMeter,
-                'promotieGeldenPerKraam' => $tariefPlanObject->lineairplan->promotieGeldenPerKraam
+                'promotieGeldenPerKraam' => $tariefPlanObject->lineairplan->promotieGeldenPerKraam,
+                'afvaleiland' => $tariefPlanObject->lineairplan->afvaleiland,
+                'eenmaligElektra' => $tariefPlanObject->lineairplan->eenmaligElektra
             ];
         } else {
             return $tariefplan = (object)[
@@ -151,7 +162,9 @@ class TariefplanController extends Controller
                 'toeslagBedrijfsafvalPerMeter' => null,
                 'toeslagKrachtstroomPerAansluiting' => null,
                 'promotieGeldenPerMeter' => null,
-                'promotieGeldenPerKraam' => null
+                'promotieGeldenPerKraam' => null,
+                'afvaleiland' => null,
+                'eenmaligElektra' => null
             ];
         }
     }
@@ -169,7 +182,9 @@ class TariefplanController extends Controller
                 'vier_meter' => $tariefPlanObject->concreetplan->vier_meter,
                 'elektra' => $tariefPlanObject->concreetplan->elektra,
                 'promotieGeldenPerMeter' => $tariefPlanObject->concreetplan->promotieGeldenPerMeter,
-                'promotieGeldenPerKraam' => $tariefPlanObject->concreetplan->promotieGeldenPerKraam
+                'promotieGeldenPerKraam' => $tariefPlanObject->concreetplan->promotieGeldenPerKraam,
+                'afvaleiland' => $tariefPlanObject->concreetplan->afvaleiland,
+                'eenmaligElektra' => $tariefPlanObject->concreetplan->eenmaligElektra
             ];
         } else {
             return $tariefplan = (object)[
@@ -181,7 +196,9 @@ class TariefplanController extends Controller
                 'vier_meter' => null,
                 'elektra' => null,
                 'promotieGeldenPerMeter' => null,
-                'promotieGeldenPerKraam' => null
+                'promotieGeldenPerKraam' => null,
+                'afvaleiland' => null,
+                'eenmaligElektra' => null
             ];
         }
     }

@@ -1,4 +1,3 @@
-syntax: glob
 app/bootstrap.php.cache
 app/config/parameters.yml
 app/phpunit.xml
@@ -13,10 +12,13 @@ app/data/*
 web/media/cache/*
 web/bootstrap/*
 web/fonts/*
-syntax: regexp
-^web/iirf\.ini$
-syntax: regexp
-^web/css$
-syntax: regexp
-^web/js$
+app/logs/*
+app/cache/*
+web/iirf.ini
+web/css/*
+web/js/*
 .idea
+
+.hgignore
+.hgtags
+.hg/*

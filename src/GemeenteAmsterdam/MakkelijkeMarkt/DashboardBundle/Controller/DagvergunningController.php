@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
@@ -14,15 +23,19 @@ class DagvergunningController extends Controller
 {
     /**
      * @Route("/dagvergunningen")
+     * @Route("/dagvergunningen/")
      * @Template()
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function indexAction(Request $request)
     {
+        if ($request->query->get('marktId') && $request->query->get('datum')) {
+            $dag = implode('-', array_reverse(explode('-', $request->query->get('datum'))));
+            return $this->redirectToRoute('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', ['marktId' => $request->query->get('marktId'), 'dag' => $dag]);
+        }
+
         $markten = $this->get('markt_api')->getMarkten();
-
         $defaultDag = date('Y-m-d');
-
         return ['markten' => $markten, 'dag' => $defaultDag];
     }
 

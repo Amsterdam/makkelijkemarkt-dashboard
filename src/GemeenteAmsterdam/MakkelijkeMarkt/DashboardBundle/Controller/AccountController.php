@@ -1,4 +1,13 @@
 <?php
+/*
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
@@ -20,7 +29,7 @@ class AccountController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $accounts = $this->get('markt_api')->getAccounts();
+        $accounts = $this->get('markt_api')->getAccounts($request->query->get('active', -1), $request->query->get('locked', -1));
 
         return ['accounts' => $accounts];
     }
@@ -35,7 +44,6 @@ class AccountController extends Controller
         $account = $this->get('markt_api')->getAccount($id);
         $account->password = '';
         $account->role = reset($account->roles);
-
         $formModel = clone $account;
         $form = $this->createForm(new AccountEditType(), $formModel);
 
@@ -83,5 +91,36 @@ class AccountController extends Controller
         }
 
         return ['form' => $form->createView(), 'formModel' => $formModel];
+    }
+
+    /**
+     * @Route("/accounts/unlock/{id}")
+     * @Security("has_role('ROLE_ADMIN')")
+     */
+    public function unlockAction(Request $request, $id)
+    {
+        $this->get('markt_api')->unlockAccount($id);
+        return $this->redirectToRoute('gemeenteamsterdam_makkelijkemarkt_dashboard_account_index');
+    }
+
+    /**
+     * @Route("/accounts/detail/{id}/tokens")
+     * @Template()
+     * @Security("has_role('ROLE_ADMIN')")
+     */
+    public function showTokensAction(Request $request, $id)
+    {
+        $pageNumber = $request->query->getInt('page', 0);
+        $pageSize = 100;
+
+        $account = $this->get('markt_api')->getAccount($id);
+        $tokens = $this->get('markt_api')->getTokensByAccount($id, $pageNumber * $pageSize, $pageSize);
+
+        return [
+                'pageNumber' => $pageNumber,
+                'pageSize' => $pageSize,
+                'account' => $account,
+                'tokens' => $tokens
+            ];
     }
 }
