@@ -27,6 +27,11 @@ use Symfony\Component\Validator\Constraints\Count;
 
 class RapportController extends Controller
 {
+    private function formatErkenningsNummer($in)
+    {
+        return substr($in, 0, 8) . '.' . substr($in, 8);
+    }
+
     /**
      * @Route("/rapport/dubbelstaan/{dag}")
      * @Template()
@@ -105,11 +110,12 @@ class RapportController extends Controller
                         $activeSheet->setCellValueByColumnAndRow(1, 1, 'Status');
                         $activeSheet->setCellValueByColumnAndRow(2, 1, 'Erkenningsnummer');
                         $activeSheet->setCellValueByColumnAndRow(3, 1, 'Voorletters');
-                        $activeSheet->setCellValueByColumnAndRow(4, 1, 'Achternaam');
-                        $activeSheet->setCellValueByColumnAndRow(5, 1, 'Aantal actieve dagvergunningen in periode');
-                        $activeSheet->setCellValueByColumnAndRow(6, 1, 'Waarvan zelf aanwezig');
-                        $activeSheet->setCellValueByColumnAndRow(7, 1, 'Waarvan andere aanwezigheid');
-                        $activeSheet->setCellValueByColumnAndRow(8, 1, 'Percentage aanwezig');
+                        $activeSheet->setCellValueByColumnAndRow(4, 1, 'Tussenvoegsels');
+                        $activeSheet->setCellValueByColumnAndRow(5, 1, 'Achternaam');
+                        $activeSheet->setCellValueByColumnAndRow(6, 1, 'Aantal actieve dagvergunningen in periode');
+                        $activeSheet->setCellValueByColumnAndRow(7, 1, 'Waarvan zelf aanwezig');
+                        $activeSheet->setCellValueByColumnAndRow(8, 1, 'Waarvan andere aanwezigheid');
+                        $activeSheet->setCellValueByColumnAndRow(9, 1, 'Percentage aanwezig');
 
                         $activeSheet->getCellByColumnAndRow(0, 1)->getStyle()->getFont()->setBold(true);
                         $activeSheet->getCellByColumnAndRow(1, 1)->getStyle()->getFont()->setBold(true);
@@ -120,25 +126,28 @@ class RapportController extends Controller
                         $activeSheet->getCellByColumnAndRow(6, 1)->getStyle()->getFont()->setBold(true);
                         $activeSheet->getCellByColumnAndRow(7, 1)->getStyle()->getFont()->setBold(true);
                         $activeSheet->getCellByColumnAndRow(8, 1)->getStyle()->getFont()->setBold(true);
+                        $activeSheet->getCellByColumnAndRow(9, 1)->getStyle()->getFont()->setBold(true);
 
                         $activeSheet->getColumnDimensionByColumn(0)->setWidth(10);
                         $activeSheet->getColumnDimensionByColumn(1)->setWidth(5);
                         $activeSheet->getColumnDimensionByColumn(2)->setWidth(20);
                         $activeSheet->getColumnDimensionByColumn(3)->setWidth(10);
-                        $activeSheet->getColumnDimensionByColumn(4)->setWidth(30);
+                        $activeSheet->getColumnDimensionByColumn(4)->setWidth(10);
+                        $activeSheet->getColumnDimensionByColumn(5)->setWidth(30);
                     }
                     $i++;
                     $activeSheet->setCellValueByColumnAndRow(0, $i, $record->sollicitatie->sollicitatieNummer);
                     $activeSheet->setCellValueByColumnAndRow(1, $i, $record->sollicitatie->status);
-                    $activeSheet->setCellValueByColumnAndRow(2, $i, $record->koopman->erkenningsnummer);
+                    $activeSheet->setCellValueExplicitByColumnAndRow(2, $i, $this->formatErkenningsNummer($record->koopman->erkenningsnummer, \PHPExcel_Cell_DataType::TYPE_STRING));
                     $activeSheet->getCellByColumnAndRow(2, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
                     $activeSheet->setCellValueByColumnAndRow(3, $i, $record->koopman->voorletters);
-                    $activeSheet->setCellValueByColumnAndRow(4, $i, $record->koopman->achternaam);
-                    $activeSheet->setCellValueByColumnAndRow(5, $i, $record->aantalActieveDagvergunningen);
-                    $activeSheet->setCellValueByColumnAndRow(6, $i, $record->aantalActieveDagvergunningenZelfAanwezig);
-                    $activeSheet->setCellValueByColumnAndRow(7, $i, $record->aantalActieveDagvergunningenNietZelfAanwezig);
-                    $activeSheet->setCellValueByColumnAndRow(8, $i, $record->aantalActieveDagvergunningen > 0 ? $record->percentageAanwezig : '');
-                    $activeSheet->getCellByColumnAndRow(8, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(4, $i, $record->koopman->tussenvoegsels);
+                    $activeSheet->setCellValueByColumnAndRow(5, $i, $record->koopman->achternaam);
+                    $activeSheet->setCellValueByColumnAndRow(6, $i, $record->aantalActieveDagvergunningen);
+                    $activeSheet->setCellValueByColumnAndRow(7, $i, $record->aantalActieveDagvergunningenZelfAanwezig);
+                    $activeSheet->setCellValueByColumnAndRow(8, $i, $record->aantalActieveDagvergunningenNietZelfAanwezig);
+                    $activeSheet->setCellValueByColumnAndRow(9, $i, $record->aantalActieveDagvergunningen > 0 ? $record->percentageAanwezig : '');
+                    $activeSheet->getCellByColumnAndRow(10, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
                 }
                 $obj->getActiveSheet()->setAutoFilter($obj->getActiveSheet()->calculateWorksheetDimension());
                 $activeSheet->setTitle($markt->naam);

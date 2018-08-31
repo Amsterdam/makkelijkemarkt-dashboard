@@ -100,7 +100,7 @@
                             </td>
                             <td>
                                 {% if record.koopman is not empty %}
-                                    {{ record.koopman.voorletters }} {{ record.koopman.achternaam }}
+                                    {{ record.koopman.voorletters }} {{ record.koopman.tussenvoegsels }}{{ record.koopman.tussenvoegsels ? ' ' }}{{ record.koopman.achternaam }}
                                 {% endif %}
                             </td>
                             <td class="text-right">{{ record.aantalActieveDagvergunningen }}</td>

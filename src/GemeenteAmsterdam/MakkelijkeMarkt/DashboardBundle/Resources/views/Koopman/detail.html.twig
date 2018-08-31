@@ -13,7 +13,7 @@
 
 {% set activeTab = app.request.query.get('tab', 'sollicitaties') %}
 
-{% block title %}{{ koopman.voorletters }} {{ koopman.achternaam }} - Koopman detail - {{ parent() }}{% endblock %}
+{% block title %}{{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }} - Koopman detail - {{ parent() }}{% endblock %}
 
 {% block scripts %}
     <script type="application/javascript">
@@ -69,7 +69,7 @@
     <div class="row">
         <div class="col-xs-12">
 
-            <h1><img src="{{ koopman.fotoUrl }}" alt="" width="50"> {{ koopman.voorletters }} {{ koopman.achternaam }}</h1>
+            <h1><img src="{{ koopman.fotoUrl }}" alt="" width="50"> {{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }}</h1>
 
             <div class="row">
                 <div class="col-xs-3">
@@ -85,6 +85,7 @@
                 </div>
                 <div class="col-xs-3">
                     <strong>Voorletters</strong> {{ koopman.voorletters }}<br>
+                    {% if koopman.tussenvoegsels %}<strong>Tussenvoegsels</strong> {{ koopman.tussenvoegsels }}<br>{% endif %}
                     <strong>Achternaam</strong> {{ koopman.achternaam }}<br>
                 </div>
                 <div class="col-xs-3">
@@ -169,7 +170,7 @@
                             <tbody>
                                 {% for vervanger in koopman.vervangers %}
                                     <tr>
-                                        <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': vervanger.vervanger_id}) }}">{{ vervanger.voorletters }} {{ vervanger.achternaam }}</a></td>
+                                        <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': vervanger.vervanger_id}) }}">{{ vervanger.voorletters }} {{ vervanger.tussenvoegsels }}{{ vervanger.tussenvoegsels ? ' ' }}{{ vervanger.achternaam }}</a></td>
                                         <td>{{ vervanger.erkenningsnummer }}</td>
                                         <td>{{ vervanger.pas_uid }}</td>
                                     </tr>
