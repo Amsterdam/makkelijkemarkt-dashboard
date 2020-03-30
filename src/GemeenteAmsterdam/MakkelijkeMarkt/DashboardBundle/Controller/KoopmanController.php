@@ -11,6 +11,7 @@
 
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -62,6 +63,10 @@ class KoopmanController extends Controller
             $dagvergunningenEindDatum = new \DateTime();
             $dagvergunningenStartDatum = clone $dagvergunningenEindDatum;
             $dagvergunningenStartDatum->sub(new \DateInterval('P1M'));
+        }
+
+        if ($koopman->handhavingsVerzoek) {
+            $koopman->handhavingsVerzoek = new \DateTime($koopman->handhavingsVerzoek);
         }
 
         $markten = $this->get('markt_api')->getMarkten();
@@ -133,6 +138,12 @@ class KoopmanController extends Controller
                 // doorgehaald
                 $stats['doorgehaald'] ++;
             }
+
+            if (isset($dagvergunning->controles)) {
+                foreach ($dagvergunning->controles as &$controle) {
+                    $controle->registratieDatumtijd = new \DateTime($controle->registratieDatumtijd);
+                }
+            }
         }
 
         $lastQuarter = new \DateTime();
@@ -158,6 +169,9 @@ class KoopmanController extends Controller
         $laatsteDagVanDeMaand->setDate($laatsteDagVanDeMaand->format('Y'), $laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, $laatsteDagVanDeMaand->format('m'), $laatsteDagVanDeMaand->format('Y')));
         $laatsteMaanden[] = ['label' => $eersteDagVanDeMaand->format('m-Y'), 'start' => clone $eersteDagVanDeMaand, 'eind' => clone $laatsteDagVanDeMaand];
 
+        $vandaag = new \DateTime();
+        $vandaag->setTime(0,0,0);
+
         return [
             'koopman' => $koopman,
             'dagvergunningen' => $dagvergunningen,
@@ -168,8 +182,72 @@ class KoopmanController extends Controller
             'dagvergunningenStartDatum' => $dagvergunningenStartDatum,
             'markten' => $markten,
             'markt' => $markt,
-            'laatsteMaanden' => $laatsteMaanden
+            'laatsteMaanden' => $laatsteMaanden,
+            'vandaag' => $vandaag
         ];
+    }
+
+    /**
+     * @Route("/koopmannen/controle/{id}")
+     * @Template()
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_SENIOR')")
+     */
+    public function controleAction(Request $request, $id)
+    {
+        $marktApi = $this->get('markt_api');
+        $koopman = $marktApi->getKoopman($id);
+
+        $start = $request->query->get('startdatum');
+        $eind = $request->query->get('einddatum');
+        if (null !== $start && null !== $eind) {
+            $startdatum = new \DateTime(implode('-',array_reverse(explode('-',$start))));
+            $einddatum = new \DateTime(implode('-',array_reverse(explode('-',$eind))));
+        } else {
+            $startdatum = new \DateTime();
+            $startdatum->modify('-1 month');
+            $einddatum = new \DateTime();
+        }
+
+
+        $vergunningen = $marktApi->getDagvergunningenByDate($koopman->id, $startdatum, $einddatum);
+        $vergunningen = $vergunningen['results'];
+
+        foreach ($vergunningen as &$vergunning) {
+            $vergunning->dag = new \DateTime($vergunning->dag);
+            $vergunning->registratieDatumtijd = new \DateTime($vergunning->registratieDatumtijd);
+            if (isset($vergunning->controles)) {
+                foreach ($vergunning->controles as &$controle) {
+                    $controle->registratieDatumtijd = new \DateTime($controle->registratieDatumtijd);
+                }
+            }
+        }
+
+        $methodes = [
+            'handmatig' => 'HND',
+            'scan-nfc' => 'NFC',
+            'scan-barcode' => 'BAR',
+        ];
+
+        return [
+            'koopman' => $koopman,
+            'startdatum' => $startdatum,
+            'einddatum' => $einddatum,
+            'vergunningen' => $vergunningen,
+            'methodes' => $methodes
+        ];
+    }
+
+    /**
+     * @Route("/koopmannen/toggle_handhavingsverzoek/{id}")
+     * @Method("POST")
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_SENIOR')")
+     */
+    public function toggleHandhavingsVerzoek(Request $request, $id)
+    {
+        $datum = implode('-',array_reverse(explode('-', $request->request->get('handhavingDatum'))));
+        $date = new \DateTime($datum);
+        $this->get('markt_api')->toggleHandhavingsverzoek($id, $date);
+        return $this->redirectToRoute('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', ['id' => $id]);
     }
 
     /**

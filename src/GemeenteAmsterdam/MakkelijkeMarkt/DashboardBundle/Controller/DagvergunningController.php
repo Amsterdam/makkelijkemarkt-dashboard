@@ -31,11 +31,14 @@ class DagvergunningController extends Controller
     {
         if ($request->query->get('marktId') && $request->query->get('datum')) {
             $dag = implode('-', array_reverse(explode('-', $request->query->get('datum'))));
-            return $this->redirectToRoute('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', ['marktId' => $request->query->get('marktId'), 'dag' => $dag]);
+
+            return $this->redirectToRoute('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview',
+                ['marktId' => $request->query->get('marktId'), 'dag' => $dag]);
         }
 
         $markten = $this->get('markt_api')->getMarkten();
         $defaultDag = date('Y-m-d');
+
         return ['markten' => $markten, 'dag' => $defaultDag];
     }
 
@@ -51,6 +54,7 @@ class DagvergunningController extends Controller
             if ($markt->id == $marktId) {
                 return $markt;
             }
+
             return $carry;
         });
 
@@ -61,7 +65,13 @@ class DagvergunningController extends Controller
         $yesterday = clone $day;
         $yesterday->sub(new \DateInterval('P1D'));
 
-        $dagvergunningen = $this->get('markt_api')->getDagvergunningen(['marktId' => $marktId, 'dag' => $dag, 'doorgehaald' => -1], 0, 1000);
+        $pinTotaalInclusief = 0;
+
+        $dagvergunningen = $this->get('markt_api')->getDagvergunningen([
+            'marktId' => $marktId,
+            'dag' => $dag,
+            'doorgehaald' => -1,
+        ], 0, 1000);
 
         $stats = [
             'total' => 0,
@@ -76,7 +86,7 @@ class DagvergunningController extends Controller
             'aanwezig.partner' => 0,
             'aanwezig.vervanger_met_toestemming' => 0,
             'aanwezig.vervanger_zonder_toestemming' => 0,
-            'aanwezig.niet_aanwezig' => 0,
+            'aanwezig.vervanger_met_ontheffing' => 0,
             'meters.aantal_3m' => 0,
             'meters.aantal_4m' => 0,
             'meters.aantal_1m' => 0,
@@ -86,51 +96,133 @@ class DagvergunningController extends Controller
             'extra.krachtstroom' => 0,
             'extra.reiniging' => 0,
         ];
-        foreach ($dagvergunningen['results'] as $dagvergunning) {
+
+        $multipleOnSameMarket = [];
+
+        $audits = [
+            'total' => 0,
+            'first' => 0,
+            'second' => 0
+        ];
+
+        foreach ($dagvergunningen['results'] as &$dagvergunning) {
             if ($dagvergunning->doorgehaald === false) {
+                if (isset($multipleOnSameMarket[$dagvergunning->erkenningsnummer]) === false) {
+                    $multipleOnSameMarket[$dagvergunning->erkenningsnummer] = 0;
+                }
+                $multipleOnSameMarket[$dagvergunning->erkenningsnummer]++;
+
                 // totaal dagvergunningen (actief)
-                $stats['total'] ++;
+                $stats['total']++;
                 // dagvergunningen per status
-                if (isset($stats['status.' . $dagvergunning->status]) === true)
-                    $stats['status.' . $dagvergunning->status] ++;
-                else
-                    $stats['status.?'] ++;
+                if (isset($stats['status.'.$dagvergunning->status]) === true) {
+                    $stats['status.'.$dagvergunning->status]++;
+                } else {
+                    $stats['status.?']++;
+                }
                 // per aanwezigheid
-                if (isset($stats['aanwezig.' . $dagvergunning->aanwezig]) === true)
-                    $stats['aanwezig.' . $dagvergunning->aanwezig] ++;
-                else
-                    $stats['aanwezig.?'] ++;
+                if (isset($stats['aanwezig.'.$dagvergunning->aanwezig]) === true) {
+                    $stats['aanwezig.'.$dagvergunning->aanwezig]++;
+                } else {
+                    $stats['aanwezig.?']++;
+                }
                 // per kraamlengte en totale kraamlengte
                 $stats['meters.aantal_3m'] = $stats['meters.aantal_3m'] + $dagvergunning->aantal3MeterKramen;
                 $stats['meters.aantal_4m'] = $stats['meters.aantal_4m'] + $dagvergunning->aantal4MeterKramen;
                 $stats['meters.aantal_1m'] = $stats['meters.aantal_1m'] + $dagvergunning->extraMeters;
                 $stats['meters.totaal'] = $stats['meters.totaal'] + ($dagvergunning->aantal3MeterKramen * 3) + ($dagvergunning->aantal4MeterKramen * 4) + ($dagvergunning->extraMeters * 1);
                 // extra's
-                if ($dagvergunning->aantalElektra > 0)
-                    $stats['extra.elektra_afgenomen'] ++;
+                if ($dagvergunning->aantalElektra > 0) {
+                    $stats['extra.elektra_afgenomen']++;
+                }
                 $stats['extra.elektra_totaal'] = $stats['extra.elektra_totaal'] + $dagvergunning->aantalElektra;
-                if ($dagvergunning->krachtstroom === true)
-                    $stats['extra.krachtstroom'] ++;
-                if ($dagvergunning->reiniging === true)
-                    $stats['extra.reiniging'] ++;
+                if ($dagvergunning->krachtstroom === true) {
+                    $stats['extra.krachtstroom']++;
+                }
+                if ($dagvergunning->reiniging === true) {
+                    $stats['extra.reiniging']++;
+                }
             } else {
                 // doorgehaald
-                $stats['doorgehaald'] ++;
+                $stats['doorgehaald']++;
+            }
+
+            if ($dagvergunning->audit) {
+                $audits['total']++;
+            }
+
+            if (isset($dagvergunning->controles)) {
+                foreach ($dagvergunning->controles as &$controle) {
+                    $controle->registratieDatumtijd = new \DateTime($controle->registratieDatumtijd);
+
+                    switch ($controle->ronde) {
+                        case 1:
+                            $audits['first']++;
+                            break;
+                        case 2:
+                            $audits['second']++;
+                            break;
+                    }
+                }
+            }
+
+            if (isset($dagvergunning->factuur) && isset($dagvergunning->factuur->producten)) {
+                if ($dagvergunning->doorgehaald === false) {
+                    foreach ($dagvergunning->factuur->producten as $product) {
+                        $pinTotaalInclusief += (float)$product->totaal_inclusief;
+                    }
+                }
+            }
+
+            if (isset($dagvergunning->koopman->handhavingsVerzoek)) {
+                $dagvergunning->koopman->handhavingsVerzoek = new \DateTime($dagvergunning->koopman->handhavingsVerzoek);
             }
         }
 
-        $multipleOnSameMarket = [];
-        foreach ($dagvergunningen['results'] as $dagvergunning) {
-            if ($dagvergunning->doorgehaald === false) {
-                if (isset($multipleOnSameMarket[$dagvergunning->erkenningsnummer]) === false)
-                    $multipleOnSameMarket[$dagvergunning->erkenningsnummer] = 0;
-                $multipleOnSameMarket[$dagvergunning->erkenningsnummer] ++;
-            }
-        }
         $multipleOnSameMarket = array_filter($multipleOnSameMarket, function ($value) {
             return $value > 1;
         });
 
-        return ['markten' => $markten, 'dag' => $day, 'gisteren' => $yesterday, 'morgen' => $tomorrow, 'vandaag' => $today, 'selectedMarkt' => $markt, 'dagvergunningen' => $dagvergunningen, 'stats' => $stats, 'multipleOnSameMarktet' => $multipleOnSameMarket];
+        $methodes = [
+            'handmatig' => 'HND',
+            'scan-nfc' => 'NFC',
+            'scan-barcode' => 'BAR',
+        ];
+
+        return [
+            'markten' => $markten,
+            'dag' => $day,
+            'gisteren' => $yesterday,
+            'morgen' => $tomorrow,
+            'vandaag' => $today,
+            'selectedMarkt' => $markt,
+            'dagvergunningen' => $dagvergunningen,
+            'stats' => $stats,
+            'multipleOnSameMarktet' => $multipleOnSameMarket,
+            'methodes' => $methodes,
+            'pinTotaalInclusief' => $pinTotaalInclusief,
+            'audits' => $audits
+        ];
+    }
+
+    /**
+     * @Route("/dagvergunningen/controlelijst_delete/{marktId}/{date}")
+     * @Template()
+     * @Security("has_role('ROLE_ADMIN') or has_role('ROLE_SENIOR')")
+     *
+     */
+    public function deleteControlelijstAction(Request $request, $marktId, $date)
+    {
+        $markt = $this->get('markt_api')->getMarkt($marktId);
+        $dag = new \DateTime($date);
+
+        if ("POST" === $request->getMethod()) {
+            $this->get('markt_api')->resetAudit($marktId, $dag);
+        }
+
+        return [
+            'markt' => $markt,
+            'dag' => $dag,
+        ];
     }
 }

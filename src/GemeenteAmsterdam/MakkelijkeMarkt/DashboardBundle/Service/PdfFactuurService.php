@@ -115,7 +115,7 @@ class PdfFactuurService
         $this->pdf->Cell(50, 6, 'Totaal inclusief btw:', 0, 0, '' , true);
         $this->pdf->Cell(130, 6, '€ ' . $totaalIncl, 0, 1, '' , true);
         $this->pdf->SetFillColor(220,220,220);
-        $this->pdf->Cell(50, 6, 'Totaal exlusief btw:', 0, 0, '' , true);
+        $this->pdf->Cell(50, 6, 'Totaal exclusief btw:', 0, 0, '' , true);
         $this->pdf->Cell(130, 6, '€ ' . $totaalExcl, 0, 1, '' , true);
 
         foreach ($vergunningenMetFactuur as $vergunning) {

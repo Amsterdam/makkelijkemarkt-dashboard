@@ -40,7 +40,7 @@
                             <th>E-mail</th>
                             <th>Status</th>
                             <th>Rollen</th>
-                            <th width="50">&nbsp;</th>
+                            <th width="80">&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,12 +63,18 @@
                             </td>
                             <td>
                                 {% for role in account.roles %}
+                                    {% set current_role = role %}
                                     {{ friendlyRoleNames[role]|default(role) }}{{ loop.last==false?', ' }}
                                 {% endfor %}
                             </td>
                             <td>
-                                <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_showtokens', {'id': account.id}) }}"><span class="glyphicon glyphicon-calendar"></span></a>
-                                <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_edit', {'id': account.id}) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_showtokens', {'id': account.id}) }}"><span class="glyphicon glyphicon-calendar"></span></a>
+                                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_edit', {'id': account.id}) }}"><span class="glyphicon glyphicon-pencil"></span></a>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_SENIOR') and current_role != 'ROLE_ADMIN') %}
+                                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_account_updatepassword', {'id': account.id}) }}"><span class="glyphicon glyphicon-user"></span></a>
+                                {% endif %}
                             </td>
                         </tr>
 {% else %}
