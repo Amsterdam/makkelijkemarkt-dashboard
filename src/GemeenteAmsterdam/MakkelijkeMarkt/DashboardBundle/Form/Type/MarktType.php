@@ -31,14 +31,6 @@ class MarktType extends AbstractType
                 'label' => 'Steekproef maximaal aanvullen tot',
                 'required' => true
             ])
-            ->add('indelingstype', 'choice', [
-                'label' => 'Indelingstype',
-                'required' => true,
-                'choices' => [
-                    'traditioneel' => 'traditioneel',
-                    'a/b-lijst' => 'a/b-lijst'
-                ]
-            ])
             ->add('marktDagenTekst', 'text', [
                 'label' => 'Marktdagen, als tekstuele omschrijving',
                 'required' => false,
@@ -79,18 +71,6 @@ class MarktType extends AbstractType
             ])
             ->add('kiesJeKraamMededelingTekst', 'text', [
                 'label' => 'Mededeling: Tekst',
-                'required' => false,
-            ])
-            ->add('kiesJeKraamGeblokkeerdePlaatsen', 'text', [
-                'label' => 'Kies je kraam: Geblokkeerde plaatsen op deze markt (er kan niet worden ingedeeld op deze plaatsen), komma gescheiden',
-                'required' => false,
-            ])
-            ->add('kiesJeKraamGeblokkeerdeData', 'text', [
-                'label' => 'Kies je kraam: Geblokkeerde data op deze markt (er wordt niet ingedeeld op deze data), komma gescheiden, invoeren als yyyy-mm-dd',
-                'required' => false,
-            ])
-            ->add('kiesJeKraamEmailKramenzetter', 'text', [
-                'label' => 'Kies je kraam: Stuur ook een e-mail met de indeling van de markt naar deze e-mailadressen, meerdere adressen kommagescheiden invoeren. Bijvoorbeeld: kramenzetter',
                 'required' => false,
             ])
             ->add('save', 'submit', ['label' => 'Opslaan'])

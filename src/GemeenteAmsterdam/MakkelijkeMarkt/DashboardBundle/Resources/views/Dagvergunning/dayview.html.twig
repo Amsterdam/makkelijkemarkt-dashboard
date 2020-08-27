@@ -9,7 +9,7 @@
 #}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
-{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info'} %}
+{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
 
 {% block title %}{{ selectedMarkt.naam }} / {{ dag|date('d-m-Y') }} - {{ parent() }}{% endblock %}
 
@@ -112,10 +112,6 @@
             <p>
                 Vaste plaats houders <span class="label label-primary">{{ attribute(stats, 'status.vpl') }}</span><br>
                 Voorkeurskaart houders <span class="label label-info">{{ attribute(stats, 'status.vkk') }}</span><br>
-                TVPL houders <span class="label label-info">{{ attribute(stats, 'status.tvpl') }}</span><br>
-                TVPLZ houders <span class="label label-info">{{ attribute(stats, 'status.tvplz') }}</span><br>
-                Experimentele zone houders <span class="label label-info">{{ attribute(stats, 'status.exp') }}</span><br>
-                Experimentele zone houders F <span class="label label-info">{{ attribute(stats, 'status.expf') }}</span><br>
                 Sollicitanten <span class="label label-success">{{ attribute(stats, 'status.soll') }}</span><br>
                 Standwerker / overig <span class="label label-warning">{{ attribute(stats, 'status.lot') }}</span><br>
             {% if attribute(stats, 'status.?') > 0 %}<p>ONBEKEND <span
@@ -217,7 +213,7 @@
                                             <br>
                                             Sollicitatienummer: {% if dagvergunning.sollicitatie is not empty %}{{ dagvergunning.sollicitatie.sollicitatieNummer }} /{% endif %}
                                             <span class="label label-{{ attribute(statusLabelClass, dagvergunning.status) }}">{% if dagvergunning.status != 'lot' %}{{ dagvergunning.status }}{% else %}overig{% endif %}</span>
-                                            {% if dagvergunning.koopman.handhavingsVerzoek is defined and dagvergunning.koopman.handhavingsVerzoek is not null and vandaag <= dagvergunning.koopman.handhavingsVerzoek %}
+                                            {% if dagvergunning.koopman.handhavingsVerzoek is not null and vandaag <= dagvergunning.koopman.handhavingsVerzoek %}
                                                 <br/><span class="label label-warning">Handhavingsverzoek</span>
                                             {% endif %}
                                         {% endif %}

@@ -149,10 +149,6 @@ class PdfLijstService
                 $this->pdf->SetTextColor(255,179,71);
                 break;
             case 'vkk':
-            case 'tvpl':
-            case 'tvplz':
-            case 'exp':
-            case 'expf':
                 $this->pdf->SetTextColor(150,111,214);
                 break;
         }

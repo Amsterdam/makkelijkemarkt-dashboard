@@ -150,8 +150,7 @@ class TariefplanController extends Controller
                 'promotieGeldenPerMeter' => $tariefPlanObject->lineairplan->promotieGeldenPerMeter,
                 'promotieGeldenPerKraam' => $tariefPlanObject->lineairplan->promotieGeldenPerKraam,
                 'afvaleiland' => $tariefPlanObject->lineairplan->afvaleiland,
-                'eenmaligElektra' => $tariefPlanObject->lineairplan->eenmaligElektra,
-                'elektra' => $tariefPlanObject->lineairplan->elektra
+                'eenmaligElektra' => $tariefPlanObject->lineairplan->eenmaligElektra
             ];
         } else {
             return $tariefplan = (object)[
@@ -165,8 +164,7 @@ class TariefplanController extends Controller
                 'promotieGeldenPerMeter' => null,
                 'promotieGeldenPerKraam' => null,
                 'afvaleiland' => null,
-                'eenmaligElektra' => null,
-                'elektra' => null,
+                'eenmaligElektra' => null
             ];
         }
     }

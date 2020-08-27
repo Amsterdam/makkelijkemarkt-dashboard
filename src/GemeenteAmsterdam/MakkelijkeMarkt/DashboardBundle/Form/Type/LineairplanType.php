@@ -47,9 +47,6 @@ class LineairplanType extends AbstractType
             ->add('afvaleiland', 'number', [
                 'label'   => 'Afvaleiland'
             ])
-            ->add('elektra', 'number', [
-                'label'   => 'Elektra per aansluiting'
-            ])
             ->add('eenmaligElektra', 'number', [
                 'label'   => 'Eenmalig elektra'
             ])
