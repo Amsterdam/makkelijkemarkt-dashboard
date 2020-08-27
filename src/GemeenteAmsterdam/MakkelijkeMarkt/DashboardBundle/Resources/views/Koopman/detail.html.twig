@@ -9,7 +9,7 @@
 #}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
-{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
+{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info', 'lot': 'warning'} %}
 
 {% set activeTab = app.request.query.get('tab', 'sollicitaties') %}
 
@@ -276,6 +276,14 @@
                                         class="label label-primary">{{ attribute(stats, 'status.vpl') }}</span><br>
                                 Voorkeurskaart houders <span
                                         class="label label-info">{{ attribute(stats, 'status.vkk') }}</span><br>
+                                TVPL houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.tvpl') }}</span><br>
+                                TVPLZ houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.tvplz') }}</span><br>
+                                EXP houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.exp') }}</span><br>
+                                EXPF houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.expf') }}</span><br>
                                 Sollicitanten <span
                                         class="label label-success">{{ attribute(stats, 'status.soll') }}</span><br>
                                 Standwerker / overig <span

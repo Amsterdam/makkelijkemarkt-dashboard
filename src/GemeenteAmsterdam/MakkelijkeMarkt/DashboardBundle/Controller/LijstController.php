@@ -100,7 +100,7 @@ class LijstController extends Controller
         $markt = $marktApi->getMarkt($marktId);
 
         $parts = array(
-            'Personen'  => $marktApi->getLijstenMetDatum($marktId,array('vpl','soll','vkk'),$tweeMaandenTerug, $maandag)
+            'Personen'  => $marktApi->getLijstenMetDatum($marktId,array('vpl','soll','vkk', 'tvpl', 'tvplz', 'exp', 'expf'),$tweeMaandenTerug, $maandag)
         );
 
         $pdf = $pdfService->generate($markt->naam, 'Barcode lijst ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
@@ -126,7 +126,7 @@ class LijstController extends Controller
 
         $parts = array(
             'Vaste plaatsen'  => $marktApi->getLijstenMetDatum($marktId,array('vpl'),$tweeMaandenTerug, $maandag),
-            'Voorkeurs kaart' => $marktApi->getLijstenMetDatum($marktId,array('vkk'),$tweeMaandenTerug, $maandag)
+            'Voorkeurs kaart, Tijdelijke Vaste Plaatshouders, Experimentele zone' => $marktApi->getLijstenMetDatum($marktId,array('vkk', 'tvpl', 'tvplz', 'exp', 'expf'),$tweeMaandenTerug, $maandag)
         );
 
         $pdf = $pdfService->generate($markt->naam, 'Weeklijst ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
@@ -179,7 +179,7 @@ class LijstController extends Controller
 
         $marktApi = $this->get('markt_api');
 
-        $personenAlijst = $marktApi->getLijstenMetDatum($marktId,array('soll','vpl','vkk'),$maandag, $donderdag);
+        $personenAlijst = $marktApi->getLijstenMetDatum($marktId,array('soll','vpl','vkk', 'tvpl', 'tvplz', 'exp', 'expf'),$maandag, $donderdag);
         $laatsteMaanden = array_merge(
                 $marktApi->getLijstenMetDatum($marktId,array('soll'),$tweeMaandenTerug, $zondag)
         );

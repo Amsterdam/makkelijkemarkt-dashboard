@@ -64,7 +64,7 @@ class PdfFactuurService
         $this->pdf->AddPage();
 
         $this->pdf->Image(
-            getcwd() . '/../src/GemeenteAmsterdam/MakkelijkeMarkt/DashboardBundle/Resources/public/images/GASD_4_centrum.png',
+            getcwd() . '/../src/GemeenteAmsterdam/MakkelijkeMarkt/DashboardBundle/Resources/public/images/GASD_1.png',
             10,
             10,
             50
@@ -128,7 +128,7 @@ class PdfFactuurService
     protected function addVergunning($koopman, $vergunning) {
         $this->pdf->AddPage();
         $this->pdf->Image(
-            getcwd() . '/../src/GemeenteAmsterdam/MakkelijkeMarkt/DashboardBundle/Resources/public/images/GASD_4_centrum.png',
+            getcwd() . '/../src/GemeenteAmsterdam/MakkelijkeMarkt/DashboardBundle/Resources/public/images/GASD_1.png',
             10,
             10,
             50
@@ -138,7 +138,7 @@ class PdfFactuurService
 
         $this->pdf->SetFont($this->fontname, 'b', 8);
         $this->pdf->Cell(16, 6, '', 0, 0);
-        $this->pdf->Cell(164, 6, 'Retouradres: Postbus 202, 1000 AE Amsterdam', 0, 0);
+        $this->pdf->Cell(164, 6, 'Retouradres: Postbus 2813, 1000 CV Amsterdam', 0, 0);
 
         $this->pdf->Ln(10);
 
@@ -150,7 +150,7 @@ class PdfFactuurService
 
         $this->pdf->SetFont($this->fontname, 'b', 10);
         $this->pdf->Cell(130, 6, '', 0, 0);
-        $this->pdf->Cell(50, 6, 'Stadsdeel Centrum', 0, 0);
+        $this->pdf->Cell(50, 6, 'Stadswerken', 0, 0);
         $this->pdf->Ln(5);
         $this->pdf->Cell(130, 6, '', 0, 0);
         $this->pdf->Cell(50, 6, 'Bezoekadres', 0, 0);
@@ -172,21 +172,15 @@ class PdfFactuurService
         $this->pdf->Cell(50, 6, 'Telefoon 020 2552912', 0, 0);
         $this->pdf->Ln(5);
         $this->pdf->Cell(130, 6, '', 0, 0);
-        $this->pdf->Cell(50, 6, 'Fax 020 256 4380', 0, 0);
+        $this->pdf->Cell(50, 6, 'Bereikbaar van 8.00-18.00', 0, 0);
         $this->pdf->Ln(5);
         $this->pdf->Cell(130, 6, '', 0, 0);
         $this->pdf->Cell(50, 6, 'Email', 0, 0);
         $this->pdf->Ln(5);
         $this->pdf->Cell(130, 6, '', 0, 0);
-        $this->pdf->Cell(50, 6, 'debiteuren@centrum.amsterdam.nl', 0, 0);
+        $this->pdf->Cell(50, 6, 'debiteurenadministratie@amsterdam.nl', 0, 0);
 
         $this->pdf->Ln(10);
-        $this->pdf->Cell(130, 6, '', 0, 0);
-        $this->pdf->Cell(50, 6, 'IBAN NL50INGB0006875256', 0, 0);
-        $this->pdf->Ln(5);
-        $this->pdf->Cell(130, 6, '', 0, 0);
-        $this->pdf->Cell(50, 6, 'BIC INGBNL2A', 0, 0);
-        $this->pdf->Ln(5);
         $this->pdf->Cell(130, 6, '', 0, 0);
         $this->pdf->Cell(50, 6, 'BTW nr NL002564440B01', 0, 0);
         $this->pdf->Ln(5);
