@@ -42,4 +42,8 @@ chgrp www-data /app/app/logs/*.log
 chmod 775 /app/app/logs/*.log
 
 nginx
+
+chgrp -R www-data /var/lib/nginx
+chmod -R 775 /var/lib/nginx/tmp
+
 php-fpm -F
