@@ -12,6 +12,8 @@
 namespace GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Controller;
 
 use GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Enum\Roles;
+use GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Form\Type\AccountPasswordType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -25,7 +27,7 @@ class AccountController extends Controller
     /**
      * @Route("/accounts")
      * @Template()
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_SENIOR')")
      */
     public function indexAction(Request $request)
     {
@@ -54,6 +56,36 @@ class AccountController extends Controller
             if ($form->isValid())
             {
                 $this->get('markt_api')->putAccount($account->id, $formModel);
+                $request->getSession()->getFlashBag()->add('success', 'Opgeslagen');
+                return $this->redirectToRoute('gemeenteamsterdam_makkelijkemarkt_dashboard_account_index');
+            }
+
+            $request->getSession()->getFlashBag()->add('error', 'Het formulier is niet correct ingevuld');
+        }
+
+        return ['account' => $account, 'form' => $form->createView(), 'formModel' => $formModel];
+    }
+
+    /**
+     * @Route("/accounts_password/{id}")
+     * @Template()
+     * @Security("has_role('ROLE_SENIOR')")
+     */
+    public function updatePasswordAction(Request $request, $id)
+    {
+        $account = $this->get('markt_api')->getAccount($id);
+        $account->password = '';
+        $account->role = reset($account->roles);
+        $formModel = clone $account;
+        $form = $this->createForm(new AccountPasswordType(), $formModel);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted())
+        {
+            if ($form->isValid())
+            {
+                $this->get('markt_api')->putPassword($account->id, $formModel);
                 $request->getSession()->getFlashBag()->add('success', 'Opgeslagen');
                 return $this->redirectToRoute('gemeenteamsterdam_makkelijkemarkt_dashboard_account_index');
             }
@@ -95,7 +127,7 @@ class AccountController extends Controller
 
     /**
      * @Route("/accounts/unlock/{id}")
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_SENIOR')")
      */
     public function unlockAction(Request $request, $id)
     {

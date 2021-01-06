@@ -26,7 +26,7 @@ class MarktController extends Controller
     /**
      * @Route("/markten")
      * @Template()
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_USER')")
      */
     public function indexAction(Request $request)
     {
@@ -38,7 +38,7 @@ class MarktController extends Controller
     /**
      * @Route("/markten/edit/{id}")
      * @Template
-     * @Security("has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_USER')")
      */
     public function editAction(Request $request, $id)
     {

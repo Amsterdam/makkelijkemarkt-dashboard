@@ -61,9 +61,23 @@ class MarktApi
         return $this->handleResponse($this->client->request('GET', 'koopman/id/' . $id, ['headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]));
     }
 
+    /**
+     * @param $id
+     * @param \DateTime $date
+     */
+    public function toggleHandhavingsverzoek($id, $date)
+    {
+        return $this->handleResponse($this->client->request('POST', 'koopman/toggle_handhavingsverzoek/' . $id. '/' . $date->format('Y-m-d'), ['headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]));
+    }
+
     public function putAccount($id, $data)
     {
         return $this->handleResponse($this->client->request('PUT', 'account/' . $id, ['json' => $data, 'headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]));
+    }
+
+    public function putPassword($id, $data)
+    {
+        return $this->handleResponse($this->client->request('PUT', 'account_password/' . $id, ['json' => $data, 'headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]));
     }
 
     public function postAccount($data)
@@ -116,6 +130,15 @@ class MarktApi
         return $this->handleResponse($this->client->request('POST', 'markt/' . $id, ['json' => $data, 'headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]));
     }
 
+    /**
+     * @param int $marktId
+     * @param \DateTime $datum
+     */
+    public function resetAudit($marktId, $datum)
+    {
+        return $this->handleResponse($this->client->request('POST', 'audit_reset/' . $marktId . '/' . $datum->format('Y-m-d'), ['headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]));
+    }
+
     public function getTariefplannenByMarktId($marktId)
     {
         return $this->handleResponse($this->client->request('GET', 'tariefplannen/list/' . $marktId, ['headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]), true);
@@ -136,9 +159,9 @@ class MarktApi
         return $this->handleResponse($this->client->request('GET', 'report/factuur/overzichtmarkt/' . $marktId. '/' . $van . '/' . $tot, ['headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]), false, $validStatusCodes = [200], $assoc = true);
     }
 
-    public function getRapportStaanverplichting($marktId, $dagStart, $dagEind, $vergunningType)
+    public function getRapportStaanverplichting($marktIds, $dagStart, $dagEind, $vergunningType)
     {
-        return $this->handleResponse($this->client->request('GET', 'rapport/staanverplichting/' . $marktId . '/' . $dagStart . '/' . $dagEind . '/' . $vergunningType, ['headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]), false);
+        return $this->handleResponse($this->client->request('GET', 'rapport/staanverplichting/' . $dagStart . '/' . $dagEind . '/' . $vergunningType, ['query' => ['marktId' => $marktIds], 'headers' => ['Authorization' => 'Bearer ' . $this->user->getToken(), 'MmAppKey' => $this->mmAppKey]]), false);
     }
 
     public function getRapportFactuurDetail($marktIds, $dagStart, $dagEind)

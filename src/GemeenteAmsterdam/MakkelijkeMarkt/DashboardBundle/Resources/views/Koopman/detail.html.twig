@@ -9,7 +9,7 @@
 #}
 {% extends "DashboardBundle:master:default.html.twig" %}
 
-{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning'} %}
+{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info', 'lot': 'warning'} %}
 
 {% set activeTab = app.request.query.get('tab', 'sollicitaties') %}
 
@@ -18,17 +18,26 @@
 {% block scripts %}
     <script type="application/javascript">
         jQuery(document).ready(function () {
-            $('#downloadOverzicht').click(function() {
+            $('#downloadOverzicht').click(function () {
                 var startDatum = jQuery('[name="facturenStartDatum"]').val();
-                var eindDatum  = jQuery('[name="facturenEindDatum"]').val();
+                var eindDatum = jQuery('[name="facturenEindDatum"]').val();
                 var url = '{{ path('factuur_blank') }}' + '{{ koopman.id }}' + '/' + startDatum + '/' + eindDatum;
                 if (startDatum.length > 0 && eindDatum.length > 0) {
                     window.open(url);
                 }
             });
+
+            var url = document.location.toString();
+            if (url.match('#')) {
+                $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+            }
+
+            jQuery('.nav-tabs a').on('shown.bs.tab', function (e) {
+                window.location.hash = e.target.hash;
+            })
         });
     </script>
-    
+
     <script src="{{ asset('bundles/dashboard/rome/rome.min.js') }}"></script>
     <script type="text/javascript">
         jQuery(document).ready(function () {
@@ -36,7 +45,10 @@
             jQuery('[name="dagvergunningenEindDatum"]').attr('init-value', jQuery('[name="dagvergunningenEindDatum"]').val());
             jQuery('[name="facturenStartDatum"]').attr('init-value', jQuery('[name="facturenStartDatum"]').val());
             jQuery('[name="facturenEindDatum"]').attr('init-value', jQuery('[name="facturenEindDatum"]').val());
-            
+
+            jQuery('[name="handhavingDatum"]').attr('init-value', jQuery('[name="handhavingDatum"]').val());
+
+
             rome(jQuery('[name="dagvergunningenStartDatum"]').get(0), {
                 'time': false,
                 'weekStart': 1,
@@ -57,6 +69,12 @@
                 'weekStart': 1,
                 'inputFormat': 'DD-MM-YYYY',
             });
+
+            rome(jQuery('[name="handhavingDatum"]').get(0), {
+                'time': false,
+                'weekStart': 1,
+                'inputFormat': 'DD-MM-YYYY',
+            });
         });
     </script>
 {% endblock %}
@@ -68,9 +86,9 @@
 {% block document %}
     <div class="row">
         <div class="col-xs-12">
-
-            <h1><img src="{{ koopman.fotoUrl }}" alt="" width="50"> {{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }}</h1>
-
+            <h1><img src="{{ koopman.fotoUrl }}" alt=""
+                     width="50"> {{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }}
+            </h1>
             <div class="row">
                 <div class="col-xs-3">
                     <strong>Erkenningsnummer</strong> {{ koopman.erkenningsnummer }}<br>
@@ -82,10 +100,14 @@
                     {% else %}
                         <span class="label label-danger">Doorgehaald</span>
                     {% endif %}
+                    {% if koopman.handhavingsVerzoek is not null and vandaag <= koopman.handhavingsVerzoek %}
+                        <span class="label label-warning">Handhavingsverzoek</span>
+                    {% endif %}
                 </div>
                 <div class="col-xs-3">
                     <strong>Voorletters</strong> {{ koopman.voorletters }}<br>
-                    {% if koopman.tussenvoegsels %}<strong>Tussenvoegsels</strong> {{ koopman.tussenvoegsels }}<br>{% endif %}
+                    {% if koopman.tussenvoegsels %}<strong>Tussenvoegsels</strong> {{ koopman.tussenvoegsels }}
+                        <br>{% endif %}
                     <strong>Achternaam</strong> {{ koopman.achternaam }}<br>
                 </div>
                 <div class="col-xs-3">
@@ -97,48 +119,62 @@
                     <strong>Pasnummer</strong> {{ koopman.pasUid }}
                 </div>
             </div>
-            
             <br>
-            
             <div class="row">
                 <div class="col-xs-12">
                     <ul class="nav nav-tabs" role="tablist" data-tabs="tabs">
-                        <li role="presentation" class="{{ activeTab == 'sollicitaties' ? 'active' }}"><a href="#sollicitaties" aria-controls="sollicitaties" data-toggle="tab">Markten</a></li>
-                        <li role="presentation" class="{{ activeTab == 'vervangers' ? 'active' }}"><a href="#vervangers" aria-controls="vervangers" data-toggle="tab">Vervangers</a></li>
-                        <li role="presentation" class="{{ activeTab == 'dagvergunningen' ? 'active' }}"><a href="#dagvergunningen" aria-controls="dagvergunningen" data-toggle="tab">Dagvergunningen</a></li>
-                        <li role="presentation" class="{{ activeTab == 'facturen' ? 'active' }}"><a href="#facturen" aria-controls="facturen" data-toggle="tab">Facturen</a></li>
+                        <li role="presentation" class="{{ activeTab == 'sollicitaties' ? 'active' }}"><a
+                                    href="#sollicitaties" aria-controls="sollicitaties" data-toggle="tab">Markten</a>
+                        </li>
+                        <li role="presentation" class="{{ activeTab == 'vervangers' ? 'active' }}"><a href="#vervangers"
+                                                                                                      aria-controls="vervangers"
+                                                                                                      data-toggle="tab">Vervangers</a>
+                        </li>
+                        <li role="presentation" class="{{ activeTab == 'dagvergunningen' ? 'active' }}"><a
+                                    href="#dagvergunningen" aria-controls="dagvergunningen" data-toggle="tab">Dagvergunningen</a>
+                        </li>
+                        <li role="presentation" class="{{ activeTab == 'facturen' ? 'active' }}"><a href="#facturen"
+                                                                                                    aria-controls="facturen"
+                                                                                                    data-toggle="tab">Facturen</a>
+                        </li>
+                        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                            <li role="presentation" class="{{ activeTab == 'instellingen' ? 'active' }}"><a
+                                    href="#instellingen" aria-controls="instellingen" data-toggle="tab">Instellingen</a>
+                            </li>{% endif %}
                     </ul>
                 </div>
             </div>
-            
             <div class="tab-content">
                 <div role="tabpanel" class="tab-pane {{ activeTab == 'sollicitaties' ? 'active' }}" id="sollicitaties">
                     <table class="table">
                         <thead>
-                            <tr>
-                                <th>Markt</th>
-                                <th>Sollicitatienummer</th>
-                                <th>Kramen</th>
-                                <th>Extra</th>
-                                <th></th>
-                            </tr>
+                        <tr>
+                            <th>Markt</th>
+                            <th>Sollicitatienummer</th>
+                            <th>Kramen</th>
+                            <th>Extra</th>
+                            <th></th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {% for sollicitatie in koopman.sollicitaties %}
+                        {% for sollicitatie in koopman.sollicitaties %}
                             <tr>
                                 <td>{{ sollicitatie.markt.naam }}</td>
                                 <td>
-                                    {{ sollicitatie.sollicitatieNummer }}
+                                    <abbr title="Koppelveld: {{ sollicitatie.koppelveld }}">{{ sollicitatie.sollicitatieNummer }}</abbr>
                                     <span class="label label-{{ attribute(statusLabelClass, sollicitatie.status) }}">{{ sollicitatie.status }}</span>
                                 </td>
                                 <td>
-                                    {% if sollicitatie.aantal3MeterKramen > 0 %}{{ sollicitatie.aantal3MeterKramen }} x 3m<br>{% endif %}
-                                    {% if sollicitatie.aantal4MeterKramen > 0 %}{{ sollicitatie.aantal4MeterKramen }} x 4m<br>{% endif %}
+                                    {% if sollicitatie.aantal3MeterKramen > 0 %}{{ sollicitatie.aantal3MeterKramen }} x 3m
+                                        <br>{% endif %}
+                                    {% if sollicitatie.aantal4MeterKramen > 0 %}{{ sollicitatie.aantal4MeterKramen }} x 4m
+                                        <br>{% endif %}
                                     {% if sollicitatie.aantalExtraMeters > 0 %}{{ sollicitatie.aantalExtraMeters }} x 1m{% endif %}
                                 </td>
                                 <td>
-                                    {% if sollicitatie.aantalElektra > 0 %}Elektra: {{ sollicitatie.aantalElektra }}x<br>{% endif %}
-                                    Krachtstroom: {{ sollicitatie.krachtstroom ? 'ja' : 'nee'}}
+                                    {% if sollicitatie.aantalElektra > 0 %}Elektra: {{ sollicitatie.aantalElektra }}x
+                                        <br>{% endif %}
+                                    Krachtstroom: {{ sollicitatie.krachtstroom ? 'ja' : 'nee' }}
                                 </td>
                                 <td>
                                     {% if sollicitatie.vastePlaatsen is not empty and sollicitatie.vastePlaatsen|length > 0 %}
@@ -149,11 +185,11 @@
                                     {% endif %}
                                 </td>
                             </tr>
-                            {% else %}
+                        {% else %}
                             <tr>
                                 <td colspan="6">Geen sollicitaties</td>
                             </tr>
-                            {% endfor %}
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -161,33 +197,38 @@
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
-                                <tr>
-                                    <th>Vervanger</th>
-                                    <th>Erkenningsnummer</th>
-                                    <th>Vervangingspasnummer</th>
-                                </tr>
+                            <tr>
+                                <th>Vervanger</th>
+                                <th>Erkenningsnummer</th>
+                                <th>Vervangingspasnummer</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                {% for vervanger in koopman.vervangers %}
-                                    <tr>
-                                        <td><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': vervanger.vervanger_id}) }}">{{ vervanger.voorletters }} {{ vervanger.tussenvoegsels }}{{ vervanger.tussenvoegsels ? ' ' }}{{ vervanger.achternaam }}</a></td>
-                                        <td>{{ vervanger.erkenningsnummer }}</td>
-                                        <td>{{ vervanger.pas_uid }}</td>
-                                    </tr>
-                                {% endfor %}
+                            {% for vervanger in koopman.vervangers %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': vervanger.vervanger_id}) }}">{{ vervanger.voorletters }} {{ vervanger.tussenvoegsels }}{{ vervanger.tussenvoegsels ? ' ' }}{{ vervanger.achternaam }}</a>
+                                    </td>
+                                    <td>{{ vervanger.erkenningsnummer }}</td>
+                                    <td>{{ vervanger.pas_uid }}</td>
+                                </tr>
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div role="tabpanel" class="tab-pane {{ activeTab == 'dagvergunningen' ? 'active' }}" id="dagvergunningen">
+                <div role="tabpanel" class="tab-pane {{ activeTab == 'dagvergunningen' ? 'active' }}"
+                     id="dagvergunningen">
                     <br>
                     <div class="row">
                         <div class="col-xs-12">
-                            <form class="form-inline" method="GET" action="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id}) }}">
+                            <form class="form-inline" method="GET"
+                                  action="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id}) }}">
                                 <input type="hidden" name="tab" value="dagvergunningen">
                                 <div class="form-group">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <button type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <span class="glyphicon glyphicon-filter"></span>
                                             {% if markt is empty %}
                                                 (alle markten)
@@ -197,18 +238,25 @@
                                             <span class="caret"></span>
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id, 'dagvergunningenStartDatum': dagvergunningenStartDatum|date('d-m-Y'), 'dagvergunningenEindDatum': dagvergunningenEindDatum|date('d-m-Y'), 'tab': 'dagvergunningen'}) }}">(alle markten)</a></li>
+                                            <li>
+                                                <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id, 'dagvergunningenStartDatum': dagvergunningenStartDatum|date('d-m-Y'), 'dagvergunningenEindDatum': dagvergunningenEindDatum|date('d-m-Y'), 'tab': 'dagvergunningen'}) }}">(alle
+                                                    markten)</a></li>
                                             {% for markt in markten.results %}
-                                                <li><a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id, 'marktId': markt.id, 'dagvergunningenStartDatum': dagvergunningenStartDatum|date('d-m-Y'), 'dagvergunningenEindDatum': dagvergunningenEindDatum|date('d-m-Y'), 'tab': 'dagvergunningen'}) }}">{{ markt.naam }}</a></li>
+                                                <li>
+                                                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': koopman.id, 'marktId': markt.id, 'dagvergunningenStartDatum': dagvergunningenStartDatum|date('d-m-Y'), 'dagvergunningenEindDatum': dagvergunningenEindDatum|date('d-m-Y'), 'tab': 'dagvergunningen'}) }}">{{ markt.naam }}</a>
+                                                </li>
                                             {% endfor %}
                                         </ul>
                                     </div>
                                 </div>
                                 <div class="form-group" style="width: 400px">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" name="dagvergunningenStartDatum" value="{{ dagvergunningenStartDatum|date('d-m-Y') }}">
-                                        <span class="input-group-addon"><span class="glyphicon glyphicon-resize-horizontal"></span></span>
-                                        <input type="text" class="form-control" name="dagvergunningenEindDatum" value="{{ dagvergunningenEindDatum|date('d-m-Y') }}">
+                                        <input type="text" class="form-control" name="dagvergunningenStartDatum"
+                                               value="{{ dagvergunningenStartDatum|date('d-m-Y') }}">
+                                        <span class="input-group-addon"><span
+                                                    class="glyphicon glyphicon-resize-horizontal"></span></span>
+                                        <input type="text" class="form-control" name="dagvergunningenEindDatum"
+                                               value="{{ dagvergunningenEindDatum|date('d-m-Y') }}">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -224,15 +272,30 @@
                         <div class="col-xs-3">
                             <h4>Vergunningen</h4>
                             <p>
-                                Vaste plaats houders <span class="label label-primary">{{ attribute(stats, 'status.vpl') }}</span><br>
-                                Voorkeurskaart houders <span class="label label-info">{{ attribute(stats, 'status.vkk') }}</span><br>
-                                Sollicitanten <span class="label label-success">{{ attribute(stats, 'status.soll') }}</span><br>
-                                Standwerker / overig <span class="label label-warning">{{ attribute(stats, 'status.lot') }}</span><br>
-                                {% if attribute(stats, 'status.?') > 0 %}<p>ONBEKEND <span class="label label-danger">{{ attribute(stats, 'status.?') }}</span>{% endif %}
+                                Vaste plaats houders <span
+                                        class="label label-primary">{{ attribute(stats, 'status.vpl') }}</span><br>
+                                Voorkeurskaart houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.vkk') }}</span><br>
+                                TVPL houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.tvpl') }}</span><br>
+                                TVPLZ houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.tvplz') }}</span><br>
+                                EXP houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.exp') }}</span><br>
+                                EXPF houders <span
+                                        class="label label-info">{{ attribute(stats, 'status.expf') }}</span><br>
+                                Sollicitanten <span
+                                        class="label label-success">{{ attribute(stats, 'status.soll') }}</span><br>
+                                Standwerker / overig <span
+                                        class="label label-warning">{{ attribute(stats, 'status.lot') }}</span><br>
+                            {% if attribute(stats, 'status.?') > 0 %}<p>ONBEKEND <span
+                                        class="label label-danger">{{ attribute(stats, 'status.?') }}</span>{% endif %}
                             </p>
                             <p>
-                                Totaal actief <span class="label label-default">{{ attribute(stats, 'total') }}</span><br>
-                                {% if attribute(stats, 'doorgehaald') > 0 %}Verwijderd <span class="label label-danger">{{ attribute(stats, 'doorgehaald') }}</span>{% endif %}
+                                Totaal actief <span
+                                        class="label label-default">{{ attribute(stats, 'total') }}</span><br>
+                                {% if attribute(stats, 'doorgehaald') > 0 %}Verwijderd <span
+                                        class="label label-danger">{{ attribute(stats, 'doorgehaald') }}</span>{% endif %}
                             </p>
                         </div>
                         <div class="col-xs-3">
@@ -240,10 +303,13 @@
                             <p>
                                 Zelf <strong>{{ attribute(stats, 'aanwezig.zelf') }}</strong><br>
                                 Partner <strong>{{ attribute(stats, 'aanwezig.partner') }}</strong><br>
-                                Vervanger met toestemming <strong>{{ attribute(stats, 'aanwezig.vervanger_met_toestemming') }}</strong><br>
-                                Vervanger zonder toestemming <strong>{{ attribute(stats, 'aanwezig.vervanger_zonder_toestemming') }}</strong><br>
+                                Vervanger met toestemming
+                                <strong>{{ attribute(stats, 'aanwezig.vervanger_met_toestemming') }}</strong><br>
+                                Vervanger zonder toestemming
+                                <strong>{{ attribute(stats, 'aanwezig.vervanger_zonder_toestemming') }}</strong><br>
                                 Niet aanwezig <strong>{{ attribute(stats, 'aanwezig.niet_aanwezig') }}</strong><br>
-                                {% if attribute(stats, 'aanwezig.?') > 0 %}ONBEKEND <strong>{{ attribute(stats, 'aanwezig.?') }}</strong><br>{% endif %}
+                                {% if attribute(stats, 'aanwezig.?') > 0 %}ONBEKEND
+                                    <strong>{{ attribute(stats, 'aanwezig.?') }}</strong><br>{% endif %}
                             </p>
                         </div>
                         <div class="col-xs-3">
@@ -264,28 +330,31 @@
                         <div class="col-xs-3">
                             <h4>Extra's</h4>
                             <p>
-                                Dagvergunningen met elektra <strong>{{ attribute(stats, 'extra.elektra_afgenomen') }}</strong><br>
-                                Totaal elektra aansluitingen <strong>{{ attribute(stats, 'extra.elektra_totaal') }}</strong><br>
-                                Dagvergunningen met krachtstroom <strong>{{ attribute(stats, 'extra.krachtstroom') }}</strong><br>
-                                Dagvergunningen met reiniging <strong>{{ attribute(stats, 'extra.reiniging') }}</strong><br>
+                                Dagvergunningen met elektra
+                                <strong>{{ attribute(stats, 'extra.elektra_afgenomen') }}</strong><br>
+                                Totaal elektra aansluitingen
+                                <strong>{{ attribute(stats, 'extra.elektra_totaal') }}</strong><br>
+                                Dagvergunningen met krachtstroom
+                                <strong>{{ attribute(stats, 'extra.krachtstroom') }}</strong><br>
+                                Dagvergunningen met reiniging <strong>{{ attribute(stats, 'extra.reiniging') }}</strong><br /><br />
+                                <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_controle', {'id': koopman.id}) }}">Controles</a>
                             </p>
                         </div>
                     </div>
-        
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
-                                <tr>
-                                    <th>Markt</th>
-                                    <th>&nbsp;</th>
-                                    <th>Kramen</th>
-                                    <th>Extra</th>
-                                    <th>Producten</th>
-                                    <th>Invoer</th>
-                                </tr>
+                            <tr>
+                                <th>Markt</th>
+                                <th>&nbsp;</th>
+                                <th>Kramen</th>
+                                <th>Extra</th>
+                                <th>Producten</th>
+                                <th>Invoer</th>
+                            </tr>
                             </thead>
                             <tbody>
-        {% for dagvergunning in dagvergunningen.results %}
+                            {% for dagvergunning in dagvergunningen.results %}
                                 <tr>
                                     <td>
                                         <strong>{{ dagvergunning.markt.naam }}</strong>
@@ -294,21 +363,32 @@
                                         <strong>{{ dagvergunning.aanwezig|replace('_', ' ') }}</strong>
                                         {% if dagvergunning.vervanger is defined and dagvergunning.vervanger is not empty %}
                                             <br>
-                                            Vervanger:
+                                            Gescand:
                                             <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_detail', {'id': dagvergunning.vervanger.id}) }}">{{ dagvergunning.vervanger.voorletters }} {{ dagvergunning.vervanger.achternaam }}</a>
                                             <br>
                                             Erkenningsnumer: {{ dagvergunning.vervanger.erkenningsnummer }}
                                         {% endif %}
+                                        {% if dagvergunning.controles is defined %}
+                                            <br/><span style="font-style: italic;">Controles:</span>
+                                            {% for controle in dagvergunning.controles %}
+                                                <br/>
+                                                <strong>{{ controle.aanwezig|replace('_', ' ') }}</strong> - {{ controle.registratieDatumtijd|date('H:i:s') }}
+                                            {% endfor %}
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        {% if dagvergunning.aantal3MeterKramen > 0 %}{{ dagvergunning.aantal3MeterKramen }} x 3 meter<br>{% endif %}
-                                        {% if dagvergunning.aantal4MeterKramen > 0 %}{{ dagvergunning.aantal4MeterKramen }} x 4 meter<br>{% endif %}
-                                        {% if dagvergunning.extraMeters > 0 %}{{ dagvergunning.extraMeters }} x extra meter<br>{% endif %}
+                                        {% if dagvergunning.aantal3MeterKramen > 0 %}{{ dagvergunning.aantal3MeterKramen }} x 3 meter
+                                            <br>{% endif %}
+                                        {% if dagvergunning.aantal4MeterKramen > 0 %}{{ dagvergunning.aantal4MeterKramen }} x 4 meter
+                                            <br>{% endif %}
+                                        {% if dagvergunning.extraMeters > 0 %}{{ dagvergunning.extraMeters }} x extra meter
+                                            <br>{% endif %}
                                         &nbsp;<br>
                                         totaal {{ dagvergunning.totaleLengte }} meter
                                     </td>
                                     <td>
-                                        {% if dagvergunning.aantalElektra > 0 %}Elektra:<br>{{ dagvergunning.aantalElektra }}<br>{% endif %}
+                                        {% if dagvergunning.aantalElektra > 0 %}Elektra:
+                                            <br>{{ dagvergunning.aantalElektra }}<br>{% endif %}
                                         Krachtstroom:<br>{{ dagvergunning.krachtstroom ? 'ja' : 'nee' }}<br>
                                         Reiniging:<br>{{ dagvergunning.reiniging ? 'ja' : 'nee' }}
                                     </td>
@@ -327,33 +407,34 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {% for product in dagvergunning.factuur.producten %}
-                                                        <tr>
-                                                            <td>&euro;{{ product.totaal_inclusief }}</td>
-                                                            <td>&euro;{{ product.btw_totaal }}</td>
-                                                            <td>{{ product.btw_percentage }}%</td>
-                                                            <td>&euro;{{ product.totaal }}</td>
-                                                            <td>{{ product.aantal }}</td>
-                                                            <td>&euro;{{ product.bedrag }}</td>
-                                                            <td>{{ product.naam }}</td>
-                                                        </tr>
-                                                    {% endfor %}
+                                                {% for product in dagvergunning.factuur.producten %}
                                                     <tr>
-                                                        <td>&euro;{{ dagvergunning.factuur.totaal }}</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td>Totaal</td>
+                                                        <td>&euro;{{ product.totaal_inclusief }}</td>
+                                                        <td>&euro;{{ product.btw_totaal }}</td>
+                                                        <td>{{ product.btw_percentage }}%</td>
+                                                        <td>&euro;{{ product.totaal }}</td>
+                                                        <td>{{ product.aantal }}</td>
+                                                        <td>&euro;{{ product.bedrag }}</td>
+                                                        <td>{{ product.naam }}</td>
                                                     </tr>
+                                                {% endfor %}
+                                                <tr>
+                                                    <td>&euro;{{ dagvergunning.factuur.totaal }}</td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td>Totaal</td>
+                                                </tr>
                                                 </tbody>
                                             </table>
                                         {% endif %}
                                     </td>
                                     <td>
                                         {{ dagvergunning.registratieDatumtijd }}<br>
-                                        {% if dagvergunning.registratieAccount is not empty %}door: {{ dagvergunning.registratieAccount.naam }}<br>{% endif %}
+                                        {% if dagvergunning.registratieAccount is not empty %}door: {{ dagvergunning.registratieAccount.naam }}
+                                            <br>{% endif %}
                                         {% if dagvergunning.doorgehaald %}
                                             <span class="label label-danger">Verwijderd</span>
                                             {{ dagvergunning.doorgehaaldDatumtijd }}
@@ -367,33 +448,55 @@
                                         {% endif %}
                                     </td>
                                 </tr>
-        {% else %}
+                            {% else %}
                                 <tr>
                                     <td colspan="6">Geen dagvergunningen uitgegeven voor {{ koopman.achternaam }}</td>
                                 </tr>
-        {% endfor %}
+                            {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
                 <div role="tabpanel" class="tab-pane {{ activeTab == 'facturen' ? 'active' }}" id="facturen">
                     <h3>Laatste kwartaal</h3>
-                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': startDate|date('d-m-Y'), 'endDate': endDate|date('d-m-Y')}) }}" target="_blank" class="btn btn-primary">Factuur overzicht laatste kwartaal</a>
+                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': startDate|date('d-m-Y'), 'endDate': endDate|date('d-m-Y')}) }}"
+                       target="_blank" class="btn btn-primary">Factuur overzicht laatste kwartaal</a>
                     <h3>Laatste maanden</h3>
-{% for maand in laatsteMaanden %}
-                    <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': maand.start|date('d-m-Y'), 'endDate': maand.eind|date('d-m-Y')}) }}" title="{{ maand.start|date('d-m-Y') ~ ' t/m ' ~ maand.eind|date('d-m-Y') }}" target="_blank" class="btn btn-primary">Factuur overzicht {{ maand.label }}</a>
-{% endfor %}
+                    {% for maand in laatsteMaanden %}
+                        <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': maand.start|date('d-m-Y'), 'endDate': maand.eind|date('d-m-Y')}) }}"
+                           title="{{ maand.start|date('d-m-Y') ~ ' t/m ' ~ maand.eind|date('d-m-Y') }}" target="_blank"
+                           class="btn btn-primary">Factuur overzicht {{ maand.label }}</a>
+                    {% endfor %}
                     <h3>Aangepaste datum reeks</h3>
                     <div class="form-inline">
                         <div class="form-group">
-                            <input type="text" class="form-control" id="facturenStartDatum" name="facturenStartDatum" placeholder="Startdatum" data-value="">
+                            <input type="text" class="form-control" id="facturenStartDatum" name="facturenStartDatum"
+                                   placeholder="Startdatum" data-value="">
                         </div>
                         <div class="form-group">
-                            <input type="email" class="form-control" id="facturenEindDatum" name="facturenEindDatum" placeholder="Einddatum" data-value="">
+                            <input type="email" class="form-control" id="facturenEindDatum" name="facturenEindDatum"
+                                   placeholder="Einddatum" data-value="">
                         </div>
                         <button id="downloadOverzicht" type="submit" class="btn btn-primary">Downloaden</button>
                     </div>
                 </div>
+                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+
+                    <div role="tabpanel" class="tab-pane {{ activeTab == 'instellingen' ? 'active' }}"
+                         id="instellingen">
+                        <h3>Instellingen</h3>
+                        <form class="form-inline" method="POST"
+                              action="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_koopman_togglehandhavingsverzoek', {'id': koopman.id}) }}">
+                            <h4>Einddatum handhavingsverzoek:</h4>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="handhavingDatum" name="handhavingDatum"
+                                       placeholder="Einddatum handhaving" data-value="{{ koopman.handhavingsVerzoek|date('d-m-Y') }}" value="{{ koopman.handhavingsVerzoek|date('d-m-Y') }}">
+                    </div>
+                            <input type="submit" class="btn btn-primary" value="Opslaan"/>
+                        </form>
+                    </div>
+
+                {% endif %}
             </div>
         </div>
     </div>

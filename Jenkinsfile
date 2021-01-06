@@ -4,11 +4,10 @@
 String PROJECTNAME = "makkelijkemarkt-dashboard"
 String CONTAINERDIR = "."
 String PRODUCTION_BRANCH = "master"
-String INFRASTRUCTURE = 'secure'
-String PLAYBOOK = 'deploy-makkelijkemarkt-dashboard.yml'
+String PLAYBOOK = 'deploy.yml'
 
 // All other data uses variables, no changes needed for static
-String CONTAINERNAME = "fixxx/makkelijkemarkt-dashboard:${env.BUILD_NUMBER}"
+String CONTAINERNAME = "fixxx/makkelijkemarkt-dashboard"
 String DOCKERFILE="Dockerfile"
 String BRANCH = "${env.BRANCH_NAME}"
 
@@ -28,6 +27,14 @@ def tryStep(String message, Closure block, Closure tearDown = null) {
     }
 }
 
+def retagAndPush(String imageName, String newTag)
+{
+    def regex = ~"^https?://"
+    def dockerReg = "${DOCKER_REGISTRY_HOST}" - regex
+    sh "docker tag ${dockerReg}/${imageName}:${env.BUILD_NUMBER} ${dockerReg}/${imageName}:${newTag}"
+    sh "docker push ${dockerReg}/${imageName}:${newTag}"
+}
+
 node {
     stage("Checkout") {
         checkout scm
@@ -36,7 +43,7 @@ node {
     stage("Build image") {
         tryStep "build", {
             docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
-                image = docker.build("${CONTAINERNAME}","-f ${DOCKERFILE} ${CONTAINERDIR}")
+                image = docker.build("${CONTAINERNAME}:${env.BUILD_NUMBER}","-f ${DOCKERFILE} ${CONTAINERDIR}")
                 image.push()
             }
         }
@@ -49,14 +56,18 @@ if (BRANCH == "${PRODUCTION_BRANCH}") {
         stage('Deploy to ACC') {
             tryStep "deployment", {
                 docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
-                    image.push("acceptance")
+                    docker.image("${CONTAINERNAME}:${env.BUILD_NUMBER}").pull()
+                    // The Image.push() function ignores the docker registry prefix of the image name,
+                    // which means that we cannot re-tag an image that was built in a different stage (on a different node).
+                    // Resort to manual tagging to allow build and tag steps to run on different Jenkins slaves.
+                    retagAndPush("${CONTAINERNAME}", "acceptance")
                 }
 
                 build job: 'Subtask_Openstack_Playbook',
                 parameters: [
-                    [$class: 'StringParameterValue', name: 'INFRASTRUCTURE', value: '${INFRASTRUCTURE}'],
                     [$class: 'StringParameterValue', name: 'INVENTORY', value: 'acceptance'],
-                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: '${PLAYBOOK}'],
+                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: "${PLAYBOOK}"],
+                    [$class: 'StringParameterValue', name: 'PLAYBOOKPARAMS', value: "-e cmdb_id=app_${PROJECTNAME}"],
                 ]
             }
         }
@@ -71,15 +82,16 @@ if (BRANCH == "${PRODUCTION_BRANCH}") {
         stage('Deploy to PROD') {
             tryStep "deployment", {
                 docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
-                    image.push("production")
-                    image.push("latest")
+                    docker.image("${CONTAINERNAME}:${env.BUILD_NUMBER}").pull()
+                    retagAndPush("${CONTAINERNAME}", "production")
+                    retagAndPush("${CONTAINERNAME}", "latest")
                 }
 
                 build job: 'Subtask_Openstack_Playbook',
                 parameters: [
-                    [$class: 'StringParameterValue', name: 'INFRASTRUCTURE', value: '${INFRASTRUCTURE}'],
                     [$class: 'StringParameterValue', name: 'INVENTORY', value: 'production'],
-                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: '${PLAYBOOK}'],
+                    [$class: 'StringParameterValue', name: 'PLAYBOOK', value: "${PLAYBOOK}"],
+                    [$class: 'StringParameterValue', name: 'PLAYBOOKPARAMS', value: "-e cmdb_id=app_${PROJECTNAME}"],
                 ]
             }
         }

@@ -30,7 +30,7 @@ class InfoController extends Controller
     {
         /* @var $api \GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\MarktApi */
         $api = $this->get('markt_api');
-        /* @var $kernel \AppData */
+        /* @var $kernel \AppKernel */
         $kernel = $this->get('kernel');
 
         return [

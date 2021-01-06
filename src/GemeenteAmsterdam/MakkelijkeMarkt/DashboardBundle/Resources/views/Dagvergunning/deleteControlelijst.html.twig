@@ -1,0 +1,43 @@
+{#
+ *  Copyright (C) 2017 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "DashboardBundle:master:default.html.twig" %}
+
+{% block title %}Controlelijst verwijderen{% endblock %}
+
+{% block document %}
+    <div class="row">
+        <div class="col-xs-12">
+
+            <h1>Weet je zeker dat je de controlelijst wilt verwijderen?</h1>
+
+            <h3>{{ markt.naam }} - {{ dag|date('d-m-Y') }}</h3>
+
+            - Alle koopmannen en bijbehorende controledata worden uit controlelijst 1 én 2 verwijderd.<br />
+            - De dagvergunningen van vandaag blijven staan.<br />
+            - In de app kun je hierna een nieuwe controlelijst voor deze dag genereren.<br /><br />
+            <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'dag': dag|date('Y-m-d'), 'marktId': markt.id }) }}#controles" class="btn btn-default">Nee, behoud controlelijst(en)</a> <span id="verwijder" class="btn btn-primary">Ja, verwijder controlelijst(en)</span>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script type="application/javascript">
+        jQuery('#verwijder').click(function () {
+            jQuery.ajax({
+                type: "POST",
+                url: "{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_deletecontrolelijst', {'marktId': markt.id, 'date': dag|date('Y-m-d')}) }}#controles",
+                success: function (data) {
+                    window.location = "{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_dagvergunning_dayview', {'dag': dag|date('Y-m-d'), 'marktId': markt.id }) }}#controles";
+                }
+            });
+        });
+    </script>
+{% endblock %}

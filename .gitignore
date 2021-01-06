@@ -15,8 +15,6 @@ web/fonts/*
 app/logs/*
 app/cache/*
 web/iirf.ini
-web/css/*
-web/js/*
 .idea
 
 .hgignore

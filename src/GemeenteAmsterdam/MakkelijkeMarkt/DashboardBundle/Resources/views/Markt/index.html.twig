@@ -33,7 +33,9 @@
                             <td>
                                 {{ markt.aantalKramen|default('') }} kramen
                                 /
-                                {{ markt.aantalMeter|default('-') }} meter 
+                                {{ markt.aantalMeter|default('-') }} meter
+                                /
+                                {{ markt.auditMax|default('-') }} steekproef max
                             </td>
                             <td>
                                 <a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_markt_edit', {'id': markt.id}) }}"><span class="glyphicon glyphicon-pencil"></span></a>

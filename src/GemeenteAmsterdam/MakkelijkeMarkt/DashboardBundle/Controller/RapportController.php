@@ -67,16 +67,16 @@ class RapportController extends Controller
         /* @var $api \GemeenteAmsterdam\MakkelijkeMarkt\DashboardBundle\Service\MarktApi */
         $api = $this->get('markt_api');
 
-        $marktId = $request->query->get('marktId');
+        $marktIds = $request->query->get('marktId', []);
         $dagStart = $request->query->get('dagStart');
         $dagEind = $request->query->get('dagEind');
         $vergunningType = $request->query->get('vergunningType');
 
-        $markten = $api->getMarkten();
-        $markt = null;
-        foreach ($markten['results'] as $i) {
-            if ($i->id == $marktId) {
-                $markt = $i;
+        $marktenResults = $api->getMarkten();
+        $markten = [];
+        foreach ($marktenResults['results'] as $i) {
+            if (in_array($i->id, $marktIds)) {
+                $markten[] = $i;
             }
         }
 
@@ -84,15 +84,19 @@ class RapportController extends Controller
             'alle' => 'Alle vergunningen',
             'soll' => 'Sollicitanten',
             'vkk'  => 'VKK',
+            'tvpl'  => 'TVPL',
+            'tvplz'  => 'TVPLZ',
             'vpl'  => 'Vaste plaats',
-            'lot'  => 'Lot'
+            'lot'  => 'Lot',
+            'exp'  => 'Exp. zone',
+            'expf'  => 'Exp. zone F'
         ];
 
         $rapport = null;
-        if ($marktId !== null && $dagStart !== null && $dagEind !== null) {
+        if ($dagStart !== null && $dagEind !== null) {
             $dagStart = \DateTime::createFromFormat('d-m-Y', $dagStart);
             $dagEind = \DateTime::createFromFormat('d-m-Y', $dagEind);
-            $rapport = $api->getRapportStaanverplichting($marktId, $dagStart->format('Y-m-d'), $dagEind->format('Y-m-d'), $vergunningType);
+            $rapport = $api->getRapportStaanverplichting($marktIds, $dagStart->format('Y-m-d'), $dagEind->format('Y-m-d'), $vergunningType);
 
             if ($request->query->get('format') === 'excel') {
                 /** @var $obj \PHPExcel */
@@ -106,16 +110,21 @@ class RapportController extends Controller
                 $i = 1;
                 foreach ($rapport->output as $record) {
                     if (1 === $i) {
-                        $activeSheet->setCellValueByColumnAndRow(0, 1, 'Sollicitatienummer');
-                        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Status');
-                        $activeSheet->setCellValueByColumnAndRow(2, 1, 'Erkenningsnummer');
-                        $activeSheet->setCellValueByColumnAndRow(3, 1, 'Voorletters');
-                        $activeSheet->setCellValueByColumnAndRow(4, 1, 'Tussenvoegsels');
-                        $activeSheet->setCellValueByColumnAndRow(5, 1, 'Achternaam');
-                        $activeSheet->setCellValueByColumnAndRow(6, 1, 'Aantal actieve dagvergunningen in periode');
-                        $activeSheet->setCellValueByColumnAndRow(7, 1, 'Waarvan zelf aanwezig');
-                        $activeSheet->setCellValueByColumnAndRow(8, 1, 'Waarvan andere aanwezigheid');
-                        $activeSheet->setCellValueByColumnAndRow(9, 1, 'Percentage aanwezig');
+                        $activeSheet->setCellValueByColumnAndRow(0, 1, 'Markt');
+                        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Sollicitatienummer met markt');
+                        $activeSheet->setCellValueByColumnAndRow(2, 1, 'Sollicitatienummer');
+                        $activeSheet->setCellValueByColumnAndRow(3, 1, 'Status');
+                        $activeSheet->setCellValueByColumnAndRow(4, 1, 'Erkenningsnummer');
+                        $activeSheet->setCellValueByColumnAndRow(5, 1, 'Voorletters');
+                        $activeSheet->setCellValueByColumnAndRow(6, 1, 'Tussenvoegsels');
+                        $activeSheet->setCellValueByColumnAndRow(7, 1, 'Achternaam');
+                        $activeSheet->setCellValueByColumnAndRow(8, 1, 'Aantal actieve dagvergunningen in periode');
+                        $activeSheet->setCellValueByColumnAndRow(9, 1, 'Waarvan zelf aanwezig');
+                        $activeSheet->setCellValueByColumnAndRow(10, 1, 'Waarvan andere aanwezigheid');
+                        $activeSheet->setCellValueByColumnAndRow(11, 1, 'Percentage aanwezig');
+                        $activeSheet->setCellValueByColumnAndRow(12, 1, 'Waarvan zelf aanwezig (controle)');
+                        $activeSheet->setCellValueByColumnAndRow(13, 1, 'Waarvan andere aanwezigheid (controle)');
+                        $activeSheet->setCellValueByColumnAndRow(14, 1, 'Percentage aanwezig (controle)');
 
                         $activeSheet->getCellByColumnAndRow(0, 1)->getStyle()->getFont()->setBold(true);
                         $activeSheet->getCellByColumnAndRow(1, 1)->getStyle()->getFont()->setBold(true);
@@ -127,35 +136,44 @@ class RapportController extends Controller
                         $activeSheet->getCellByColumnAndRow(7, 1)->getStyle()->getFont()->setBold(true);
                         $activeSheet->getCellByColumnAndRow(8, 1)->getStyle()->getFont()->setBold(true);
                         $activeSheet->getCellByColumnAndRow(9, 1)->getStyle()->getFont()->setBold(true);
+                        $activeSheet->getCellByColumnAndRow(10, 1)->getStyle()->getFont()->setBold(true);
+                        $activeSheet->getCellByColumnAndRow(11, 1)->getStyle()->getFont()->setBold(true);
+                        $activeSheet->getCellByColumnAndRow(12, 1)->getStyle()->getFont()->setBold(true);
+                        $activeSheet->getCellByColumnAndRow(13, 1)->getStyle()->getFont()->setBold(true);
+                        $activeSheet->getCellByColumnAndRow(14, 1)->getStyle()->getFont()->setBold(true);
 
-                        $activeSheet->getColumnDimensionByColumn(0)->setWidth(10);
-                        $activeSheet->getColumnDimensionByColumn(1)->setWidth(5);
-                        $activeSheet->getColumnDimensionByColumn(2)->setWidth(20);
-                        $activeSheet->getColumnDimensionByColumn(3)->setWidth(10);
-                        $activeSheet->getColumnDimensionByColumn(4)->setWidth(10);
-                        $activeSheet->getColumnDimensionByColumn(5)->setWidth(30);
+                        $activeSheet->getColumnDimensionByColumn(2)->setWidth(10);
+                        $activeSheet->getColumnDimensionByColumn(3)->setWidth(5);
+                        $activeSheet->getColumnDimensionByColumn(4)->setWidth(20);
+                        $activeSheet->getColumnDimensionByColumn(5)->setWidth(10);
+                        $activeSheet->getColumnDimensionByColumn(6)->setWidth(10);
+                        $activeSheet->getColumnDimensionByColumn(7)->setWidth(30);
                     }
                     $i++;
-                    $activeSheet->setCellValueByColumnAndRow(0, $i, $record->sollicitatie->sollicitatieNummer);
-                    $activeSheet->setCellValueByColumnAndRow(1, $i, $record->sollicitatie->status);
-                    $activeSheet->setCellValueExplicitByColumnAndRow(2, $i, $this->formatErkenningsNummer($record->koopman->erkenningsnummer, \PHPExcel_Cell_DataType::TYPE_STRING));
-                    $activeSheet->getCellByColumnAndRow(2, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
-                    $activeSheet->setCellValueByColumnAndRow(3, $i, $record->koopman->voorletters);
-                    $activeSheet->setCellValueByColumnAndRow(4, $i, $record->koopman->tussenvoegsels);
-                    $activeSheet->setCellValueByColumnAndRow(5, $i, $record->koopman->achternaam);
-                    $activeSheet->setCellValueByColumnAndRow(6, $i, $record->aantalActieveDagvergunningen);
-                    $activeSheet->setCellValueByColumnAndRow(7, $i, $record->aantalActieveDagvergunningenZelfAanwezig);
-                    $activeSheet->setCellValueByColumnAndRow(8, $i, $record->aantalActieveDagvergunningenNietZelfAanwezig);
-                    $activeSheet->setCellValueByColumnAndRow(9, $i, $record->aantalActieveDagvergunningen > 0 ? $record->percentageAanwezig : '');
-                    $activeSheet->getCellByColumnAndRow(10, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(0, $i, $record->sollicitatie->markt->naam);
+                    $activeSheet->setCellValueByColumnAndRow(1, $i, $record->sollicitatie->markt->afkorting . '_' . $record->sollicitatie->sollicitatieNummer);
+                    $activeSheet->setCellValueByColumnAndRow(2, $i, $record->sollicitatie->sollicitatieNummer);
+                    $activeSheet->setCellValueByColumnAndRow(3, $i, $record->sollicitatie->status);
+                    $activeSheet->setCellValueExplicitByColumnAndRow(4, $i, $this->formatErkenningsNummer($record->koopman->erkenningsnummer, \PHPExcel_Cell_DataType::TYPE_STRING));
+                    $activeSheet->getCellByColumnAndRow(4, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_TEXT);
+                    $activeSheet->setCellValueByColumnAndRow(5, $i, $record->koopman->voorletters);
+                    $activeSheet->setCellValueByColumnAndRow(6, $i, $record->koopman->tussenvoegsels);
+                    $activeSheet->setCellValueByColumnAndRow(7, $i, $record->koopman->achternaam);
+                    $activeSheet->setCellValueByColumnAndRow(8, $i, $record->aantalActieveDagvergunningen);
+                    $activeSheet->setCellValueByColumnAndRow(9, $i, $record->aantalActieveDagvergunningenZelfAanwezig);
+                    $activeSheet->setCellValueByColumnAndRow(10, $i, $record->aantalActieveDagvergunningenNietZelfAanwezig);
+                    $activeSheet->setCellValueByColumnAndRow(11, $i, $record->aantalActieveDagvergunningen > 0 ? $record->percentageAanwezig : '');
+                    $activeSheet->setCellValueByColumnAndRow(12, $i, $record->aantalActieveDagvergunningenZelfAanwezigNaControle);
+                    $activeSheet->setCellValueByColumnAndRow(13, $i, $record->aantalActieveDagvergunningenNietZelfAanwezigNaControle);
+                    $activeSheet->setCellValueByColumnAndRow(14, $i, $record->aantalActieveDagvergunningen > 0 ? $record->percentageAanwezigNaControle : '');
+                    //$activeSheet->getCellByColumnAndRow(12, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
                 }
                 $obj->getActiveSheet()->setAutoFilter($obj->getActiveSheet()->calculateWorksheetDimension());
-                $activeSheet->setTitle($markt->naam);
                 $activeSheet->freezePaneByColumnAndRow(0,2);
 
                 $writer = $this->get('phpexcel')->createWriter($obj, 'Excel2007');
                 $response = $this->get('phpexcel')->createStreamedResponse($writer);
-                $dispositionHeader = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'staanverplichting_' . $markt->naam . '_' . $dagStart->format('d-m-Y') . '_' . $dagEind->format('d-m-Y') . '.xlsx');
+                $dispositionHeader = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'staanverplichting_' . $dagStart->format('d-m-Y') . '_' . $dagEind->format('d-m-Y') . '.xlsx');
                 $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8');
                 $response->headers->set('Pragma', 'public');
                 $response->headers->set('Cache-Control', 'maxage=1');
@@ -169,7 +187,7 @@ class RapportController extends Controller
             $dagEind = (new \DateTime());
         }
 
-        return ['rapport' => $rapport, 'markt' => $markt, 'markten' => $markten, 'marktId' => $marktId, 'dagStart' => $dagStart, 'dagEind' => $dagEind, 'vergunningType' => $vergunningType, 'vergunningTypes' => $vergunningTypes];
+        return ['rapport' => $rapport, 'selectedMarkten' => $markten, 'markten' => $marktenResults, 'marktIds' => $marktIds, 'dagStart' => $dagStart, 'dagEind' => $dagEind, 'vergunningType' => $vergunningType, 'vergunningTypes' => $vergunningTypes];
     }
 
     /**
@@ -1495,35 +1513,68 @@ class RapportController extends Controller
                         $activeSheet->setCellValueByColumnAndRow(5, 1, 'Markt');
                         $activeSheet->setCellValueByColumnAndRow(6, 1, 'Max. kramen');
                         $activeSheet->setCellValueByColumnAndRow(7, 1, 'Max. meters');
+
                         $activeSheet->setCellValueByColumnAndRow(8, 1, 'VPL. dagv. #');
                         $activeSheet->setCellValueByColumnAndRow(9, 1, 'VPL. dagv. %');
                         $activeSheet->setCellValueByColumnAndRow(10, 1, 'VPL. kramen #');
                         $activeSheet->setCellValueByColumnAndRow(11, 1, 'VPL. kramen %');
                         $activeSheet->setCellValueByColumnAndRow(12, 1, 'VPL. meters #');
                         $activeSheet->setCellValueByColumnAndRow(13, 1, 'VPL. meters %');
+
                         $activeSheet->setCellValueByColumnAndRow(14, 1, 'VKK. dagv. #');
                         $activeSheet->setCellValueByColumnAndRow(15, 1, 'VKK. dagv. %');
                         $activeSheet->setCellValueByColumnAndRow(16, 1, 'VKK. kramen #');
                         $activeSheet->setCellValueByColumnAndRow(17, 1, 'VKK. kramen %');
                         $activeSheet->setCellValueByColumnAndRow(18, 1, 'VKK. meters #');
                         $activeSheet->setCellValueByColumnAndRow(19, 1, 'VKK. meters %');
-                        $activeSheet->setCellValueByColumnAndRow(20, 1, 'SOLL. dagv. #');
-                        $activeSheet->setCellValueByColumnAndRow(21, 1, 'SOLL. dagv. %');
-                        $activeSheet->setCellValueByColumnAndRow(22, 1, 'SOLL. kramen #');
-                        $activeSheet->setCellValueByColumnAndRow(23, 1, 'SOLL. kramen %');
-                        $activeSheet->setCellValueByColumnAndRow(24, 1, 'SOLL. meters #');
-                        $activeSheet->setCellValueByColumnAndRow(25, 1, 'SOLL. meters %');
-                        $activeSheet->setCellValueByColumnAndRow(26, 1, 'LOT. dagv. #');
-                        $activeSheet->setCellValueByColumnAndRow(27, 1, 'LOT. dagv. %');
-                        $activeSheet->setCellValueByColumnAndRow(28, 1, 'LOT. kramen #');
-                        $activeSheet->setCellValueByColumnAndRow(29, 1, 'LOT. kramen %');
-                        $activeSheet->setCellValueByColumnAndRow(30, 1, 'LOT. meters #');
-                        $activeSheet->setCellValueByColumnAndRow(31, 1, 'LOT. meters %');
-                        $activeSheet->setCellValueByColumnAndRow(32, 1, 'Totaal dagvergunningen #');
-                        $activeSheet->setCellValueByColumnAndRow(33, 1, 'Totaal kramen #');
-                        $activeSheet->setCellValueByColumnAndRow(34, 1, 'Totaal kramen %');
-                        $activeSheet->setCellValueByColumnAndRow(35, 1, 'Totaal meters #');
-                        $activeSheet->setCellValueByColumnAndRow(36, 1, 'Totaal meters %');
+
+                        $activeSheet->setCellValueByColumnAndRow(20, 1, 'TVPL. dagv. #');
+                        $activeSheet->setCellValueByColumnAndRow(21, 1, 'TVPL. dagv. %');
+                        $activeSheet->setCellValueByColumnAndRow(22, 1, 'TVPL. kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(23, 1, 'TVPL. kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(24, 1, 'TVPL. meters #');
+                        $activeSheet->setCellValueByColumnAndRow(25, 1, 'TVPL. meters %');
+
+                        $activeSheet->setCellValueByColumnAndRow(26, 1, 'TVPLZ. dagv. #');
+                        $activeSheet->setCellValueByColumnAndRow(27, 1, 'TVPLZ. dagv. %');
+                        $activeSheet->setCellValueByColumnAndRow(28, 1, 'TVPLZ. kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(29, 1, 'TVPLZ. kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(30, 1, 'TVPLZ. meters #');
+                        $activeSheet->setCellValueByColumnAndRow(31, 1, 'TVPLZ. meters %');
+
+                        $activeSheet->setCellValueByColumnAndRow(32, 1, 'EXP. dagv. #');
+                        $activeSheet->setCellValueByColumnAndRow(33, 1, 'EXP. dagv. %');
+                        $activeSheet->setCellValueByColumnAndRow(34, 1, 'EXP. kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(35, 1, 'EXP. kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(36, 1, 'EXP. meters #');
+                        $activeSheet->setCellValueByColumnAndRow(37, 1, 'EXP. meters %');
+
+                        $activeSheet->setCellValueByColumnAndRow(38, 1, 'EXPF. dagv. #');
+                        $activeSheet->setCellValueByColumnAndRow(39, 1, 'EXPF. dagv. %');
+                        $activeSheet->setCellValueByColumnAndRow(40, 1, 'EXPF. kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(41, 1, 'EXPF. kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(42, 1, 'EXPF. meters #');
+                        $activeSheet->setCellValueByColumnAndRow(43, 1, 'EXPF. meters %');
+
+                        $activeSheet->setCellValueByColumnAndRow(44, 1, 'SOLL. dagv. #');
+                        $activeSheet->setCellValueByColumnAndRow(45, 1, 'SOLL. dagv. %');
+                        $activeSheet->setCellValueByColumnAndRow(46, 1, 'SOLL. kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(47, 1, 'SOLL. kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(48, 1, 'SOLL. meters #');
+                        $activeSheet->setCellValueByColumnAndRow(49, 1, 'SOLL. meters %');
+
+                        $activeSheet->setCellValueByColumnAndRow(50, 1, 'LOT. dagv. #');
+                        $activeSheet->setCellValueByColumnAndRow(51, 1, 'LOT. dagv. %');
+                        $activeSheet->setCellValueByColumnAndRow(52, 1, 'LOT. kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(53, 1, 'LOT. kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(54, 1, 'LOT. meters #');
+                        $activeSheet->setCellValueByColumnAndRow(55, 1, 'LOT. meters %');
+
+                        $activeSheet->setCellValueByColumnAndRow(56, 1, 'Totaal dagvergunningen #');
+                        $activeSheet->setCellValueByColumnAndRow(57, 1, 'Totaal kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(58, 1, 'Totaal kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(59, 1, 'Totaal meters #');
+                        $activeSheet->setCellValueByColumnAndRow(60, 1, 'Totaal meters %');
 
                         for ($j = 0; $j < 37; $j++) {
                             $activeSheet->getCellByColumnAndRow($j, 1)->getStyle()->getFont()->setBold(true);
@@ -1544,6 +1595,7 @@ class RapportController extends Controller
                     $activeSheet->setCellValueByColumnAndRow(5, $i, $recordArray['marktNaam']);
                     $activeSheet->setCellValueByColumnAndRow(6, $i, $recordArray['capaciteitKramen']);
                     $activeSheet->setCellValueByColumnAndRow(7, $i, $recordArray['capaciteitMeter']);
+
                     $activeSheet->setCellValueByColumnAndRow(8, $i, $recordArray['vplAantalDagvergunningen']);
                     $activeSheet->setCellValueByColumnAndRow(9, $i, $recordArray['vplAantalDagvergunningen%']);
                     $activeSheet->getCellByColumnAndRow(9, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
@@ -1553,6 +1605,7 @@ class RapportController extends Controller
                     $activeSheet->setCellValueByColumnAndRow(12, $i, $recordArray['vplAantalMeter']);
                     $activeSheet->setCellValueByColumnAndRow(13, $i, $recordArray['vplAantalMeter%']);
                     $activeSheet->getCellByColumnAndRow(13, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+
                     $activeSheet->setCellValueByColumnAndRow(14, $i, $recordArray['vkkAantalDagvergunningen']);
                     $activeSheet->setCellValueByColumnAndRow(15, $i, $recordArray['vkkAantalDagvergunningen%']);
                     $activeSheet->getCellByColumnAndRow(15, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
@@ -1562,32 +1615,74 @@ class RapportController extends Controller
                     $activeSheet->setCellValueByColumnAndRow(18, $i, $recordArray['vkkAantalMeter']);
                     $activeSheet->setCellValueByColumnAndRow(19, $i, $recordArray['vkkAantalMeter%']);
                     $activeSheet->getCellByColumnAndRow(19, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(20, $i, $recordArray['sollAantalDagvergunningen']);
-                    $activeSheet->setCellValueByColumnAndRow(21, $i, $recordArray['sollAantalDagvergunningen%']);
+
+                    $activeSheet->setCellValueByColumnAndRow(20, $i, $recordArray['tvplAantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(21, $i, $recordArray['tvplAantalDagvergunningen%']);
                     $activeSheet->getCellByColumnAndRow(21, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(22, $i, $recordArray['sollAantalKramen']);
-                    $activeSheet->setCellValueByColumnAndRow(23, $i, $recordArray['sollAantalKramen%']);
+                    $activeSheet->setCellValueByColumnAndRow(22, $i, $recordArray['tvplAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(23, $i, $recordArray['tvplAantalKramen%']);
                     $activeSheet->getCellByColumnAndRow(23, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(24, $i, $recordArray['sollAantalMeter']);
-                    $activeSheet->setCellValueByColumnAndRow(25, $i, $recordArray['sollAantalMeter%']);
+                    $activeSheet->setCellValueByColumnAndRow(24, $i, $recordArray['tvplAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(25, $i, $recordArray['tvplAantalMeter%']);
                     $activeSheet->getCellByColumnAndRow(25, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(26, $i, $recordArray['lotAantalDagvergunningen']);
-                    $activeSheet->setCellValueByColumnAndRow(27, $i, $recordArray['lotAantalDagvergunningen%']);
+
+                    $activeSheet->setCellValueByColumnAndRow(26, $i, $recordArray['tvplzAantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(27, $i, $recordArray['tvplzAantalDagvergunningen%']);
                     $activeSheet->getCellByColumnAndRow(27, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(28, $i, $recordArray['lotAantalKramen']);
-                    $activeSheet->setCellValueByColumnAndRow(29, $i, $recordArray['lotAantalKramen%']);
+                    $activeSheet->setCellValueByColumnAndRow(28, $i, $recordArray['tvplzAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(29, $i, $recordArray['tvplzAantalKramen%']);
                     $activeSheet->getCellByColumnAndRow(29, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(30, $i, $recordArray['lotAantalMeter']);
-                    $activeSheet->setCellValueByColumnAndRow(31, $i, $recordArray['lotAantalMeter%']);
+                    $activeSheet->setCellValueByColumnAndRow(30, $i, $recordArray['tvplzAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(31, $i, $recordArray['tvplzAantalMeter%']);
                     $activeSheet->getCellByColumnAndRow(31, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
 
-                    $activeSheet->setCellValueByColumnAndRow(32, $i, $recordArray['aantalDagvergunningen']);
-                    $activeSheet->setCellValueByColumnAndRow(33, $i, $recordArray['totaalAantalKramen']);
-                    $activeSheet->setCellValueByColumnAndRow(34, $i, $recordArray['totaalAantalKramen%']);
-                    $activeSheet->getCellByColumnAndRow(34, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(35, $i, $recordArray['totaalAantalMeter']);
-                    $activeSheet->setCellValueByColumnAndRow(36, $i, $recordArray['totaalAantalMeter%']);
-                    $activeSheet->getCellByColumnAndRow(36, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(32, $i, $recordArray['expAantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(33, $i, $recordArray['expAantalDagvergunningen%']);
+                    $activeSheet->getCellByColumnAndRow(33, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(34, $i, $recordArray['expAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(35, $i, $recordArray['expAantalKramen%']);
+                    $activeSheet->getCellByColumnAndRow(35, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(36, $i, $recordArray['expAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(37, $i, $recordArray['expAantalMeter%']);
+                    $activeSheet->getCellByColumnAndRow(37, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+
+                    $activeSheet->setCellValueByColumnAndRow(38, $i, $recordArray['expfAantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(39, $i, $recordArray['expfAantalDagvergunningen%']);
+                    $activeSheet->getCellByColumnAndRow(39, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(40, $i, $recordArray['expfAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(41, $i, $recordArray['expfAantalKramen%']);
+                    $activeSheet->getCellByColumnAndRow(41, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(42, $i, $recordArray['expfAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(43, $i, $recordArray['expfAantalMeter%']);
+                    $activeSheet->getCellByColumnAndRow(43, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+
+                    $activeSheet->setCellValueByColumnAndRow(44, $i, $recordArray['sollAantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(45, $i, $recordArray['sollAantalDagvergunningen%']);
+                    $activeSheet->getCellByColumnAndRow(45, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(46, $i, $recordArray['sollAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(47, $i, $recordArray['sollAantalKramen%']);
+                    $activeSheet->getCellByColumnAndRow(47, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(48, $i, $recordArray['sollAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(49, $i, $recordArray['sollAantalMeter%']);
+                    $activeSheet->getCellByColumnAndRow(49, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+
+                    $activeSheet->setCellValueByColumnAndRow(50, $i, $recordArray['lotAantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(51, $i, $recordArray['lotAantalDagvergunningen%']);
+                    $activeSheet->getCellByColumnAndRow(51, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(52, $i, $recordArray['lotAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(53, $i, $recordArray['lotAantalKramen%']);
+                    $activeSheet->getCellByColumnAndRow(53, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(54, $i, $recordArray['lotAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(55, $i, $recordArray['lotAantalMeter%']);
+                    $activeSheet->getCellByColumnAndRow(55, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+
+                    $activeSheet->setCellValueByColumnAndRow(56, $i, $recordArray['aantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(57, $i, $recordArray['totaalAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(58, $i, $recordArray['totaalAantalKramen%']);
+                    $activeSheet->getCellByColumnAndRow(58, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    $activeSheet->setCellValueByColumnAndRow(59, $i, $recordArray['totaalAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(60, $i, $recordArray['totaalAantalMeter%']);
+                    $activeSheet->getCellByColumnAndRow(60, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
 
 
                 }

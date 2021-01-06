@@ -1,0 +1,12 @@
+.text-green {
+    color: #28a745;
+}
+
+.text-red {
+    color: #dc3545;
+}
+
+.verwijder_lijst {
+    float: right;
+    padding-right: 10px;
+}
