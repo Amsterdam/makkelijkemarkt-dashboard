@@ -19,6 +19,7 @@ COPY . /app
 COPY Docker/docker-entrypoint.sh /app/docker-entrypoint.sh
 
 COPY Docker/nginx/nginx.conf /etc/nginx/nginx.conf
+RUN rm /etc/nginx/conf.d/default.conf
 COPY Docker/nginx/conf.d/makkelijkemarkt-dashboard.conf /etc/nginx/conf.d/makkelijkemarkt-dashboard.conf
 
 COPY Docker/php/php.ini /usr/local/etc/php/php.ini
