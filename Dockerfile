@@ -30,7 +30,7 @@ WORKDIR /app
 COPY Docker/adp_rootca.crt /usr/local/share/ca-certificates/extras/
 RUN update-ca-certificates
 
-RUN curl -sS https://getcomposer.org/installer | php -- && php composer.phar install --prefer-dist --no-scripts
+RUN curl -sS https://getcomposer.org/installer | php -- && php composer.phar install --prefer-dist
 
 RUN mkdir /app/var \
     && mkdir /app/var/log \
