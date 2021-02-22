@@ -1,0 +1,59 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Tariefplannen - {% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Tariefplannen - {{ markt.naam }}</h1>
+
+    <p>
+        <a class="btn btn-primary" href="{{ path('app_tariefplan_createlineair', {'marktId': markt.id}) }}">Lineairplan toevoegen</a>
+        <a class="btn btn-primary" href="{{ path('app_tariefplan_createconcreet', {'marktId': markt.id}) }}">Concreetplan toevoegen</a>
+    </p>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>type</th>
+            <th>naam</th>
+            <th>vanaf</th>
+            <th>tot</th>
+            <th>Opties</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tariefplan in tariefplannen %}
+            <tr>
+                <td>{{ tariefplan.id }}</td>
+                <td>{{ tariefplan.lineairplan is null ? 'Concreet' : 'Lineair' }}</td>
+                <td>{{ tariefplan.naam }}</td>
+                <td>{{ tariefplan.geldigVanaf|date('d-m-Y') }}</td>
+                <td>{{ tariefplan.geldigTot|date('d-m-Y') }}</td>
+                <td>
+                    <form method="post" action="{{ path('app_tariefplan_delete', {'tariefPlanId': tariefplan.id}) }}">
+                        <a class="btn btn-primary" href="{{ tariefplan.lineairplan is null ? path('app_tariefplan_updateconcreet', {'tariefPlanId': tariefplan.id}) : path('app_tariefplan_updatelineair', {'tariefPlanId': tariefplan.id}) }}">Bewerken</a>
+                        <input type="hidden" name="_csrf" value="{{ csrf_token('app_tariefplan_delete') }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Weet u het dat u tariefplan met id {{ tariefplan.id }} wilt verwijderen?')">Verwijderen</a>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

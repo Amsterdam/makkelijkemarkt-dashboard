@@ -1,0 +1,107 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}Makkelijke Markt Dashboard {% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        {% block css %}
+             {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+        {% block javascript %}
+               {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+            <a class="navbar-brand" href="#">Makkelijke Markt</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                     {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Koopmannen
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{{ path('app_koopman_index') }}">Zoeken op naam</a>
+                            </div>
+                        </li>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_USER') %}
+                        <li class="nav-item"><a class="nav-link"  href="{{ path('app_dagvergunning_index') }}">Dagvergunningen</a></li>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_USER') %}
+                        <li class="nav-item"><a class="nav-link" href="{{ path('app_lijst_index') }}">Lijsten</a></li>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Rapportages
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{{ path('app_scanspeed_index') }}">Scan snelheid</a>
+                                <a class="dropdown-item" href="{{ path('app_rapport_dubbelstaan') }}">Dubbel staan</a>
+                                <a class="dropdown-item" href="{{ path('app_rapport_staanverplichting') }}">Staanverplichting</a>
+                                <a class="dropdown-item" href="{{ path('app_rapport_facturen') }}">Facturen</a>
+                                <a class="dropdown-item" href="{{ path('app_rapport_factuurdetail') }}">Facturen (detail)</a>
+                                <a class="dropdown-item" href="{{ path('app_rapport_frequentiemarkten') }}">Frequentie</a>
+                                <a class="dropdown-item" href="{{ path('app_rapport_capaciteit') }}">Gebruik capaciteit</a>
+                            </div>
+                        </li>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_USER') %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Stamgegevens
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{{ path('app_markt_index') }}">Markt</a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a class="dropdown-item" href="{{ path('app_tariefplan_index') }}">Tariefplannen</a>
+                                    <a class="dropdown-item" href="{{ path('app_btw_index') }}">BTW</a>
+                                {% endif %}
+                                <a class="dropdown-item" href="{{ path('app_account_index') }}">Accounts</a>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                {% if is_granted('ROLE_USER') %}
+                    <ul class="nav navbar-nav navbar-right ml-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ app.user.username }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{{ path('app_login_logout') }}">Afmelden</a>
+                                <a class="dropdown-item" href="{{ path('app_info_version') }}">Info</a>
+                            </div>
+                        </li>
+                    </ul>
+                {% endif %}
+            </div>
+        </nav>
+
+        {% block document %}
+        {% endblock %}
+    </div>
+    </body>
+</html>

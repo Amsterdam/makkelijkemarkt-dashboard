@@ -1,0 +1,107 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Scan Speed {% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1><i class="bi bi-speedometer"></i> Scan Speed</h1>
+
+    <p>Selecteer markt, dag, account/toezichthouder, pauze detectie tijd (in sec):</p>
+
+    <form>
+        <div class="form-row">
+            <div class=" col-md-6 col-lg-4">
+                <label class="control-label sr-only required" for="markt">Markt</label>
+                <select id="markt" name="markt" required="required" class="form-control">
+                    {% for markt in markten %}
+                        <option value="{{ markt.id }}"{% if marktId is defined and marktId == markt.id %} selected{% endif %}>{{ markt.naam }}</option>
+                    {% endfor %}
+                </select>
+                <br>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label sr-only required" for="account">Account</label>
+                <select id="account" name="account" required="required" class="form-control">
+                    {% for account in accounts %}
+                        <option value="{{ account.id }}"{% if accountId is defined and accountId == account.id %} selected="selected"{% endif %}>{{ account.naam }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class=" col-md-2 col-lg-2">
+                <input type="text" name="datum" class="form-control date-pricker" id="datum" placeholder="Datum" value="{% if datum is defined %}{{ datum|date('Y-m-d') }}{% endif %}">
+                <br>
+            </div>
+
+            <div class=" col-md-2 col-lg-2">
+                <label class="control-label sr-only required" for="pauze">Pauze detectie in sec.</label>
+                <input type="number" id="pauze" name="pauze" required="required" placeholder="Pauze detectie in sec." class="form-control" value="{{ pauze }}" >
+                <br>
+            </div>
+
+            <div class=" col-md-2 col-lg-2">
+                <button type="submit" id="save" name="save" class="btn btn-primary">Selecteer</button>
+            </div>
+        </div>
+    </form>
+
+    {% if periods is defined %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="col-md-2">Start</th>
+                    <th class="col-md-2">Eind</th>
+                    <th class="col-md-2">Duur</th>
+                    <th class="col-md-2">Aantal gescand</th>
+                    <th class="col-md-2">Gem. tijd per scan</th>
+                    <th class="col-md-2">Scans per uur</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for period in periods %}
+                    <tr>
+                        <td>{{ period.start|date('d-m-Y H:i:s') }}</td>
+                        <td>{{ period.end|date('H:i:s') }}</td>
+                        <td class="text-right">{{ period.duration }} sec.</td>
+                        <td class="text-right">{{ period.scans }}</td>
+                        <td class="text-right">
+                            {% if period.avgTimePerScan == -1 %}
+                                -
+                            {% else %}
+                                {{ period.avgTimePerScan|round(2, 'ceil') }} sec.
+                            {% endif %}
+                        </td>
+                        <td class="text-right">
+                            {% if period.avgTimePerScan == -1 %}
+                                -
+                            {% else %}
+                                {{ period.avgScansPerHour|round(2, 'floor') }} scans/uur
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% if loop.last == false %}
+                    <tr>
+                        <td colspan="6">(pauze)</td>
+                    </tr>
+                {% endif %}
+                {% endfor  %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

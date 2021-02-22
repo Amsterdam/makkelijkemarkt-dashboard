@@ -1,0 +1,129 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+
+{% extends "base.html.twig" %}
+
+{% block title %}Rapport: Detail facturen{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Facturen</h1>
+    <form class="form">
+        <div class="row">
+            <div class="form-group col-sm-5">
+                <label for="markt">Markt</label>
+                <select id="markt" class="form-control" name="marktIds[]" multiple>
+                    {% for markt in markten %}
+                        <option value="{{ markt.id }}" {% if markt.id in marktIds %}selected="selected"{% endif %}>{{ markt.naam }}</option>
+                    {% endfor %}
+                </select>
+                <small>Selecteer meerdere markten door Ctrl ingedrukt te houden bij het selecteren</small>
+            </div>
+            <div class="form-group col-sm-2">
+                <label for="periode">Periode</label>
+                <select id="periode" name="periode" class="form-control">
+                    <option value="dag" {{ periode == 'dag' ? 'selected' }}>Dag</option>
+                    <option value="maand" {{ periode == 'maand' ? 'selected' }}>Maand</option>
+                    <option value="kwartaal" {{ periode == 'kwartaal' ? 'selected' }}>Kwartaal</option>
+                    <option value="eigen" {{ periode == 'eigen' ? 'selected' }}>Zelf kiezen</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-2 periode-selector periode-eigen">
+                <label for="dagStart">Van</label>
+                <input id="dagStart" type="text" class="date-pricker form-control" name="dagStart" value="{{ dagStart }}">
+            </div>
+            <div class="form-group col-sm-2 periode-selector periode-eigen">
+                <label for="dagEind">Tot</label>
+                <input id="dagEind" type="text" class="date-pricker form-control" name="dagEind" value="{{ dagEind }}">
+            </div>
+            <div class="form-group col-sm-2 periode-selector periode-dag">
+                <label for="dag">Dag</label>
+                <input id="dag" type="text" class="date-pricker form-control" name="dag" value="{{ dagEind }}">
+            </div>
+            <div class="form-group col-sm-2 periode-selector periode-kwartaal periode-maand">
+                <label for="jaar">Jaar</label>
+                <select id="jaar" class="form-control" name="jaar">
+                {% for jaartal in jaartallen %}
+                    <option value="{{ jaartal }}" {{ jaartal == jaar ? 'selected' }}>{{ jaartal }}</option>
+                {% endfor %}
+                </select>
+            </div>
+            <div class="form-group col-sm-2 periode-selector periode-kwartaal">
+                <label for="kwartaal">Kwartaal</label>
+                <select id="kwartaal" class="form-control" name="kwartaal">
+                    <option value="0" {{ '0' == kwartaal ? 'selected' }}>Kw 1 (jan., feb., mrt.)</option>
+                    <option value="1" {{ '1' == kwartaal ? 'selected' }}>Kw 2 (apr., mei, jun.)</option>
+                    <option value="2" {{ '2' == kwartaal ? 'selected' }}>Kw 3 (jul., aug., sep.)</option>
+                    <option value="3" {{ '3' == kwartaal ? 'selected' }}>Kw 4 (okt., nov., dec.)</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-2 periode-selector periode-maand">
+                <label for="maand">Maand</label>
+                <select id="maand" class="form-control" name="maand">
+                    <option value="01" {{ '01' == maand ? 'selected' }}>Januari</option>
+                    <option value="02" {{ '02' == maand ? 'selected' }}>Februari</option>
+                    <option value="03" {{ '03' == maand ? 'selected' }}>Maart</option>
+                    <option value="04" {{ '04' == maand ? 'selected' }}>April</option>
+                    <option value="05" {{ '05' == maand ? 'selected' }}>Mei</option>
+                    <option value="06" {{ '06' == maand ? 'selected' }}>Juni</option>
+                    <option value="07" {{ '07' == maand ? 'selected' }}>Juli</option>
+                    <option value="08" {{ '08' == maand ? 'selected' }}>Augustus</option>
+                    <option value="09" {{ '09' == maand ? 'selected' }}>September</option>
+                    <option value="10" {{ '10' == maand ? 'selected' }}>Oktober</option>
+                    <option value="11" {{ '11' == maand ? 'selected' }}>November</option>
+                    <option value="12" {{ '12' == maand ? 'selected' }}>December</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-sm-3">
+                <input type="submit" class="btn btn-primary" name="submit" value="Tonen">
+                <input type="submit" class="btn btn-info" name="submit" value="Download Excel">
+            </div>
+        </div>
+    </form>
+
+    {% if rapport is not null %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Voorkomens</th>
+                    <th>Product</th>
+                    <th>Markt</th>
+                    <th>Datum</th>
+                    <th>Bedrag</th>
+                    <th>Aantal</th>
+                    <th>Som</th>
+                    <th>Totaal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rapport.output %}
+                    <tr>
+                        <td>{{ row.voorkomens }}</td>
+                        <td>{{ row.product_naam }}</td>
+                        <td>{{ row.markt_naam }}</td>
+                        <td>{{ row.dag }}</td>
+                        <td>&euro; {{ row.bedrag|format(2, ',', '.') }}</td>
+                        <td>{{ row.aantal }}</td>
+                        <td>&euro; {{ row.som|format(2, ',', '.') }}</td>
+                        <td>&euro; {{ row.totaal|format(2, ',', '.') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

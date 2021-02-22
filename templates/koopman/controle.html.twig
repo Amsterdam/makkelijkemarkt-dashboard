@@ -1,0 +1,204 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }} - Koopman controle - {{ parent() }}{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1><img src="{{ koopman.fotoUrl }}" alt=""width="50"> {{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }}</h1>
+
+
+    <div class="row">
+        <div class="col-sm-6 col-md-3">
+            <strong>Erkenningsnummer</strong> {{ koopman.erkenningsnummer }}<br>
+            <strong>Status</strong>
+            {% if koopman.status == 'Actief' %}
+                <span class="badge badge-success">Actief</span>
+            {% elseif koopman.status == 'Vervanger' %}
+                <span class="badge badge-warning">Vervanger</span>
+            {% else %}
+                <span class="badge badge-danger">Doorgehaald</span>
+            {% endif %}
+
+            {% if koopman.handhavingsVerzoek is not null and vandaag <= koopman.handhavingsVerzoek %}
+                <span class="badge badge-warning">Handhavingsverzoek</span>
+            {% endif %}
+            <br>
+            <br>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+            <strong>Voorletters</strong> {{ koopman.voorletters }}<br>
+            {% if koopman.tussenvoegsels %}<strong>Tussenvoegsels</strong> {{ koopman.tussenvoegsels }}
+                <br>{% endif %}
+            <strong>Achternaam</strong> {{ koopman.achternaam }}<br>
+            <br>
+        </div>
+ 
+            <div class="col-sm-6 col-md-3">
+                <strong>E-mail</strong> {{ koopman.email is not empty ? koopman.email : 'onbekend' }}<br>
+                <strong>Telefoon</strong> {{ koopman.telefoon is not empty ? koopman.telefoon : 'onbekend' }}
+                <br>
+                <br>
+        </div>
+
+        <div class="col-sm-6 col-md-3">
+            <strong>PerfectView nummer</strong> {{ koopman.perfectViewNummer }}<br>
+            <strong>Pasnummer</strong> {{ koopman.pasUid }}
+            <br>
+            <br>
+        </div>
+    </div>
+
+
+
+
+    <h1>Controles</h1>
+    <form  method="GET" action="{{ path('app_koopman_controle', {'id': koopman.id}) }}">
+        <div class="form-row">
+            <div class="col-sm-4">
+            <input type="text" class="form-control" name="startdatum" value="{{ startdatum|date('d-m-Y') }}">
+            <br>
+            </div>
+
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="einddatum" value="{{ einddatum|date('d-m-Y') }}">
+                <br>
+            </div>
+
+            <div class="col-sm-4 col-lg-3">
+                {% if markt is defined and markt is not empty %}
+                    <input type="hidden" name="marktId" value="{{ markt.id }}">
+                {% endif %}
+                    <button type="submit" class="btn btn-primary form-control">Tonen</button>
+                    <br>
+            </div>
+        </div>
+    </form>
+
+
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Markt</th>
+            <th>Dag</th>
+            <th>Dagvergunning</th>
+            <th>1e controle</th>
+            <th>2e controle</th>
+            <th>Selectiemethode</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for vergunning in vergunningen %}
+            <tr>
+                <td>{{ vergunning.markt.naam }}</td>
+                <td>{{ vergunning.dag|date('d-m-Y') }}</td>
+                <td>
+                    <span class="glyphicon {% if 'vervanger_zonder_toestemming' == vergunning.aanwezig %}remove-sign text-red{% else %}ok-sign text-green{% endif %}"></span>
+                    <strong>{{ vergunning.aanwezig|reglyphicon-place('_', ' ')|capitalize }}</strong><br/>
+                    {% if vergunning.vervanger is defined and vergunning.vervanger is not empty %}
+                        Gescand:
+                        <a href="{{ path('app_makkelijkemarkt_dashboard_koopman_detail', {'id': vergunning.vervanger.id}) }}">{{ vergunning.vervanger.voorletters }} {{ vergunning.vervanger.achternaam }}</a>
+                        <br/>
+                        Erkenningsnr.: {{ vergunning.vervanger.erkenningsnummer }}<br/>
+                    {% endif %}
+                    {% if methodes[vergunning.erkenningsnummerInvoerMethode] is defined %}
+                        <span class="badge {% if 'handmatig' != vergunning.erkenningsnummerInvoerMethode %}badge-default{% else %}badge-danger{% endif %}">{{ methodes[vergunning.erkenningsnummerInvoerMethode]|default('...') }}</span>
+                    {% endif %}
+                    {{ vergunning.registratieDatumtijd|date('H:i:s') }}<br/>
+                    Door: {{ vergunning.registratieAccount.naam }}
+                    {% if vergunning.notitie is not empty %}
+                        <br/>
+                        <i class="bi bi-chat-left-fill"></i>{{ vergunning.notitie }}
+                    {% endif %}
+                </td>
+                {% if vergunning.controles %}
+                    <td>
+                        {% set selectedControle = null %}
+                        {% for controle in vergunning.controles %}
+                            {% if '1' == controle.ronde %}
+                                {% set selectedControle = controle %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if selectedControle is not null %}
+                            <span class="bi bi-{% if 'vervanger_zonder_toestemming' == selectedControle.aanwezig %}x-circle-fill text-red{% else %}check-circle-fill text-green{% endif %}"></span>
+                            <strong>{{ selectedControle.aanwezig|replace('_', ' ')|capitalize }}</strong><br/>
+                            {% if selectedControle.vervanger is defined and selectedControle.vervanger is not empty %}
+                                Gescand:
+                                <a href="{{ path('app_makkelijkemarkt_dashboard_koopman_detail', {'id': selectedControle.vervanger.id}) }}">{{ selectedControle.vervanger.voorletters }} {{ selectedControle.vervanger.achternaam }}</a>
+                                <br/>
+                                Erkenningsnr.: {{ selectedControle.vervanger.erkenningsnummer }}<br/>
+                            {% endif %}
+                            {% if methodes[selectedControle.erkenningsnummerInvoerMethode] is defined %}
+                                <span class="badge {% if 'handmatig' != selectedControle.erkenningsnummerInvoerMethode %}badge-default{% else %}badge-danger{% endif %}">{{ methodes[selectedControle.erkenningsnummerInvoerMethode]|default('...') }}</span>
+                            {% endif %}
+                            {{ selectedControle.registratieDatumtijd|date('H:i:s') }}<br/>
+                            Door: {{ selectedControle.registratieAccount.naam }}
+                            {% if selectedControle.notitie is not empty %}
+                                <br/>
+                                <i class="bi bi-chat-left-fill"></i>{{ selectedControle.notitie }}
+                            {% endif %}
+                        {% else %}
+                            1e ronde niet gecontroleerd
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% set selectedControle = null %}
+                        {% for controle in vergunning.controles %}
+                            {% if '2' == controle.ronde %}
+                                {% set selectedControle = controle %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if selectedControle is not null %}
+                            <span class="bi bi-{% if 'vervanger_zonder_toestemming' == selectedControle.aanwezig %}x-circle-fill{% else %}check-circle-fill text-green{% endif %}"></span>
+                            <strong>{{ selectedControle.aanwezig|replace('_', ' ')|capitalize }}</strong><br/>
+                            {% if selectedControle.vervanger is defined and selectedControle.vervanger is not empty %}
+                                Gescand:
+                                <a href="{{ path('app_makkelijkemarkt_dashboard_koopman_detail', {'id': selectedControle.vervanger.id}) }}">{{ selectedControle.vervanger.voorletters }} {{ selectedControle.vervanger.achternaam }}</a>
+                                <br/>
+                                Erkenningsnr.: {{ selectedControle.vervanger.erkenningsnummer }}<br/>
+                            {% endif %}
+                            {% if methodes[selectedControle.erkenningsnummerInvoerMethode] is defined %}
+                                <span class="badge {% if 'handmatig' != selectedControle.erkenningsnummerInvoerMethode %}badge-default{% else %}badge-danger{% endif %}">{{ methodes[selectedControle.erkenningsnummerInvoerMethode]|default('...') }}</span>
+                            {% endif %}
+                            {{ selectedControle.registratieDatumtijd|date('H:i:s') }}<br/>
+                            Door: {{ selectedControle.registratieAccount.naam }}
+                            {% if selectedControle.notitie is not empty %}
+                                <br/>
+                                <<i class="bi bi-chat-left-fill"></i></span> {{ selectedControle.notitie }}
+                            {% endif %}
+                        {% else %}
+                            2e ronde niet gecontroleerd
+                        {% endif %}
+                    </td>
+                    <td>
+                        Methode: {{ vergunning.auditReason }}<br/>
+                        {% if vergunning.loten %}Aantal loten: {{ vergunning.loten }}{% endif %}
+                    </td>
+                {% else %}
+                    <td colspan="3"
+                        style="vertical-align: middle">{{ vergunning.audit ? 'Niet gecontroleerd' : '-' }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+
+{% block document %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                {% for flashMessage in app.session.flashbag.get('error') %}
+                    <div class="alert alert-danger alert-dismissible" role="alert"><strong>Oeps!</strong> {{ flashMessage }}</div>
+                {% endfor %}
+                {% for flashMessage in app.session.flashbag.get('notice') %}
+                    <div class="alert alert-warning alert-dismissible" role="alert"><strong>Opletten!</strong> {{ flashMessage }}</div>
+                {% endfor %}
+                {% for flashMessage in app.session.flashbag.get('success') %}
+                    <div class="alert alert-success alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ flashMessage }}
+                    </div>
+                {% endfor %}
+                {% for flashMessage in app.session.flashbag.get('info') %}
+                    <div class="alert alert-info alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ flashMessage }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="jumbotron" id="login-banner">
+            <h1>Inloggen</h1>
+            <p>Makkelijke Markt - Dashboard - Gemeente Amsterdam</p>
+        </div>
+
+        {% if error %}
+            <div class="alert alert-danger" role="alert">{{ error.messageKey }}</div>
+        {% endif %}
+
+        <form  class="form" method="post">
+            <div class="form-group">
+                <label for="inputUsername">Gebruikersnaam:</label>
+                <input type="text" value="{{ last_username }}" name="username" id="inputUsername" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="inputPassword">Pincode:</label>
+                <input type="password" name="password" id="inputPassword" required>
+            </div>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <button class="btn btn-primary" type="submit">Inloggen</button>
+        </form>
+    </div>
+{% endblock %}

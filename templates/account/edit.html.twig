@@ -1,0 +1,35 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}{{ account.naam }} - Account beheer - {% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>{{ account.naam }}</h1>
+
+    <div class="btn-toolbar" role="toolbar" aria-label="...">
+        <div class="btn-group" role="group">
+            <a href="{{ path('app_account_index') }}" class="btn btn-default">Terug naar overzicht</a>
+        </div>
+        <div class="btn-group" role="group">
+            <a href="{{ path('app_account_edit', {'id': account.id}) }}" class="btn btn-primary">Bewerken</a>
+            <a href="{{ path('app_account_showtokens', {'id': account.id}) }}" class="btn btn-default">Inlogoverzicht</a>
+        </div>
+    </div>
+
+    {{ form(form) }}
+{% endblock %}

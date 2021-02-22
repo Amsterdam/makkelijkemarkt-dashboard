@@ -1,0 +1,100 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Account beheer{% endblock %}
+
+{% set friendlyRoleNames = {'ROLE_ADMIN': 'Beheerder', 'ROLE_USER': 'Gebruiker', 'ROLE_SENIOR': 'Senior gebruiker'} %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Accounts</h1>
+
+<div class="row">
+    <div class="col-sm-9 col-md-10">
+          <nav class="nav nav-pills flex-column flex-sm-row bg-light">
+            <a class="flex-sm-fill text-sm-center nav-link" href="{{ path('app_account_index') }}" >Alle</a>
+            <a class="flex-sm-fill text-sm-center nav-link" href="{{ path('app_account_index', {'locked': 1}) }}" >Geblokkeerd</a>
+            <a class="flex-sm-fill text-sm-center nav-link"  href="{{ path('app_account_index', {'active': 1}) }}">Actief</a>
+            <a class="flex-sm-fill text-sm-center nav-link" href="{{ path('app_account_index', {'active': 0}) }}" >Inactief</a>
+        </nav>
+        <br>
+    </div>
+    <div class="col-sm">
+        <a class="btn btn-info form-control" href="{{ path('app_account_create') }}" role="button">Nieuw</a>
+        <br>
+        <br>
+    </div>
+ </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Gebruikersnaam</th>
+                    <th>Naam</th>
+                    <th>E-mail</th>
+                    <th>Status</th>
+                    <th>Rollen</th>
+                    <th width="80">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for account in accounts %}
+                <tr>
+                    <td>{{ account.username }}</td>
+                    <td>{{ account.naam }}</td>
+                    <td>
+                        {{ account.email }}
+                        <a href="mailto:{{ account.email }}"><i class="bi bi-envelope-fill"></i></a>
+                    </td>
+                    <td>
+                        {% if account.active == false %}
+                            Inactief
+                        {% elseif account.locked == true %}
+                            <form action="{{ path('app_account_unlock', {'id': account.id}) }}"  method="POST">
+                                <button class="btn btn-primary" type="submit">Deblokkeren <i class="bi bi-unlock-fill"></i></button>
+                                <input type="hidden" name="csrf" value="{{ csrf_token('account-unlock') }}">
+                            </form>
+                        {% else %}
+                            Actief
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for role in account.roles %}
+                            {% set current_role = role %}
+                            {{ friendlyRoleNames[role]|default(role) }}{{ loop.last==false?', ' }}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('app_account_showtokens', {'id': account.id}) }}"><i class="bi bi-calendar3"></i></a>
+                            <a href="{{ path('app_account_edit', {'id': account.id}) }}"><i class="bi bi-pencil-fill"></i></a>
+                        {% endif %}
+                        {% if is_granted('ROLE_ADMIN') or (is_granted('ROLE_SENIOR') and current_role != 'ROLE_ADMIN') %}
+                            <a href="{{ path('app_account_updatepassword', {'id': account.id}) }}"><i class="bi bi-person-fill"></i></a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">Geen gegevens gevonden</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

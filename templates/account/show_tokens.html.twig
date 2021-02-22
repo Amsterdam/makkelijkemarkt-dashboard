@@ -1,0 +1,85 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Inlog overzicht {{ account.naam }}{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Inlogoverzicht {{ account.naam }}</h1>
+
+    <div class="btn-toolbar" role="toolbar" aria-label="...">
+        <div class="btn-group" role="group">
+            <a href="{{ path('app_account_index') }}" class="btn btn-default">Terug naar overzicht</a>
+        </div>
+        <div class="btn-group" role="group">
+            <a href="{{ path('app_account_edit', {'id': account.id}) }}" class="btn btn-info">Bewerken</a>
+            <a href="{{ path('app_account_showtokens', {'id': account.id}) }}" class="btn btn-primary">Inlogoverzicht</a>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Sessie code</th>
+                    <th>Ingelogd</th>
+                    <th>Programma</th>
+                    <th>Versie</th>
+                    <th>Device UUID (voor app)</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for token in tokens.results %}
+                <tr>
+                    <td>{{ token.uuid }}</td>
+                    <td>{{ token.creationDate|date('d-m-Y H:i:s') }}</td>
+                    <td>{{ token.clientApp }}</td>
+                    <td>{{ token.clientVersion }}</td>
+                    <td>{{ token.deviceUuid }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">Geen gegevens gevonden</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% set basicParameters = {'id': account.id} %}
+            {% if pageNumber > 0 %}
+                <li class="previous page-item"><a class="page-link" href="{{ path('app_account_showtokens', {'page': pageNumber - 1}|merge(basicParameters)) }}"><span aria-hidden="true">&larr;</span> Vorige</a></li>
+            {% else %}
+                <liclass="previous disabled page-item"><a class="page-link" href="{{ path('app_account_showtokens', {'page': 0}|merge(basicParameters)) }}"><span aria-hidden="true">&larr;</span> Vorige</a></li>
+            {% endif %}
+                <li class="page-item"><a class="page-link" href="javascript:void(0);">pagina {{ pageNumber + 1 }} van {{ (tokens.fullListLength / pageSize)|round(0, 'ceil') }}</a></li>
+
+           {% if (pageNumber + 1) < ( ((tokens.fullListLength / pageSize)|round(0, 'ceil')) ) %}
+                <li class="next page-item"><a class="page-link" href="{{ path('app_account_showtokens', {'page': pageNumber + 1}|merge(basicParameters)) }}"><span aria-hidden="true">&rarr;</span> Volgende</a></li>
+            {% else %}
+                <li class="next disabled page-item"><a class="page-link" href="{{ path('app_koopman_index', {'page': pageNumber}|merge(basicParameters)) }}"><span aria-hidden="true">&rarr;</span> Volgende</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+
+{% endblock %}

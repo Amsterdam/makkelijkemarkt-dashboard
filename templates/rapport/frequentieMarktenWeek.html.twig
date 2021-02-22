@@ -1,0 +1,80 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+
+{% extends "base.html.twig" %}
+
+{% block title %}Frequentie Dag - {% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Frequentie dagmarkt - {{ markt.naam }}</h1>
+    <h4><a href="{{ path('app_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': lastQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&lt;</a> {{ startDate|date('d-m-Y') }} - {{ endDate|date('d-m-Y') }} {% if today > endDate %}<a href="{{ path('app_makkelijkemarkt_dashboard_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>{% endif %}</h4>
+
+    <h2>Totaaloverzicht verplichting niet gehaald</h2>
+    <a target="_blank" class="btn btn-primary" href="{{ path('app_rapport_frequentiemarktenweek_excel_datum', {'marktId': markt.id, 'datum': startDate|date('Y-m-d')}) }}">Excel</a>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>erkenningsnummer</th>
+            <th>achternaam</th>
+            <th>voorletters</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for koopman in koopmannen %}
+            {% if koopman.aanwezigheid_voldaan == false %}
+                <tr>
+                    <td>{{ koopman.erkenningsnummer }}</td>
+                    <td>{{ koopman.achternaam }}</td>
+                    <td>{{ koopman.voorletters }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Rapportage per koopman</h2>
+    {% for koopman in koopmannen %}
+        {% if koopman.aanwezigheid_voldaan == false %}
+            <h3>{{ koopman.erkenningsnummer }}. {{ koopman.achternaam }}, {{ koopman.voorletters }}</h3>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Week nummer</th>
+                    <th>Status</th>
+                    <th>dagen aanwezig</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for week_nummer, aanwezig in koopman.weken_afwezig %}
+                    <tr class="danger">
+                        <td>{{ week_nummer }}</td>
+                        <td>Afwezig</td>
+                        <td>{{ aanwezig }}</td>
+                    </tr>
+                {% endfor %}
+                {% for week_nummer, aanwezig in koopman.weken_aanwezig %}
+                    <tr class="success">
+                        <td>{{ week_nummer }}</td>
+                        <td>Aanwezig</td>
+                        <td>{{ aanwezig }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

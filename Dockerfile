@@ -1,4 +1,4 @@
-FROM php:7.0.15-fpm-alpine
+FROM php:7.3-fpm-alpine
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -10,8 +10,9 @@ RUN apk add bash
 
 RUN apk add nginx && mkdir /run/nginx
 
-RUN apk add postgresql-dev bzip2-dev libpng-dev libintl gettext gettext-dev gmp gmp-dev icu-dev libmcrypt-dev libxml2-dev libxslt-dev && \
-    docker-php-ext-install pdo_pgsql pgsql bcmath bz2 calendar exif gd gettext gmp intl mcrypt pcntl shmop soap sockets sysvmsg sysvsem sysvshm wddx xmlrpc xsl zip
+RUN apk add postgresql-dev bzip2-dev freetype libpng libjpeg-turbo freetype-dev libpng-dev jpeg-dev libjpeg libjpeg-turbo-dev libintl gettext gettext-dev gmp gmp-dev icu-dev libxml2-dev libxslt-dev libzip libzip-dev && \
+    docker-php-ext-configure gd --with-freetype-dir=/usr/lib/ --with-png-dir=/usr/lib/ --with-jpeg-dir=/usr/lib/ --with-gd && \
+    docker-php-ext-install pdo_pgsql pgsql bcmath bz2 calendar exif gd gettext gmp intl pcntl shmop soap sockets sysvmsg sysvsem sysvshm wddx xmlrpc xsl zip
 
 COPY . /app
 
@@ -25,12 +26,13 @@ COPY Docker/php/conf.d/10-opcache.ini /usr/local/etc/php/conf.d/10-opcache.ini
 
 WORKDIR /app
 
-RUN curl -sS https://getcomposer.org/installer | php -- --1 && php composer.phar install --prefer-dist --no-scripts
+RUN curl -sS https://getcomposer.org/installer | php composer.phar install --prefer-dist
 
-RUN chown -R www-data:www-data /app/app/cache \
-    && chmod 770 /app/app/cache \
-    && chown -R www-data:www-data /app/app/logs \
-    && chmod 770 /app/app/logs \
+RUN chown -R www-data:www-data /app/var/cache \
+    && chmod 770 /app/var/cache \
+    && chown -R www-data:www-data /app/var/log \
+    && chmod 770 /app/var/log \
     && chmod 777 /app/docker-entrypoint.sh
 
 CMD /app/docker-entrypoint.sh
+

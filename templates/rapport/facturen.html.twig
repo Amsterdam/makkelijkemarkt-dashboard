@@ -1,0 +1,83 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Rapport: Facturen{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+<h1>Facturen</h1>
+
+    <form>
+        <div class="form-row">
+         <div class="col-xs-12  col-md-3">
+            <label for="markt">Markt</label>
+            <select id="markt" class="form-control" name="markt">
+                <option value="0" {% if marktId is null or marktId == "0" %}selected="selected"{% endif %}> - Maak een keuze - </option>
+                <option value="alle" {% if marktId == "alle" %}selected="selected"{% endif %}>Alle markten</option>
+                {% for markt in markten %}
+                    <option value="{{ markt.id }}" {% if marktId == markt.id %}selected="selected"{% endif %}>{{ markt.naam }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <label for="vanaf">Vanaf</label>
+                <input id="vanaf" type="text" class="date-pricker form-control" name="vanaf" value="{{ vanaf }}" required>
+                <br>
+            </div>
+            <div class="col-xs-12 col-md-3">
+               <label for="tot">Tot</label>
+                <input id="tot" type="text" class="date-pricker form-control" name="tot" value="{{ tot }}" required>
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <label>&nbsp;</label>
+                <input type="submit" class="btn btn-primary" value="Rapportage"  style="display: block;">
+                <br>
+            </div>
+        </div>
+    </form>
+
+    {% if report is not null %}
+        {% if marktId == "alle" %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Markt</th>
+                        <th>Sollicitanten</th>
+                        <th>Totaal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for markt in report.markten %}
+                        <tr>
+                            <td>{{ markt.naam }}</td>
+                            <td>{{ markt.soll }}</td>
+                            <td>&euro;  {{ markt.totaal }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Totaal</td>
+                        <td>{{ report.solltotaal }}</td>
+                        <td>&euro; {{ report.totaal }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,19 +1,13 @@
-app/bootstrap.php.cache
-app/config/parameters.yml
-app/phpunit.xml
-bin/
 composer.phar
 vendor/
-web/bundles/
+public/bundles/
 .project
 .settings
-app/data/*
+var/data/*
 .buildpath
-web/media/cache/*
-web/bootstrap/*
-web/fonts/*
-app/logs/*
-app/cache/*
+public/fonts/*
+var/log/*
+var/cache/*
 web/iirf.ini
 .idea
 

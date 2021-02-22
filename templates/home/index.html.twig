@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <div id="markten-lijst">
+        <header>
+            <h1>Dagvergunningen</h1>
+            <p>Selecteer een markt a.u.b.</p>
+        </header>
+        
+        {% for markt in markten %}
+            <p><a href="{{ path('app_dagvergunning_dayview', {marktId: markt.id, dag: "now"|date("Y-m-d")} ) }}">{{ markt.naam }}</a></p>
+        {% endfor %}
+    </div>
+{% endblock %}
