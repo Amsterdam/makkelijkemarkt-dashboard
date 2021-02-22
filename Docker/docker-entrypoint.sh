@@ -8,16 +8,15 @@ cat > /app/.env <<EOF
 APP_ENV=prod
 APP_SECRET=${MM_DASHBOARD__SECRET}
 MARKT_API=${MM_DASHBOARD__API_URL}
-MMAPPKEY=MM_DASHBOARD__APP_KEY
+MM_APP_KEY=${MM_DASHBOARD__APP_KEY}
 EOF
 
 php composer.phar install
 
-cd /app/app
-php console cache:clear --env=prod
-php console cache:warmup --env=prod
-chown -R www-data:www-data /app/app/cache && find /app/app/cache -type d -exec chmod -R 0770 {} \; && find /app/app/cache -type f -exec chmod -R 0660 {} \;
-php console assetic:dump --env=prod || /bin/true
+cd /app/
+php bin/console cache:clear --env=prod
+php bin/console cache:warmup --env=prod
+chown -R www-data:www-data /app/var/cache && find /app/var/cache -type d -exec chmod -R 0770 {} \; && find /app/var/cache -type f -exec chmod -R 0660 {} \;
 
 # Make sure log files exist, so tail won't return a non-zero exitcode
 touch /app/var/log/dev.log
@@ -30,8 +29,8 @@ tail -f /app/var/log/prod.log &
 tail -f /var/log/nginx/access.log &
 tail -f /var/log/nginx/error.log &
 
-chgrp www-data /app/var/logs/*.log
-chmod 775 /app/var/logs/*.log
+chgrp www-data /app/var/log/*.log
+chmod 775 /app/var/log/*.log
 
 nginx
 
