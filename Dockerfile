@@ -28,7 +28,10 @@ WORKDIR /app
 
 RUN curl -sS https://getcomposer.org/installer | php -- && php composer.phar install --prefer-dist --no-scripts
 
-RUN chown -R www-data:www-data /app/var/cache \
+RUN mkdir /app/var \
+    && mkdir /app/var/log \
+    && mkdir /app/var/cache \
+    && chown -R www-data:www-data /app/var/cache \
     && chmod 770 /app/var/cache \
     && chown -R www-data:www-data /app/var/log \
     && chmod 770 /app/var/log \
