@@ -51,7 +51,7 @@ class MarktApi
 
         $options['headers']['MmAppKey'] = $this->mmAppKey;
 
-        return $this->client->request($method, $this->marktApi . $url, $options);
+        return $this->client->request($method, rtrim($this->marktApi, '/') . $url, $options);
     }
 
     public function login(string $username, string $password)
