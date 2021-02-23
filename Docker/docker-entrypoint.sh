@@ -11,8 +11,6 @@ MARKT_API=${MM_DASHBOARD__API_URL}
 MM_APP_KEY=${MM_DASHBOARD__APP_KEY}
 EOF
 
-php composer.phar install
-
 cd /app/
 php bin/console cache:clear --env=prod
 php bin/console cache:warmup --env=prod
