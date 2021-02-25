@@ -181,17 +181,17 @@
             <form>
                 <div class="form-row">
                     <div class="col-sm-6 col-lg-3">
-                        <input type="text" class="form-control" placeholder="Start" name="dagvergunningenEindDatum" value="{{ dagvergunningenEindDatum|date('d-m-Y') }}">
+                        <input type="text" class="form-control date-pricker" placeholder="Start" name="dagvergunningenEindDatum" value="{{ dagvergunningenEindDatum|date('d-m-Y') }}">
                         <br>
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-                        <input type="text" class="form-control" placeholder="Eind" name="dagvergunningenStartDatum" value="{{ dagvergunningenStartDatum|date('d-m-Y') }}">
+                        <input type="text" class="form-control date-pricker" placeholder="Eind" name="dagvergunningenStartDatum" value="{{ dagvergunningenStartDatum|date('d-m-Y') }}">
                         <br>
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-<button class="btn btn-secondary dropdown-toggle form-control" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle form-control" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     
                             <i class="bi bi-funnel-fill"></i>
                                 {% if markt is empty %}
@@ -458,7 +458,7 @@
                         action="{{ path('app_koopman_togglehandhavingsverzoek', {'id': koopman.id}) }}">
                     <h4>Einddatum handhavingsverzoek:</h4>
                     <div class="form-group">
-                        <input type="text" class="form-control" id="handhavingDatum" name="handhavingDatum"
+                        <input type="text" class="form-control date-pricker" id="handhavingDatum" name="handhavingDatum"
                                 placeholder="Einddatum handhaving" data-value="{{ koopman.handhavingsVerzoek|date('d-m-Y') }}" value="{{ koopman.handhavingsVerzoek|date('d-m-Y') }}">
             </div>
                     <input type="submit" class="btn btn-primary" value="Opslaan"/>

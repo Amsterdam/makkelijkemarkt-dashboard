@@ -90,11 +90,12 @@ class RapportController extends AbstractController
             'exp'  => 'Exp. zone',
             'expf'  => 'Exp. zone F'
         ];
-
+        
         $rapport = null;
         if ($dagStart !== null && $dagEind !== null) {
             $dagStart = \DateTime::createFromFormat('d-m-Y', $dagStart);
             $dagEind = \DateTime::createFromFormat('d-m-Y', $dagEind);
+            
             $rapport = $api->getRapportStaanverplichting($marktIds, $dagStart->format('Y-m-d'), $dagEind->format('Y-m-d'), $vergunningType);
 
             if ($request->query->get('format') === 'excel') {
@@ -1286,7 +1287,7 @@ class RapportController extends AbstractController
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function factuurDetailAction(MarktApi $api, Request $request): array
+    public function factuurDetailAction(MarktApi $api, Request $request)
     {
         $periode = $request->query->get('periode', 'maand');
         $dag = $request->query->get('dag', date('d'));
@@ -1338,8 +1339,8 @@ class RapportController extends AbstractController
         if ($request->query->get('submit') === 'Download Excel') {
             $selectedMarktNamen = [];
             foreach ($markten as $markt) {
-                if (in_array($markt->id, $marktIds) === true) {
-                    $selectedMarktNamen[] = $markt->naam;
+                if (in_array($markt['id'], $marktIds) === true) {
+                    $selectedMarktNamen[] = $markt['naam'];
                 }
             }
 
@@ -1389,24 +1390,24 @@ class RapportController extends AbstractController
             $sheet->getStyle('A3:H3')->getFont()->setBold(true);
 
             foreach ($rapport['output'] as $i => $row) {
-                $sheet->setCellValueByColumnAndRow(1, $i + 4, $row->voorkomens);
+                $sheet->setCellValueByColumnAndRow(1, $i + 4, $row['voorkomens']);
 
-                $sheet->setCellValueByColumnAndRow(2, $i + 4, $row->product_naam);
+                $sheet->setCellValueByColumnAndRow(2, $i + 4, $row['product_naam']);
 
-                $sheet->setCellValueByColumnAndRow(3, $i + 4, $row->markt_naam);
+                $sheet->setCellValueByColumnAndRow(3, $i + 4, $row['markt_naam']);
 
-                $sheet->setCellValueByColumnAndRow(4, $i + 4, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($row->dag));
+                $sheet->setCellValueByColumnAndRow(4, $i + 4, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($row['dag']));
                 $sheet->getCellByColumnAndRow(4, $i + 4)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
 
-                $sheet->setCellValueByColumnAndRow(5, $i + 4, $row->bedrag);
+                $sheet->setCellValueByColumnAndRow(5, $i + 4, $row['bedrag']);
                 $sheet->getCellByColumnAndRow(5, $i + 4)->getStyle()->getNumberFormat()->setFormatCode('€ #,##0.00_-');
 
-                $sheet->setCellValueByColumnAndRow(6, $i + 4, $row->aantal);
+                $sheet->setCellValueByColumnAndRow(6, $i + 4, $row['aantal']);
 
-                $sheet->setCellValueByColumnAndRow(7, $i + 4, $row->som);
+                $sheet->setCellValueByColumnAndRow(7, $i + 4, $row['som']);
                 $sheet->getCellByColumnAndRow(7, $i + 4)->getStyle()->getNumberFormat()->setFormatCode('€ #,##0.00_-');
 
-                $sheet->setCellValueByColumnAndRow(8, $i + 4, $row->totaal);
+                $sheet->setCellValueByColumnAndRow(8, $i + 4, $row['totaal']);
                 $sheet->getCellByColumnAndRow(8, $i + 4)->getStyle()->getNumberFormat()->setFormatCode('€ #,##0.00_-');
             }
             $spreadsheet->getActiveSheet()->setTitle('Overzicht');

@@ -72,12 +72,12 @@
     <form  method="GET" action="{{ path('app_koopman_controle', {'id': koopman.id}) }}">
         <div class="form-row">
             <div class="col-sm-4">
-            <input type="text" class="form-control" name="startdatum" value="{{ startdatum|date('d-m-Y') }}">
+            <input type="text" class="form-control date-pricker" name="startdatum" value="{{ startdatum|date('d-m-Y') }}">
             <br>
             </div>
 
             <div class="col-sm-4">
-                <input type="text" class="form-control" name="einddatum" value="{{ einddatum|date('d-m-Y') }}">
+                <input type="text" class="form-control date-pricker" name="einddatum" value="{{ einddatum|date('d-m-Y') }}">
                 <br>
             </div>
 
@@ -112,7 +112,7 @@
                 <td>{{ vergunning.dag|date('d-m-Y') }}</td>
                 <td>
                     <span class="glyphicon {% if 'vervanger_zonder_toestemming' == vergunning.aanwezig %}remove-sign text-red{% else %}ok-sign text-green{% endif %}"></span>
-                    <strong>{{ vergunning.aanwezig|reglyphicon-place('_', ' ')|capitalize }}</strong><br/>
+                    <strong>{{ vergunning.aanwezig|replace('_', ' ')|capitalize }}</strong><br/>
                     {% if vergunning.vervanger is defined and vergunning.vervanger is not empty %}
                         Gescand:
                         <a href="{{ path('app_makkelijkemarkt_dashboard_koopman_detail', {'id': vergunning.vervanger.id}) }}">{{ vergunning.vervanger.voorletters }} {{ vergunning.vervanger.achternaam }}</a>

@@ -15,20 +15,27 @@ require("bootstrap");
 import './bootstrap';
 import rome from '@bevacqua/rome';
 
-window.addEventListener('DOMContentLoaded', (event) => {    
-    if (document.getElementById('dayview-date') !== null) {
-        rome(document.getElementById('dayview-date'), { 
+window.addEventListener('DOMContentLoaded', () => {    
+    const elm = document.getElementById('dayview-date');
+    const startValue = elm.value;
+    if (elm !== null) {
+        rome(elm, { 
             'time': false,
             'weekStart': 1,
             'inputFormat': 'DD-MM-YYYY',
         }).on('hide', function () {
-            // document.getElementById('dayview-date').closest('form').submit();
+            if (elm.value !== startValue) {
+                elm.closest('form').submit();
+            }
         });
     }
 
     const list = document.querySelectorAll('.date-pricker');
     for (let item of list) {
-        rome(item, {'time': false });
+        rome(item, {
+            'time': false,
+            'inputFormat': 'DD-MM-YYYY', 
+        });
     }
 });
 
