@@ -18,7 +18,6 @@ class PdfLijstService
     {
         $this->projectDir = $projectDir;
     }
-
     public function generate(string $markt, string $naam, array $parts): TCPDF
     {
         $this->pdf = new TCPDF();
@@ -37,14 +36,14 @@ class PdfLijstService
         $this->pdf->AddPage();
 
         $fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir."/public/resources/fonts/Avenir-Roman.ttf",
+            $this->projectDir . '/public/resources/fonts/Avenir-Roman.ttf',
             'TrueTypeUnicode',
             '',
             96
         );
 
         $this->pdf->Image(
-            $this->projectDir."/public/resources/images/GASD_1.png",
+            $this->projectDir . '/public/resources/images/GASD_1.png',
             10,
             10,
             50

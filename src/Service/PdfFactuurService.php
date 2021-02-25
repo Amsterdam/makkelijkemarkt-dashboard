@@ -24,14 +24,13 @@ class PdfFactuurService
         $this->projectDir = $projectDir;
 
         $this->fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir."/public/resources/fonts/Avenir-Roman.ttf",
+            $this->projectDir .'/public/resources/fonts/Avenir-Roman.ttf',
             'TrueTypeUnicode',
             '',
             96
         );
-
         $this->fontnameBold = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir."/public/resources/fonts/Avenir-Heavy.ttf",
+            $this->projectDir .'/public/resources/fonts/Avenir-Heavy.ttf',
             'TrueTypeUnicode',
             '',
             96
@@ -56,7 +55,7 @@ class PdfFactuurService
         $this->pdf->AddPage();
 
         $this->pdf->Image(
-            $this->projectDir."/public/resources/fonts/GASD_1.png",
+            $this->projectDir .'/public/resources/fonts/GASD_1.png',
             10,
             10,
             50
@@ -122,7 +121,7 @@ class PdfFactuurService
 
         $this->pdf->AddPage();
         $this->pdf->Image(
-            $this->projectDir."/public/resources/fonts/GASD_1.png",
+            $this->projectDir . '/public/resources/fonts/GASD_1.png',
             10,
             10,
             50

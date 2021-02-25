@@ -39,7 +39,7 @@ class MarktController extends AbstractController
      * @Template
      * @Security("is_granted('ROLE_USER')")
      */
-    public function editAction(Request $request, int $id, MarktApi $api): array
+    public function editAction(Request $request, int $id, MarktApi $api)
     {
         $markt = $api->getMarkt($id);
 
