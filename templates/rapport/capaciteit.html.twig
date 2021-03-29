@@ -20,46 +20,27 @@
 
 {% block document %}
 
-    <p class="mt-5">
-        Toon details:
-        <label><input type="checkbox" name="columns[vpl]" value="vpl" checked> VPL</label>
-        <label><input type="checkbox" name="columns[vkk]" value="vkk" checked> VKK</label>
-        <label><input type="checkbox" name="columns[tvpl]" value="tvpl" checked> TVPL</label>
-        <label><input type="checkbox" name="columns[tvplz]" value="tvplz" checked> TVPLZ</label>
-        <label><input type="checkbox" name="columns[exp]" value="exp" checked> EXP</label>
-        <label><input type="checkbox" name="columns[expf]" value="expf" checked> EXPF</label>
-        <label><input type="checkbox" name="columns[soll]" value="soll" checked> SOLL</label>
-        <label><input type="checkbox" name="columns[lot]" value="lot" checked> LOT</label>
-    </p>
+            {{ form_start(form) }}
+                <div class="row">
+                    <div class="form-group col-sm-5">
+                        <label for="markt">Markt</label>
+                        {{ form_widget(form.marktId) }}
+                        <small>Selecteer meerdere markten door Ctrl ingedrukt te houden bij het selecteren</small>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label for="periodeVan">Start datum</label>
+                        {{ form_widget(form.dagStart, {'attr': {'class': 'date-pricker'}}) }}
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label for="periodeVan">Eind datum</label>
+                        {{ form_widget(form.dagEind, {'attr': {'class': 'date-pricker'}}) }}
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">Bekijken</button>
+                {{ form_widget(form.excel, {'attr': {'class': 'btn-info btn'}}) }}
+            {{ form_end(form) }}
 
-    <form>
-        <div class="form-row">
-            <div class="col-xs-12 col-md-5 col-lg-4">
-                <label for="q">Naam</label>
-                <select class="form-control" name="status" id="status">  
-                    {% for markt in markten %}
-                        <option {% if  marktId == markt.naam %} selected="selected"{% endif %}>{{ markt.naam }}</option>
-                    {% endfor %}
-                  </select>
-                  <br>
-            </div>
-            <div class="col-xs-12 col-md-2">
-                <label for="q">Start datum</label>
-                <input type="text" class="date-pricker form-control">
-                <br>
-            </div>
-            <div class="col-xs-12 col-md-2">
-                <label for="q">Eìnd datum</label>
-                <input type="text" class="date-pricker form-control">
-            </div>
-            <div class="col-xs-12 col-md-3">
-                <label>&nbsp;</label>
-                <button type="submit" class="btn btn-primary mb-2" style="display: block;">Bekijken</button>
-            </div>
-        </div>
-    </form>
-
-<br>
+            <br>
 
 
             <div class="table-responsive">

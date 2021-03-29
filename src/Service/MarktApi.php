@@ -291,11 +291,11 @@ class MarktApi
         )->toArray();
     }
 
-    public function getRapportCapaciteit(int $marktId, \DateTime $dagStart, \DateTime $dagEind): array
+    public function getRapportCapaciteit(array $marktId, \DateTime $dagStart, \DateTime $dagEind): array
     {
         return $this->makeRequest(
             'GET',
-            'rapport/marktcapaciteit',
+            '/rapport/marktcapaciteit',
             [
                 'query' => [
                     'marktId' => $marktId,

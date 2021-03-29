@@ -58,8 +58,6 @@ class TariefplanController extends AbstractController
     public function createLineairAction(Request $request, MarktApi $api, int $marktId)
     {
         $formModel = $this->getLineairPlanObject();
-        $formModel['geldigVanaf'] = new \DateTime($formModel['geldigVanaf']['date']);
-        $formModel['geldigTot'] =  new \DateTime($formModel['geldigTot']['date']);
         $form = $this->createForm(LineairplanType::class, $formModel);
 
         $form->handleRequest($request);

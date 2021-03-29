@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Service\MarktApi;
@@ -18,7 +19,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -1032,7 +1032,7 @@ class RapportController extends AbstractController
     }
 
     /**
-     * @Route("/rapport/frequentie/markten/week/{marktId}/{datum}")
+     * @Route("/rapport/frequentie/markten/week/{marktId}/{datum}", name="app_rapport_frequentiemarktenweek_datum")
      * @Route("/rapport/frequentie/markten/week/{marktId}")
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
@@ -1171,7 +1171,7 @@ class RapportController extends AbstractController
     }
 
     /**
-     * @Route("/rapport/aanwezigheid/markten/excel/week/{marktId}/{datum}")
+     * @Route("/rapport/aanwezigheid/markten/excel/week/{marktId}/{datum}", name="app_rapport_frequentiemarktenweek_excel_datum")
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function persoonlijkeAanwezigheidExcelAction( MarktApi $api, int $marktId, string $datum = null): StreamedResponse
@@ -1317,7 +1317,7 @@ class RapportController extends AbstractController
                         break;
                     case 3:
                         $dagStart = $jaar . '-07-01';
-                        $dagEind = $jaar . '-09-31';
+                        $dagEind = $jaar . '-09-30';
                         break;
                     case 4:
                         $dagStart = $jaar . '-10-01';
@@ -1458,7 +1458,12 @@ class RapportController extends AbstractController
 
         $formBuilder->add('marktId', ChoiceType::class, [
             'label' => 'Markten',
-            'choices' => $markten,
+            'choices' => array_map(function ($marktData) {
+                return (object) $marktData;
+            }, $markten),
+            'choice_label' => function (object $marktData) {
+                return $marktData->naam . ' (' . $marktData->afkorting . ')';
+            },
             'multiple' => true,
             'expanded' => false,
             'constraints' => [
@@ -1469,7 +1474,7 @@ class RapportController extends AbstractController
         $formBuilder->add('dagStart', DateType::class, [
             'label' => 'Periode start',
             'widget' => 'single_text',
-            'format' => 'yyyy-MM-dd',
+            'format' => 'dd-MM-yyyy',
             'html5' => false,
             'constraints' => [
                 new NotBlank(),
@@ -1478,7 +1483,7 @@ class RapportController extends AbstractController
         $formBuilder->add('dagEind', DateType::class, [
             'label' => 'Periode eind',
             'widget' => 'single_text',
-            'format' => 'yyyy-MM-dd',
+            'format' => 'dd-MM-yyyy',
             'html5' => false,
             'constraints' => [
                 new NotBlank(),
@@ -1493,9 +1498,11 @@ class RapportController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $rapport = $client->getRapportCapaciteit(
-                $form->get('marktId')->getData(),
-                $form->get('dagStart')->getData()->format('Y-m-d'),
-                $form->get('dagEind')->getData()->format('Y-m-d')
+                array_map(function ($marktData) {
+                    return $marktData->id;
+                }, $form->get('marktId')->getData()),
+                $form->get('dagStart')->getData(),
+                $form->get('dagEind')->getData()
             );
 
             /** @var Form $form */
@@ -1582,7 +1589,7 @@ class RapportController extends AbstractController
                         $activeSheet->setCellValueByColumnAndRow(60, 1, 'Totaal meters #');
                         $activeSheet->setCellValueByColumnAndRow(61, 1, 'Totaal meters %');
 
-                        for ($j = 1; $j < 38; $j++) {
+                        for ($j = 1; $j < 62; $j++) {
                             $activeSheet->getCellByColumnAndRow($j, 1)->getStyle()->getFont()->setBold(true);
                             $activeSheet->getCellByColumnAndRow($j, 1)->getStyle()->getAlignment()->setTextRotation(45);
                             $activeSheet->getColumnDimensionByColumn($j)->setWidth(6);
@@ -1592,7 +1599,7 @@ class RapportController extends AbstractController
                     $activeSheet->getColumnDimensionByColumn(6)->setWidth(28);
                     $i++;
 
-                    $recordArray = get_object_vars($record);
+                    $recordArray = $record;
                     $activeSheet->setCellValueByColumnAndRow(1, $i, $recordArray['dag']);
                     $activeSheet->setCellValueByColumnAndRow(2, $i, $recordArray['datum']);
                     $activeSheet->setCellValueByColumnAndRow(3, $i, $recordArray['week']);

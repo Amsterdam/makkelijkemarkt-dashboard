@@ -12,13 +12,14 @@ import './styles/app.scss';
 import $ from 'jquery';
 require("bootstrap");
 // start the Stimulus application
-import './bootstrap';
+// import './bootstrap';
 import rome from '@bevacqua/rome';
 
 window.addEventListener('DOMContentLoaded', () => {    
     const elm = document.getElementById('dayview-date');
-    const startValue = elm.value;
+
     if (elm !== null) {
+        const startValue = elm.value;
         rome(elm, { 
             'time': false,
             'weekStart': 1,
@@ -34,12 +35,19 @@ window.addEventListener('DOMContentLoaded', () => {
     for (let item of list) {
         rome(item, {
             'time': false,
-            'inputFormat': 'DD-MM-YYYY', 
+            'inputFormat': 'YYYY-MM-DD', 
         });
     }
+
+    
+    function showFields() {
+        $('.periode-selector').hide();
+        $('.periode-'+ $("#periode").children("option:selected").val()).show();
+    };
+
+    showFields();
+    $('#periode').on('change', function() {
+        showFields();
+    });
 });
-
-
-
-
 

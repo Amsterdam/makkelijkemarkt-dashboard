@@ -56,9 +56,9 @@
             <div class="form-group col-sm-2 periode-selector periode-kwartaal periode-maand">
                 <label for="jaar">Jaar</label>
                 <select id="jaar" class="form-control" name="jaar">
-                {% for jaartal in jaartallen %}
-                    <option value="{{ jaartal }}" {{ jaartal == jaar ? 'selected' }}>{{ jaartal }}</option>
-                {% endfor %}
+                    {% for jaartal in jaartallen %}
+                        <option value="{{ jaartal }}" {{ jaartal == jaar ? 'selected' }}>{{ jaartal }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="form-group col-sm-2 periode-selector periode-kwartaal">
@@ -113,7 +113,7 @@
             <tbody>
                 {% for row in rapport.output %}
                     <tr>
-                        <td>{{ row.voorkomens }}</td>
+                        <td>{{ row["voorkomens"] }}</td>
                         <td>{{ row.product_naam }}</td>
                         <td>{{ row.markt_naam }}</td>
                         <td>{{ row.dag }}</td>
