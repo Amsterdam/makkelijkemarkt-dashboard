@@ -41,7 +41,7 @@
                 <span class="badge badge-danger">Doorgehaald</span>
             {% endif %}
             {% if koopman.handhavingsVerzoek is not null and vandaag <= koopman.handhavingsVerzoek %}
-                <span class="badge badge-warning">Handhavingsverzoek:</span>
+                <span class="badge badge-warning">Handhavingsverzoek: {{ koopman.handhavingsVerzoek|date('d-m-Y') }}</span>
             {% endif %}
             <br>
             <br>
@@ -55,7 +55,7 @@
             <br>
             <br>
         </div>
- 
+
             <div class="col-sm-7 col-md-3">
                 <strong>E-mail:</strong> {{ koopman.email is not empty ? koopman.email : 'onbekend' }}<br>
                 <strong>Telefoon:</strong> {{ koopman.telefoon is not empty ? koopman.telefoon : 'onbekend' }}
@@ -74,16 +74,16 @@
     <br>
 
     <nav class="nav nav-pills flex-column flex-sm-row bg-light">
-        <a class="flex-sm-fill text-sm-center nav-link active" href="#sollicitaties"  aria-controls="sollicitaties" data-toggle="tab">Markten</a>
-        <a class="flex-sm-fill text-sm-center nav-link" href="#vervangers"  aria-controls="vervangers" data-toggle="tab">Vervangers</a>
-        <a class="flex-sm-fill text-sm-center nav-link" href="#dagvergunningen"  aria-controls="dagvergunningen" data-toggle="tab">Dagvergunninngen</a>
-        <a class="flex-sm-fill text-sm-center nav-link" href="#facturen"  aria-controls="facturen" data-toggle="tab">Facturen</a>
-         <a class="flex-sm-fill text-sm-center nav-link" href="#instellingen" aria-controls="instellingen"  data-toggle="tab">Instellingen</a>
+        <a class="flex-sm-fill text-sm-center nav-link {{ activeTab == 'sollicitaties' ? 'active' }}" href="#sollicitaties"  aria-controls="sollicitaties" data-toggle="tab">Markten</a>
+        <a class="flex-sm-fill text-sm-center nav-link {{ activeTab == 'vervangers' ? 'active' }}" href="#vervangers"  aria-controls="vervangers" data-toggle="tab">Vervangers</a>
+        <a class="flex-sm-fill text-sm-center nav-link {{ activeTab == 'dagvergunningen' ? 'active' }}" href="#dagvergunningen"  aria-controls="dagvergunningen" data-toggle="tab">Dagvergunninngen</a>
+        <a class="flex-sm-fill text-sm-center nav-link {{ activeTab == 'facturen' ? 'active' }}" href="#facturen"  aria-controls="facturen" data-toggle="tab">Facturen</a>
+         <a class="flex-sm-fill text-sm-center nav-link {{ activeTab == 'instellingen' ? 'active' }}" href="#instellingen" aria-controls="instellingen"  data-toggle="tab">Instellingen</a>
     </nav>
 
     <br>
 
-    
+
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane {{ activeTab == 'sollicitaties' ? 'active' }}" id="sollicitaties">
             <table class="table">
@@ -161,7 +161,7 @@
 
 
 
-        
+
         <div role="tabpanel" class="tab-pane {{ activeTab == 'dagvergunningen' ? 'active' }}"
                 id="dagvergunningen">
 
@@ -180,10 +180,6 @@
 
             <form>
                 <div class="form-row">
-                    <div class="col-sm-6 col-lg-3">
-                        <input type="text" class="form-control date-pricker" placeholder="Start" name="dagvergunningenEindDatum" value="{{ dagvergunningenEindDatum|date('d-m-Y') }}">
-                        <br>
-                    </div>
 
                     <div class="col-sm-6 col-lg-3">
                         <input type="text" class="form-control date-pricker" placeholder="Eind" name="dagvergunningenStartDatum" value="{{ dagvergunningenStartDatum|date('d-m-Y') }}">
@@ -191,8 +187,13 @@
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
+                        <input type="text" class="form-control date-pricker" placeholder="Start" name="dagvergunningenEindDatum" value="{{ dagvergunningenEindDatum|date('d-m-Y') }}">
+                        <br>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
                         <button class="btn btn-secondary dropdown-toggle form-control" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    
+
                             <i class="bi bi-funnel-fill"></i>
                                 {% if markt is empty %}
                                     (alle markten)
@@ -278,7 +279,7 @@
                     <strong>{{ attribute(stats, 'aanwezig.?') }}</strong><br>{% endif %}
             </p>
         </div>
- 
+
         <div class="col-sm-7 col-md-3">
             <h4>Kramen</h4>
             <p>
@@ -428,25 +429,25 @@
         </div>
         <div role="tabpanel" class="tab-pane {{ activeTab == 'facturen' ? 'active' }}" id="facturen">
             <h3>Laatste kwartaal</h3>
-            <a href="{{ path('app_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': startDate|date('d-m-Y'), 'endDate': endDate|date('d-m-Y')}) }}" target="_blank" class="btn btn-primary">Factuur overzicht laatste kwartaal</a>
+            <a href="{{ path('app_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': startDate|date('d-m-Y'), 'endDate': endDate|date('d-m-Y')}) }}"
+                target="_blank" class="btn btn-primary">Factuur overzicht laatste kwartaal</a>
             <h3>Laatste maanden</h3>
-
             {% for maand in laatsteMaanden %}
-                <a class="btn btn-primary mb-2" href="{{ path('app_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': maand.start|date('d-m-Y'), 'endDate': maand.eind|date('d-m-Y')}) }}"title="{{ maand.start|date('d-m-Y') ~ ' t/m ' ~ maand.eind|date('d-m-Y') }}" target="_blank" class="btn btn-primary">Factuur overzicht {{ maand.label }}</a>
+                <a href="{{ path('app_koopman_factuuroverzicht', {'id': koopman.id, 'startDate': maand.start|date('d-m-Y'), 'endDate': maand.eind|date('d-m-Y')}) }}"
+                    title="{{ maand.start|date('d-m-Y') ~ ' t/m ' ~ maand.eind|date('d-m-Y') }}" target="_blank"
+                    class="btn btn-primary">Factuur overzicht {{ maand.label }}</a>
             {% endfor %}
 
-            <h3>Aangepaste datum reeks</h3>
-            <div class="row">
-                <div class="col-sm-3 mb-2">
-                    <input type="text" class="form-control date-pricker" name="facturenStartDatum" placeholder="Startdatum" data-value="">
+            <h3 class="mt-2">Aangepaste datum reeks</h3>
+            {{ form_start(form, { 'attr': {'class': 'form-inline'} }) }}
+                <div class="form-group">
+                     {{ form_row(form.beginDatum, { 'attr': {'class': 'form-control date-pricker mr-2'} }) }}
                 </div>
-                <div class="col-sm-3 mb-2">
-                <input type="text" class="form-control date-pricker" name="facturenStartDatum" placeholder="Startdatum" data-value="">
+                <div class="form-group">
+                     {{ form_row(form.eindDatum, { 'attr': {'class': 'form-control date-pricker mr-2'} }) }}
                 </div>
-                    <div class="col-sm-3 mb-2">
-                <button id="downloadOverzicht" type="submit" class="btn btn-primary">Downloaden</button>
-                </div>
-            </div>
+                 {{ form_row(form.download, { 'attr': {'class': 'btn btn-primary'} }) }}
+            {{ form_end(form) }}
 
         </div>
         {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}

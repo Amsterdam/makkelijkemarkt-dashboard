@@ -90,12 +90,12 @@ class RapportController extends AbstractController
             'exp'  => 'Exp. zone',
             'expf'  => 'Exp. zone F'
         ];
-        
+
         $rapport = null;
         if ($dagStart !== null && $dagEind !== null) {
             $dagStart = \DateTime::createFromFormat('d-m-Y', $dagStart);
             $dagEind = \DateTime::createFromFormat('d-m-Y', $dagEind);
-            
+
             $rapport = $api->getRapportStaanverplichting($marktIds, $dagStart->format('Y-m-d'), $dagEind->format('Y-m-d'), $vergunningType);
 
             if ($request->query->get('format') === 'excel') {
@@ -207,15 +207,15 @@ class RapportController extends AbstractController
         $markten = $api->getMarkten();
 
         $marktId = $request->query->get('markt');
-        $vanaf = $request->query->get('vanaf');
-        $tot = $request->query->get('tot');
+        $vanaf = $request->query->has('vanaf') ? \DateTime::createFromFormat('d-m-Y', $request->query->get('vanaf')) : (new \DateTime())->sub(new \DateInterval('P7D'));
+        $tot = $request->query->has('tot') ? \DateTime::createFromFormat('d-m-Y', $request->query->get('tot')) : new \DateTime();
 
         $report = null;
         if (null !== $marktId && "0" !== $marktId) {
             if ('alle' === $marktId) {
-                $report = $api->getFactuurOverzicht($vanaf, $tot);
+                $report = $api->getFactuurOverzicht($vanaf->format('Y-m-d'), $tot->format('Y-m-d'));
             } else {
-                $report = $api->getFactuurMarktOverzicht((int)$marktId, $vanaf, $tot);
+                $report = $api->getFactuurMarktOverzicht((int)$marktId, $vanaf->format('Y-m-d'), $tot->format('Y-m-d'));
 
                 $spreadsheet = new Spreadsheet();
                 $spreadsheet->getProperties()->setCreator("Gemeente Amsterdam")
@@ -1294,8 +1294,10 @@ class RapportController extends AbstractController
         $maand = $request->query->get('maand', date('m'));
         $jaar = $request->query->get('jaar', date('Y'));
         $kwartaal = $request->query->get('kwartaal', floor(date('m') / 4));
-        $dagStart = $request->query->get('dagStart', date('d-m-Y', time() - (7*24*60*60)));
-        $dagEind = $request->query->get('dagEind', date('d-m-Y'));
+        $dagStart = $request->query->get('dagStart', date('Y-m-d', time() - (7*24*60*60)));
+        $dagEind = $request->query->get('dagEind', date('Y-m-d'));
+        $huidige_dag = Date('Y-m-d');
+
         switch ($periode) {
             case 'dag':
                 $dagStart = $dag;
@@ -1334,7 +1336,7 @@ class RapportController extends AbstractController
             $marktIds = array_map(function ($o) { return $o['id']; }, $markten);
         }
 
-        $rapport = $api->getRapportFactuurDetail($marktIds, $dagStart, $dagEind);
+        $rapport = $api->getRapportFactuurDetail($marktIds,  date("Y-m-d", strtotime($dagStart)), date("Y-m-d", strtotime($dagEind)));
 
         if ($request->query->get('submit') === 'Download Excel') {
             $selectedMarktNamen = [];
@@ -1437,10 +1439,11 @@ class RapportController extends AbstractController
             'jaartallen' => range(2015,2100),
             'kwartaal' => $kwartaal,
             'periode' => $periode,
-            'dagStart' => $dagStart,
-            'dagEind' => $dagEind,
+            'dagStart' => date("d-m-Y", strtotime($dagStart)),
+            'dagEind' =>  date("d-m-Y", strtotime($dagEind)),
             'marktIds' => $marktIds,
-            'markten' => $markten
+            'markten' => $markten,
+            'huidige_dag' => date("d-m-Y", strtotime($huidige_dag))
         ];
     }
 

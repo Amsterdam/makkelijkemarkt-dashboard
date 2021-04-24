@@ -36,12 +36,12 @@
             </div>
             <div class="col-xs-12 col-md-3">
                 <label for="vanaf">Vanaf</label>
-                <input id="vanaf" type="text" class="date-pricker form-control" name="vanaf" value="{{ vanaf }}" required>
+                <input id="vanaf" type="text" class="date-pricker form-control" name="vanaf" value="{{ vanaf|date('d-m-Y') }}" required>
                 <br>
             </div>
             <div class="col-xs-12 col-md-3">
                <label for="tot">Tot</label>
-                <input id="tot" type="text" class="date-pricker form-control" name="tot" value="{{ tot }}" required>
+                <input id="tot" type="text" class="date-pricker form-control" name="tot" value="{{ tot|date('d-m-Y') }}" required>
             </div>
             <div class="col-xs-12 col-md-3">
                 <label>&nbsp;</label>

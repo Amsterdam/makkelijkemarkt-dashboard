@@ -35,7 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
     for (let item of list) {
         rome(item, {
             'time': false,
-            'inputFormat': 'YYYY-MM-DD', 
+            'inputFormat': 'DD-MM-YYYY', 
         });
     }
 
@@ -49,5 +49,16 @@ window.addEventListener('DOMContentLoaded', () => {
     $('#periode').on('change', function() {
         showFields();
     });
+
+    $('[name^="columns"]').on('change', function (event) {
+        var show = $(event.target).is(':checked');
+        var col = $(event.target).val();
+        if (show) {
+            $('.main-table .data-' + col).show();
+        } else {
+            $('.main-table .data-' + col).hide();
+        }
+    });
 });
+
 

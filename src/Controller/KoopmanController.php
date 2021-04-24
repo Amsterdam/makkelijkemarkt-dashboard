@@ -20,6 +20,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use App\Service\MarktApi;
 use App\Service\PdfFactuurService;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class KoopmanController extends AbstractController
@@ -53,8 +55,44 @@ class KoopmanController extends AbstractController
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function detailAction(Request $request, MarktApi $api, int $id): array
+    public function detailAction(Request $request, MarktApi $api, int $id)
     {
+
+        $formBuilder = $this->createFormBuilder();
+
+        $formBuilder->add('beginDatum', DateType::class, [
+            'label' => false,
+            'widget' => 'single_text',
+            'format' => 'dd-MM-yyyy',
+            'html5' => false,
+        ]);
+
+        $formBuilder->add('eindDatum', DateType::class, [
+            'label' => false,
+            'widget' => 'single_text',
+            'format' => 'dd-MM-yyyy',
+            'html5' => false,
+        ]);
+
+        $formBuilder->add('download', SubmitType::class, [
+            'label' => 'Download'
+        ]);
+
+
+        $form = $formBuilder->getForm();
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $startDate =  $form->getData()['beginDatum']->format('d-m-Y');
+            $endDate =  $form->getData()['eindDatum']->format('d-m-Y');
+
+            return $this->redirectToRoute('app_koopman_factuuroverzicht', array(
+                'id' => $id,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                ));
+        };
+
         $koopman = $api->getKoopman($id);
 
         $dagvergunningenStartDatum = false;
@@ -181,6 +219,7 @@ class KoopmanController extends AbstractController
         $vandaag->setTime(0,0,0);
 
         return [
+            'form' => $form->createView(),
             'koopman' => $koopman,
             'dagvergunningen' => $dagvergunningen,
             'stats' => $stats,
@@ -267,7 +306,6 @@ class KoopmanController extends AbstractController
      */
     public function factuurOverzichtAction(MarktApi $api, int $id, string $startDate, string $endDate, PdfFactuurService $pdfFactuur): void
     {
-
         $sDate = \DateTime::createFromFormat('d-m-Y', $startDate);
         $eDate = \DateTime::createFromFormat('d-m-Y', $endDate);
 
