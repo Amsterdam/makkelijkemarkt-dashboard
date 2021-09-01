@@ -4,6 +4,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 80
 
+COPY certificates/adp_rootca.crt /usr/local/share/ca-certificates/adp_rootca.crt
+RUN chmod 644 /usr/local/share/ca-certificates/adp_rootca.crt \
+  && update-ca-certificates --fresh
+
 RUN apk update && apk upgrade
 
 RUN apk add bash
@@ -44,4 +48,3 @@ RUN mkdir /app/var \
     && chmod 777 /app/docker-entrypoint.sh
 
 CMD /app/docker-entrypoint.sh
-
