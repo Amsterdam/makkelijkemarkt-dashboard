@@ -12,7 +12,9 @@ RUN apk update && apk upgrade
 
 RUN apk add bash
 
-RUN apk add nginx && mkdir -p /run/nginx
+RUN apk add nginx
+
+RUN mkdir -p /run/nginx
 
 RUN apk add postgresql-dev bzip2-dev freetype libpng libjpeg-turbo freetype-dev libpng-dev jpeg-dev libjpeg libjpeg-turbo-dev libintl gettext gettext-dev gmp gmp-dev icu-dev libxml2-dev libxslt-dev libzip libzip-dev yarn && \
     docker-php-ext-configure gd --with-freetype-dir=/usr/lib/ --with-png-dir=/usr/lib/ --with-jpeg-dir=/usr/lib/ --with-gd && \
