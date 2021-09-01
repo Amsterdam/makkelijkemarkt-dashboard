@@ -49,6 +49,21 @@ class MarktType extends AbstractType
                 'label' => 'Marktdagen, als tekstuele omschrijving',
                 'required' => false,
             ])
+            ->add('marktDagen', ChoiceType::class, [
+                'label' => 'Marktdagen',
+                'expanded' => true,
+                'multiple'=> true,
+                'required' => false,
+                'choices' => [
+                    'Maandag' => 'ma',
+                    'Dinsdag' => 'di',
+                    'Woensdag' => 'wo',
+                    'Donderdag' => 'do',
+                    'Vrijdag' => 'vr',
+                    'Zaterdag' => 'za',
+                    'Zondag' => 'zo',
+                ]
+            ])
             ->add('indelingsTijdstipTekst', TextType::class, [
                 'label' => 'Indelingstijdstip, als tekstuele omschrijving',
                 'required' => false,
@@ -108,3 +123,4 @@ class MarktType extends AbstractType
         return str_replace('\\', '_', __CLASS__);
     }
 }
+
