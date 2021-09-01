@@ -5,6 +5,7 @@ String PROJECTNAME = "makkelijkemarkt-dashboard"
 String CONTAINERDIR = "."
 String PRODUCTION_BRANCH = "master"
 String PLAYBOOK = 'deploy.yml'
+String PIPELINE_URL = "https://ci.secure.amsterdam.nl/job/fixxx/job/makkelijkemarkt/job/makkelijkemarkt-dashboard/job/master/"
 
 // All other data uses variables, no changes needed for static
 String CONTAINERNAME = "fixxx/makkelijkemarkt-dashboard"
@@ -52,6 +53,12 @@ node {
 
 // On master branch, fetch the container, tag with production and latest and deploy to production
 if (BRANCH == "${PRODUCTION_BRANCH}") {
+
+    stage('Waiting for approval') {
+        slackSend channel: '#salmagundi_ci', color: 'warning', message: "Makkelijke markt Dashboard is waiting for Acceptance Release - please confirm. URL: ${PIPELINE_URL}"
+        input "Deploy to Acceptance?"
+    }
+
     node {
         stage('Deploy to ACC') {
             tryStep "deployment", {
@@ -74,7 +81,7 @@ if (BRANCH == "${PRODUCTION_BRANCH}") {
     }
 
     stage('Waiting for approval') {
-        slackSend channel: '#ci-channel-app', color: 'warning', message: 'Makkelijke markt API is waiting for Production Release - please confirm'
+        slackSend channel: '#salmagundi_ci', color: 'warning', message: 'Makkelijke markt Dashboard is waiting for Production Release - please confirm. URL: ${PIPELINE_URL}'
         input "Deploy to Production?"
     }
 
