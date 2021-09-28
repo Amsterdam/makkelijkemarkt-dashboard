@@ -84,3 +84,8 @@ Voer tenslote een cache clear uit voor dev en prod om zeker te weten dat alle ca
 Configueer tenslote een vhost van de webserver. Zie ook de specifieke handleiding 
 per webserver [in de Symfony 2.7 handleiding](http://symfony.com/doc/2.7/setup/web_server_configuration.html)
 
+## How to run locally with docker-compose
+De aanbevolen manier is met Docker compose ( https://docs.docker.com/compose/ )
+1. Kopieer .env.local uit de Vault ( https://vault01.shared-services.amsterdam.nl:8200/ui/vault/secrets/secret/list/teams/salmagundi/ )
+2. run `docker-compose down && docker-compose build && docker-compose up`
+
