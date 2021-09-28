@@ -4,13 +4,6 @@ echo Starting server
 set -u
 set -e
 
-cat > /app/.env <<EOF
-APP_ENV=prod
-APP_SECRET=${MM_DASHBOARD__SECRET}
-MARKT_API=${MM_DASHBOARD__API_URL}
-MM_APP_KEY=${MM_DASHBOARD__APP_KEY}
-EOF
-
 cd /app/
 php bin/console cache:clear --env=prod
 php bin/console cache:warmup --env=prod

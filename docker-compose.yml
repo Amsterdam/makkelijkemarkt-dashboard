@@ -4,14 +4,15 @@ services:
   web:
     build: .
     ports:
-    - "80:80"
-    environment:
-      MM_DASHBOARD__MAILER__TRANSPORT: "smtp"
-      MM_DASHBOARD__MAILER__HOST: "localhost"
-      MM_DASHBOARD__MAILER__USER: ""
-      MM_DASHBOARD__MAILER__PASSWORD: ""
-      MM_DASHBOARD__MAILER__PORT: "25"
-      MM_DASHBOARD__MAILER__ENCRYPTION: "ssl" # null, ssl, tls
-      MM_DASHBOARD__SECRET: "insecure" # random
-      MM_DASHBOARD__API_URL: http://localhost:8080/api/1.1.0/
-      MM_DASHBOARD__APP_KEY: "insecure"
+    - "8082:80"
+    networks:
+      - bridge
+    volumes:
+      - ./src:/app/src
+
+networks:
+  bridge:
+    ipam:
+      config:
+        - subnet: 172.102.0.0/16
+          gateway: 172.102.0.1
