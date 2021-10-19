@@ -80,6 +80,10 @@ class MarktType extends AbstractType
                 'label' => 'Zichtbaar in Kies Je Kraam app?',
                 'required' => false
             ])
+            ->add('marktBeeindigd', CheckboxType::class, [
+                'label' => 'Einddatum verstreken',
+                'required' => false
+            ])
             ->add('kiesJeKraamFase', ChoiceType::class, [
                 'label' => 'In welke fase bevind zich de implementatie van Kies je kraam op deze markt?',
                 'required' => false,

@@ -29,7 +29,7 @@ class MarktController extends AbstractController
      */
     public function indexAction(MarktApi $api): array
     {
-        $markten = $api->getMarkten();
+        $markten = $api->getNonExpiredMarkten();
 
         return ['markten' => $markten];
     }

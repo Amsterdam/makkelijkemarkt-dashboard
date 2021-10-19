@@ -31,7 +31,7 @@ class LijstController extends AbstractController
      */
     public function indexAction( string $dag = null, MarktApi $api): array
     {
-        $markten = $api->getMarkten();
+        $markten = $api->getNonExpiredMarkten();
 
         if (null === $dag) {
             $maandag = new \DateTime();

@@ -74,6 +74,17 @@ class MarktApi
         return $this->makeRequest('GET', '/markt/')->toArray();
     }
 
+    public function getNonExpiredMarkten(): array{
+        $markten = $this->getMarkten();
+        $filteredMarkten = array_filter($markten, function($obj){
+            if($obj["marktBeeindigd"] === true){
+                return false;
+            }
+            return true;
+        });
+        return $filteredMarkten;
+    }
+
     public function getMarktenByName(): array
     {
         $markten= $this->makeRequest('GET', '/markt/')->toArray();

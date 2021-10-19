@@ -22,7 +22,7 @@ class TariefplanController extends AbstractController
      */
     public function indexAction(MarktApi $api)
     {
-        $markten = $api->getMarkten();
+        $markten = $api->getNonExpiredMarkten();
 
         return [
             'markten'=> $markten
