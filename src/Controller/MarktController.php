@@ -33,6 +33,18 @@ class MarktController extends AbstractController
 
         return ['markten' => $markten];
     }
+    
+    /**
+     * @Route("/markten/archief")
+     * @Template
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function archiveAction(MarktApi $api): array
+    {
+        $markten = $api->getExpiredMarkten();
+
+        return ['markten' => $markten];
+    }
 
     /**
      * @Route("/markten/edit/{id}")

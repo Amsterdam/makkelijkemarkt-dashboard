@@ -84,6 +84,17 @@ class MarktApi
         });
         return $filteredMarkten;
     }
+    
+    public function getExpiredMarkten(): array{
+        $markten = $this->getMarkten();
+        $filteredMarkten = array_filter($markten, function($obj){
+            if($obj["marktBeeindigd"] === true){
+                return true;
+            }
+            return false;
+        });
+        return $filteredMarkten;
+    }
 
     public function getMarktenByName(): array
     {
