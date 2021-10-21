@@ -9,7 +9,7 @@ services:
       - bridge
     volumes:
       - ./src:/app/src
-
+      - ./templates:/app/templates  
 networks:
   bridge:
     ipam:
