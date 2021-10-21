@@ -76,19 +76,19 @@ class MarktApi
 
     public function getNonExpiredMarkten(): array{
         $markten = $this->getMarkten();
-        $filteredMarkten = array_filter($markten, function($obj){
-            if($obj["marktBeeindigd"] === true){
+        $filteredMarkten = array_filter($markten, function($markt){
+            if($markt["marktBeeindigd"] === true){
                 return false;
             }
             return true;
         });
         return $filteredMarkten;
     }
-    
+
     public function getExpiredMarkten(): array{
         $markten = $this->getMarkten();
-        $filteredMarkten = array_filter($markten, function($obj){
-            if($obj["marktBeeindigd"] === true){
+        $filteredMarkten = array_filter($markten, function($markt){
+            if($markt["marktBeeindigd"] === true){
                 return true;
             }
             return false;
