@@ -29,9 +29,21 @@ class MarktController extends AbstractController
      */
     public function indexAction(MarktApi $api): array
     {
-        $markten = $api->getMarkten();
+        $markten = $api->getNonExpiredMarkten();
 
-        return ['markten' => $markten];
+        return ['markten' => $markten, 'title' => "Markten", 'index' => true];
+    }
+    
+    /**
+     * @Route("/markten/archief")
+     * @Template("markt/index.html.twig")
+     * @Security("is_granted('ROLE_USER')")
+     */
+    public function archiveAction(MarktApi $api): array
+    {
+        $markten = $api->getExpiredMarkten();
+
+        return ['markten' => $markten, 'title' => "Markten archief", 'index' => false];
     }
 
     /**

@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block document %}
-            <h1>Markten</h1>
+            <h1>{{ title }}</h1>
 
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -53,5 +53,8 @@
                     {% endfor %}
                     </tbody>
                 </table>
+                {% if index %}
+                    <p><a href="{{ path('app_markt_archive') }}">Markten gearchiveerd</a></p>
+                {% endif %}
             </div>
 {% endblock %}

@@ -36,7 +36,7 @@ class DagvergunningController extends AbstractController
                 ['marktId' => $request->query->get('marktId'), 'dag' => $dag]);
         }
 
-        $markten = $api->getMarkten();
+        $markten = $api->getNonExpiredMarkten();
         $defaultDag = date('Y-m-d');
 
         return ['markten' => $markten, 'dag' => $defaultDag];
@@ -49,7 +49,7 @@ class DagvergunningController extends AbstractController
      */
     public function dayviewAction(MarktApi $api, int $marktId, string $dag): array
     {
-        $markten= $api->getMarkten();
+        $markten = $api->getNonExpiredMarkten();
         $selectedMarkt = '';
         foreach ($markten as $markt) {
             if($markt['id'] == $marktId){
