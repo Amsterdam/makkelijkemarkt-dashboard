@@ -81,7 +81,7 @@ class LijstController extends AbstractController
 
         $pdf = $pdfLijst->generate($markt['naam'], 'Weeklijst Sollicitanten ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
         $pdf->Output('weeklijst_sollicitanten.pdf', 'I');
-        
+
         die;
     }
 
@@ -89,9 +89,9 @@ class LijstController extends AbstractController
      * @Route("/lijsten/barcode/{marktId}/{dag}")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function lijstBarcodePdfAction(int $marktId, string $dag, MarktApi $api, PdfBarcodeService $pdfBarcode): void 
+    public function lijstBarcodePdfAction(int $marktId, string $dag, MarktApi $api, PdfBarcodeService $pdfBarcode): void
     {
-        
+
         $maandag = new \DateTime($dag);
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
@@ -115,7 +115,7 @@ class LijstController extends AbstractController
      */
     public function weeklijstVastePlaatsenPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
-    
+
         $maandag = new \DateTime($dag);
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
