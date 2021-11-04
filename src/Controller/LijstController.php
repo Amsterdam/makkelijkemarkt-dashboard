@@ -81,7 +81,7 @@ class LijstController extends AbstractController
 
         $pdf = $pdfLijst->generate($markt['naam'], 'Weeklijst Sollicitanten ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
         $pdf->Output('weeklijst_sollicitanten.pdf', 'I');
-        
+
         die;
     }
 
@@ -89,9 +89,9 @@ class LijstController extends AbstractController
      * @Route("/lijsten/barcode/{marktId}/{dag}")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function lijstBarcodePdfAction(int $marktId, string $dag, MarktApi $api, PdfBarcodeService $pdfBarcode): void 
+    public function lijstBarcodePdfAction(int $marktId, string $dag, MarktApi $api, PdfBarcodeService $pdfBarcode): void
     {
-        
+
         $maandag = new \DateTime($dag);
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
@@ -115,7 +115,7 @@ class LijstController extends AbstractController
      */
     public function weeklijstVastePlaatsenPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
-    
+
         $maandag = new \DateTime($dag);
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
@@ -164,22 +164,20 @@ class LijstController extends AbstractController
      * @Route("/lijsten/b/{marktId}/{dag}")
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
-    public function blijstPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void 
+    public function blijstPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
 
         $maandag = new \DateTime($dag);
         $zondag = clone $maandag;
-        $zondag->modify('-1 day');
+        $zondag->modify('+6 days');
         $donderdag = clone $maandag;
         $donderdag->modify('+3 days');
 
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
 
-        $personenAlijst = $api->getLijstenMetDatum($marktId,array('soll','vpl','vkk', 'tvpl', 'tvplz', 'exp', 'expf'),$maandag, $donderdag);
-        $laatsteMaanden = array_merge(
-                $api->getLijstenMetDatum($marktId,array('soll'),$tweeMaandenTerug, $zondag)
-        );
+        $personenAlijst = $api->getLijstenMetDatum($marktId,array('soll'),$maandag, $donderdag);
+        $laatsteMaanden = $api->getLijstenMetDatum($marktId,array('soll'),$tweeMaandenTerug, $donderdag);
 
         $ids = array();
         foreach ($personenAlijst as $persoon) {
@@ -187,8 +185,8 @@ class LijstController extends AbstractController
         }
 
         $personen = array();
-        foreach ($laatsteMaanden as $key => $persoon) {
-            if (!in_array($persoon->id, $ids)) {
+        foreach ($laatsteMaanden as $persoon) {
+            if (!in_array($persoon['id'], $ids)) {
                 $personen[] = $persoon;
             }
         }
@@ -204,3 +202,4 @@ class LijstController extends AbstractController
         die;
     }
 }
+
