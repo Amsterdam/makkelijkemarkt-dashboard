@@ -293,7 +293,7 @@
                                         <strong>{{ dagvergunning.aanwezig|replace({'_' : ' '})|capitalize }}</strong><br/>
                                         {% if dagvergunning.vervanger is defined and dagvergunning.vervanger is not empty %}
                                             Gescand:
-                                            <a href="{{ path('app__koopman_detail', {'id': dagvergunning.vervanger.id}) }}">{{ dagvergunning.vervanger.voorletters }} {{ dagvergunning.vervanger.achternaam }}</a>
+                                            <a href="{{ path('app_koopman_detail', {'id': dagvergunning.vervanger.id}) }}">{{ dagvergunning.vervanger.voorletters }} {{ dagvergunning.vervanger.achternaam }}</a>
                                             <br/>
                                             Erkenningsnr.: {{ dagvergunning.vervanger.erkenningsnummer }}<br/>
                                         {% endif %}
