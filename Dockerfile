@@ -1,4 +1,4 @@
-FROM php:7.3-fpm-alpine3.13
+FROM php:7.4-fpm-alpine3.13
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -17,8 +17,8 @@ RUN apk add nginx
 RUN mkdir -p /run/nginx
 
 RUN apk add postgresql-dev bzip2-dev freetype libpng libjpeg-turbo freetype-dev libpng-dev jpeg-dev libjpeg libjpeg-turbo-dev libintl gettext gettext-dev gmp gmp-dev icu-dev libxml2-dev libxslt-dev libzip libzip-dev yarn && \
-    docker-php-ext-configure gd --with-freetype-dir=/usr/lib/ --with-png-dir=/usr/lib/ --with-jpeg-dir=/usr/lib/ --with-gd && \
-    docker-php-ext-install pdo_pgsql pgsql bcmath bz2 calendar exif gd gettext gmp intl pcntl shmop soap sockets sysvmsg sysvsem sysvshm wddx xmlrpc xsl zip
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install pdo_pgsql pgsql bcmath bz2 calendar exif gd gettext gmp intl pcntl shmop soap sockets sysvmsg sysvsem sysvshm xmlrpc xsl zip
 
 COPY . /app
 
