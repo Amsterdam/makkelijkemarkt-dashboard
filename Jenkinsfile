@@ -1,20 +1,17 @@
 #!groovy
-
 String PROJECTNAME = "makkelijkemarkt-dashboard"
 String CONTAINERDIR = "."
-String PRODUCTION_BRANCH = "main"
-String INFRASTRUCTURE = 'secure'
-String PLAYBOOK = 'deploy.yml'
-String CONTAINERNAME = "fixxx/${PROJECTNAME}"
+String CONTAINERNAME = "salmagundi/${PROJECTNAME}"
 String DOCKERFILE = "Dockerfile"
-String BRANCH = "${env.BRANCH_NAME}"
+String INFRASTRUCTURE = "secure"
+String PLAYBOOK = "deploy.yml"
 
 def tryStep (String message, Closure block, Closure tearDown = null) {
     try {
         block();
     }
     catch (Throwable t) {
-        slackSend message: "${env.JOB_NAME}: ${message} failure ${env.BUILD_URL}", channel: '#salmagundi_ci', color: 'danger'
+        slackSend message: "${env.JOB_NAME}: ${message} failure ${env.BUILD_URL}", channel: "#salmagundi_ci", color: "danger"
         throw t;
     }
     finally {
@@ -31,72 +28,116 @@ def retagAndPush (String imageName, String newTag) {
     sh "docker push ${dockerReg}/${imageName}:${newTag}"
 }
 
-node {
-    stage("Checkout") {
-        checkout scm
-}
+pipeline {
+    agent any
 
-    stage("Build develop image") {
-        tryStep "build", {
-            sh "git rev-parse HEAD > version_file"
-            sh 'cat version_file'
+    options {
+        timeout(time: 1, unit: "DAYS")
+    }
 
-            docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
-                image = docker.build("${CONTAINERNAME}:${env.BUILD_NUMBER}","-f ${DOCKERFILE} ${CONTAINERDIR}")
-                image.push()
+    stages {
+        stage("Checkout") {
+            steps {
+                checkout scm
             }
         }
-    }
-}
 
-if (BRANCH == "${PRODUCTION_BRANCH}") {
-    stage('Waiting for approval') {
-        slackSend channel: '#salmagundi_ci', color: 'warning', message: "${PROJECTNAME} is waiting for Acceptance Release - please confirm. URL: ${env.JOB_URL}"
-        input "Deploy to Acceptance?"
-    }
+        stage("Build") {
+            steps {
+                script {
 
-    node {
-        stage("Deploy to ACC") {
-            tryStep "deployment", {
-                docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
-                    docker.image("${CONTAINERNAME}:${env.BUILD_NUMBER}").pull()
-                    retagAndPush("${CONTAINERNAME}", "acceptance")
+                    tryStep "build", {
+                        sh "git rev-parse HEAD > version_file"
+                        sh "cat version_file"
+
+                        docker.withRegistry("${DOCKER_REGISTRY_HOST}","docker_registry_auth") {
+                            image = docker.build("${CONTAINERNAME}:${env.BUILD_NUMBER}","-f ${DOCKERFILE} ${CONTAINERDIR}")
+                            image.push()
+                        }
+                    }
+
                 }
-
-                build job: 'Subtask_Openstack_Playbook',
-                        parameters: [
-                                [$class: 'StringParameterValue', name: 'INFRASTRUCTURE', value: "${INFRASTRUCTURE}"],
-                                [$class: 'StringParameterValue', name: 'INVENTORY', value: 'acceptance'],
-                                [$class: 'StringParameterValue', name: 'PLAYBOOK', value: "${PLAYBOOK}"],
-                                [$class: 'StringParameterValue', name: 'PLAYBOOKPARAMS', value: "-e cmdb_id=app_${PROJECTNAME}"],
-                                [$class: 'StringParameterValue', name: 'STATIC_CONTAINER', value: "${PROJECTNAME}"],
-                        ]
             }
         }
-    }
 
-    stage('Waiting for approval') {
-        slackSend channel: '#salmagundi_ci', color: 'warning', message: "${PROJECTNAME} is waiting for Production Release - please confirm. URL: ${env.JOB_URL}"
-        input "Deploy to Production?"
-    }
+        stage("Push and deploy") {
+            stages {
+                stage("Confirm Release ACC") {
+                    steps {
+                        script {
 
-    node {
-        stage("Deploy to PROD") {
-            tryStep "deployment", {
-                docker.withRegistry("${DOCKER_REGISTRY_HOST}",'docker_registry_auth') {
-                    docker.image("${CONTAINERNAME}:${env.BUILD_NUMBER}").pull()
-                    retagAndPush("${CONTAINERNAME}", "production")
-                    retagAndPush("${CONTAINERNAME}", "latest")
+                            slackSend channel: "#salmagundi_ci", color: "warning", message: "${PROJECTNAME} is waiting for ACC Release - please confirm. URL: ${env.JOB_URL}"
+                            input "Deploy to ACC?"
+
+                        }
+                    }
                 }
 
-                build job: 'Subtask_Openstack_Playbook',
-                        parameters: [
-                                [$class: 'StringParameterValue', name: 'INFRASTRUCTURE', value: "${INFRASTRUCTURE}"],
-                                [$class: 'StringParameterValue', name: 'INVENTORY', value: 'production'],
-                                [$class: 'StringParameterValue', name: 'PLAYBOOK', value: "${PLAYBOOK}"],
-                                [$class: 'StringParameterValue', name: 'PLAYBOOKPARAMS', value: "-e cmdb_id=app_${PROJECTNAME}"],
-                                [$class: 'StringParameterValue', name: 'STATIC_CONTAINER', value: "${PROJECTNAME}"],
-                        ]
+                stage("Release ACC") {
+                    steps {
+                        script {
+
+                            tryStep "deployment", {
+                                docker.withRegistry("${DOCKER_REGISTRY_HOST}","docker_registry_auth") {
+                                    docker.image("${CONTAINERNAME}:${env.BUILD_NUMBER}").pull()
+                                    retagAndPush("${CONTAINERNAME}", "acceptance")
+                                }
+
+                                build job: "Subtask_Openstack_Playbook", parameters: [
+                                    [$class: "StringParameterValue", name: "INFRASTRUCTURE", value: "${INFRASTRUCTURE}"],
+                                    [$class: "StringParameterValue", name: "INVENTORY", value: "acceptance"],
+                                    [$class: "StringParameterValue", name: "PLAYBOOK", value: "${PLAYBOOK}"],
+                                    [$class: "StringParameterValue", name: "PLAYBOOKPARAMS", value: "-e cmdb_id=app_${PROJECTNAME}"],
+                                    [$class: "StringParameterValue", name: "STATIC_CONTAINER", value: "${PROJECTNAME}"]
+                                    ], wait: true
+                            }
+
+                            slackSend channel: "#salmagundi_ci", color: "warning", message: "${PROJECTNAME} ACC Release successful. URL: ${env.JOB_URL}"
+
+                        }
+                    }
+                }
+                stage("Confirm Release PRD") {
+                    when {
+                        buildingTag()
+                    }
+                    steps {
+                        script {
+
+                            slackSend channel: "#salmagundi_ci", color: "warning", message: "${PROJECTNAME} is waiting for PRD Release - please confirm. URL: ${env.JOB_URL}"
+                            input "Deploy to PRD?"
+
+                        }
+                    }
+                }
+
+                stage("Release PRD") {
+                    when {
+                        buildingTag()
+                    }
+                    steps {
+                        script {
+
+                            tryStep "deployment", {
+                                docker.withRegistry("${DOCKER_REGISTRY_HOST}","docker_registry_auth") {
+                                    docker.image("${CONTAINERNAME}:${env.BUILD_NUMBER}").pull()
+                                    retagAndPush("${CONTAINERNAME}", "production")
+                                }
+
+                                build job: "Subtask_Openstack_Playbook", parameters: [
+                                    [$class: "StringParameterValue", name: "INFRASTRUCTURE", value: "${INFRASTRUCTURE}"],
+                                    [$class: "StringParameterValue", name: "INVENTORY", value: "production"],
+                                    [$class: "StringParameterValue", name: "PLAYBOOK", value: "${PLAYBOOK}"],
+                                    [$class: "StringParameterValue", name: "PLAYBOOKPARAMS", value: "-e cmdb_id=app_${PROJECTNAME}"],
+                                    [$class: "StringParameterValue", name: "STATIC_CONTAINER", value: "${PROJECTNAME}"]
+                                    ], wait: true
+                            }
+
+                            slackSend channel: "#salmagundi_ci", color: "warning", message: "${PROJECTNAME} PRD Release successful. URL: ${env.JOB_URL}"
+
+                        }
+                    }
+                }
             }
         }
     }
