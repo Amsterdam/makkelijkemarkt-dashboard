@@ -133,23 +133,32 @@ class TariefplanController extends AbstractController
                 'naam' => $tariefPlanObject['naam'],
                 'geldigVanaf' => $geldigVanaf,
                 'geldigTot' => $geldigTot,
+                'tariefPerMeterGroot' => $tariefPlanObject['lineairplan']['tariefPerMeterGroot'],
                 'tariefPerMeter' => $tariefPlanObject['lineairplan']['tariefPerMeter'],
+                'tariefPerMeterKlein' => $tariefPlanObject['lineairplan']['tariefPerMeterKlein'],
+                'reinigingPerMeterGroot' => $tariefPlanObject['lineairplan']['reinigingPerMeterGroot'],
                 'reinigingPerMeter' => $tariefPlanObject['lineairplan']['reinigingPerMeter'],
+                'reinigingPerMeterKlein' => $tariefPlanObject['lineairplan']['reinigingPerMeterKlein'],
                 'toeslagBedrijfsafvalPerMeter' => $tariefPlanObject['lineairplan']['toeslagBedrijfsafvalPerMeter'],
                 'toeslagKrachtstroomPerAansluiting' => $tariefPlanObject['lineairplan']['toeslagKrachtstroomPerAansluiting'],
                 'promotieGeldenPerMeter' => $tariefPlanObject['lineairplan']['promotieGeldenPerMeter'],
                 'promotieGeldenPerKraam' => $tariefPlanObject['lineairplan']['promotieGeldenPerKraam'],
                 'afvaleiland' => $tariefPlanObject['lineairplan']['afvaleiland'],
                 'eenmaligElektra' => $tariefPlanObject['lineairplan']['eenmaligElektra'],
-                'elektra' => $tariefPlanObject['lineairplan']['elektra']
+                'elektra' => $tariefPlanObject['lineairplan']['elektra'],
+                'agfPerMeter' => $tariefPlanObject['lineairplan']['agfPerMeter']
             ];
         } else {
             return [
                 'naam' => '',
                 'geldigVanaf' => null,
                 'geldigTot' => null,
+                'tariefPerMeterGroot' => null,
                 'tariefPerMeter' => null,
+                'tariefPerMeterKlein' => null,
+                'reinigingPerMeterGroot' => null,
                 'reinigingPerMeter' => null,
+                'reinigingPerMeterKlein' => null,
                 'toeslagBedrijfsafvalPerMeter' => null,
                 'toeslagKrachtstroomPerAansluiting' => null,
                 'promotieGeldenPerMeter' => null,
@@ -157,6 +166,7 @@ class TariefplanController extends AbstractController
                 'afvaleiland' => null,
                 'eenmaligElektra' => null,
                 'elektra' => null,
+                'agfPerMeter' => null
             ];
         }
     }
