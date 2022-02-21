@@ -93,11 +93,14 @@ class DagvergunningController extends AbstractController
             'meters.aantal_3m' => 0,
             'meters.aantal_4m' => 0,
             'meters.aantal_1m' => 0,
+            'meters.aantal_groot' => 0,
+            'meters.aantal_klein' => 0,
             'meters.totaal' => 0,
             'extra.elektra_afgenomen' => 0,
             'extra.elektra_totaal' => 0,
             'extra.krachtstroom' => 0,
             'extra.reiniging' => 0,
+            'extra.agf' => 0
         ];
 
         $multipleOnSameMarket = [];
@@ -107,7 +110,6 @@ class DagvergunningController extends AbstractController
             'first' => 0,
             'second' => 0
         ];
-
         
         foreach ($dagvergunningen as &$dagvergunning) {
             if ($dagvergunning['doorgehaald'] === false) {
@@ -131,10 +133,18 @@ class DagvergunningController extends AbstractController
                     $stats['aanwezig.?'] ++;
                 }
                 // per kraamlengte en totale kraamlengte
-                $stats['meters.aantal_3m'] = $stats['meters.aantal_3m'] + $dagvergunning['aantal3MeterKramen'];
-                $stats['meters.aantal_4m'] = $stats['meters.aantal_4m'] + $dagvergunning['aantal4MeterKramen'];
-                $stats['meters.aantal_1m'] = $stats['meters.aantal_1m'] + $dagvergunning['extraMeters'];
-                $stats['meters.totaal'] = $stats['meters.totaal'] + ($dagvergunning['aantal3MeterKramen'] * 3) + ($dagvergunning['extraMeters'] * 4) + ($dagvergunning['extraMeters'] * 1);
+                $stats['meters.aantal_3m'] += $dagvergunning['aantal3MeterKramen'];
+                $stats['meters.aantal_4m'] += $dagvergunning['aantal4MeterKramen'];
+                $stats['meters.aantal_1m'] += $dagvergunning['extraMeters'];
+                $stats['meters.aantal_groot'] += $dagvergunning['grootPerMeter'];
+                $stats['meters.aantal_klein'] += $dagvergunning['kleinPerMeter'];
+                $stats['meters.totaal'] =
+                    $stats['meters.totaal']
+                    + ($dagvergunning['aantal3MeterKramen'] * 3)
+                    + ($dagvergunning['aantal4MeterKramen'] * 4)
+                    + ($dagvergunning['extraMeters'] * 1)
+                    + ($dagvergunning['grootPerMeter'] * 1)
+                    + ($dagvergunning['kleinPerMeter'] * 1);
                 // extra's
                 if ($dagvergunning['aantalElektra'] > 0) {
                     $stats['extra.elektra_afgenomen'] ++;
@@ -145,6 +155,10 @@ class DagvergunningController extends AbstractController
                 }
                 if ($dagvergunning['reiniging'] === true) {
                     $stats['extra.reiniging'] ++;
+                }
+
+                if ($dagvergunning['afvalEilandAgf'] > 0) {
+                    $stats['extra.agf'] += $dagvergunning['afvalEilandAgf'];
                 }
             } else {
                 // doorgehaald
