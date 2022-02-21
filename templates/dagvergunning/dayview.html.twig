@@ -100,6 +100,8 @@
                 Aantal 3m kramen <strong>{{ drieM }} x</strong><br>
                 Aantal 4m kramen <strong>{{ vierM }} x</strong><br>
                 Totaal aantal kramen <strong>{{ totaalM }} x</strong><br>
+                Aantal meters groot <strong>{{ attribute(stats, 'meters.aantal_groot') }} x</strong><br>
+                Aantal meters klein <strong>{{ attribute(stats, 'meters.aantal_klein') }} x</strong><br>
                 Aantal extra meters <strong>{{ attribute(stats, 'meters.aantal_1m') }} x</strong>
             </p>
             <p>
@@ -117,6 +119,7 @@
                 Totaal elektra aansluitingen <strong>{{ attribute(stats, 'extra.elektra_totaal') }}</strong><br>
                 Dagvergunningen met krachtstroom <strong>{{ attribute(stats, 'extra.krachtstroom') }}</strong><br>
                 Dagvergunningen met reiniging <strong>{{ attribute(stats, 'extra.reiniging') }}</strong><br>
+                Aantal AGF <strong>{{ attribute(stats, 'extra.agf') }}</strong><br>
             </p>
             <br>
         </div>
@@ -197,13 +200,18 @@
                                         <br>{% endif %}
                                     {% if dagvergunning.extraMeters > 0 %}{{ dagvergunning.extraMeters }} x extra meter
                                         <br>{% endif %}
+                                    {% if dagvergunning.grootPerMeter > 0 %}{{ dagvergunning.grootPerMeter }} x groot
+                                        <br>{% endif %}
+                                    {% if dagvergunning.kleinPerMeter > 0 %}{{ dagvergunning.kleinPerMeter }} x klein
+                                        <br>{% endif %}
                                     totaal {{ dagvergunning.totaleLengte }} meter
                                 </td>
                                 <td>
                                     {% if dagvergunning.aantalElektra > 0 %}Elektra: {{ dagvergunning.aantalElektra }}
                                         <br>{% endif %}
                                     Krachtstroom: {{ dagvergunning.krachtstroom ? 'ja' : 'nee' }}<br>
-                                    Reiniging: {{ dagvergunning.reiniging ? 'ja' : 'nee' }}
+                                    Reiniging: {{ dagvergunning.reiniging ? 'ja' : 'nee' }}<br>
+                                    AGF: {{ dagvergunning.afvalEilandAgf }}
                                 </td>
                                 <td>
                                     {{ dagvergunning.registratieDatumtijd }}<br>
