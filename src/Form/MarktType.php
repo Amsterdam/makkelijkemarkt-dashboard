@@ -29,6 +29,10 @@ class MarktType extends AbstractType
                 'label' => 'Aantal kramen (capaciteit)',
                 'required' => true
             ])
+            ->add('maxAantalKramenPerOndernemer', IntegerType::class, [
+                'label' => 'Maximaal aantal kramen per ondernemer',
+                'required' => false
+            ])
             ->add('aantalMeter', IntegerType::class, [
                 'label' => 'Aantal meters (capaciteit)',
                 'required' => true
