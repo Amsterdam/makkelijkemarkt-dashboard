@@ -1,0 +1,45 @@
+FROM php:7.4-fpm-alpine
+
+COPY certificates/adp_rootca.crt /usr/local/share/ca-certificates/adp_rootca.crt
+RUN update-ca-certificates --fresh
+
+RUN apk update && apk upgrade
+
+RUN apk add \
+    libzip-dev \
+    postgresql-dev \
+    icu-dev \
+    zlib-dev \
+    freetype-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    jpeg-dev
+
+RUN docker-php-ext-configure \
+    gd \
+    --with-freetype \
+    --with-jpeg
+
+RUN docker-php-ext-install \
+    intl \
+    pdo_pgsql \
+    gd \
+    zip
+
+COPY docker-phpfpm/php-ini-overrides.ini /usr/local/etc/php/conf.d/
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
+RUN php -r "unlink('composer-setup.php');"
+
+COPY --chown=www-data . /var/www
+
+RUN mkdir -p /var/www/var/cache
+
+WORKDIR /var/www
+
+RUN composer install --prefer-dist --no-progress --no-suggest --no-scripts
+
+RUN chown -R www-data: /var/www
+
+CMD ["php-fpm"]
