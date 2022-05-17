@@ -7,7 +7,6 @@ RUN apk update && apk upgrade
 
 RUN apk add \
     libzip-dev \
-    postgresql-dev \
     icu-dev \
     zlib-dev \
     freetype-dev \
@@ -22,7 +21,6 @@ RUN docker-php-ext-configure \
 
 RUN docker-php-ext-install \
     intl \
-    pdo_pgsql \
     gd \
     zip
 
