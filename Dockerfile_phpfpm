@@ -43,6 +43,3 @@ RUN composer install --prefer-dist --no-progress --no-suggest --no-scripts
 RUN chown -R www-data: /var/www
 
 CMD ["php-fpm"]
-
-#APK ADD: bzip2-dev gettext-dev gmp-dev libxml2-dev libxslt-dev
-#PHP EXT: bcmath bz2 calendar exif gettext gmp pcntl shmop soap sockets sysvmsg sysvsem sysvshm xmlrpc xsl
