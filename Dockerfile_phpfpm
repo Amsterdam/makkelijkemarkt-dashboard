@@ -40,7 +40,7 @@ WORKDIR /var/www
 
 RUN composer install --prefer-dist --no-progress --no-suggest --no-scripts
 
-RUN yarn && yarn encore prod
+RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
 RUN chown -R www-data: /var/www
 
