@@ -18,7 +18,7 @@ COPY --chown=nginx ./webpack.config.js /var/www/webpack.config.js
 
 WORKDIR /var/www
 
-RUN yarn && yarn encore prod
+RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
 CMD envsubst '$FASTCGI_PASS' < /tmp/default.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'
 
