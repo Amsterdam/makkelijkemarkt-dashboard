@@ -1,6 +1,6 @@
 server {
     listen 80 default;
-    server_name adus.amsterdam.nl;
+    server_name makkelijkemarkt-dashboard.amsterdam.nl;
 
     root /var/www/public;
     index index.php;
