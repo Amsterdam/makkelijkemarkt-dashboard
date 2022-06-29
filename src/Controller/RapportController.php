@@ -200,7 +200,7 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/facturen/")
      * @Template()
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') or is_granted('ROLE_ACCOUNTANT')")
      */
     public function facturenAction(Request $request, MarktApi $api)
     {
