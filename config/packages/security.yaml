@@ -8,6 +8,7 @@ security:
     role_hierarchy:
         ROLE_SENIOR: [ROLE_USER]
         ROLE_ADMIN:  [ROLE_USER, ROLE_SENIOR]
+        ROLE_ACCOUNTANT:  [ROLE_USER]
 
     firewalls:
         dev:

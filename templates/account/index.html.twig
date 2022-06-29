@@ -11,7 +11,7 @@
 
 {% block title %}Account beheer{% endblock %}
 
-{% set friendlyRoleNames = {'ROLE_ADMIN': 'Beheerder', 'ROLE_USER': 'Gebruiker', 'ROLE_SENIOR': 'Senior gebruiker'} %}
+    {% set friendlyRoleNames = {'ROLE_ADMIN': 'Beheerder', 'ROLE_USER': 'Gebruiker', 'ROLE_SENIOR': 'Senior gebruiker', 'ROLE_ACCOUNTANT': 'Accountant'} %}
 
 {% block css %}
         {{ encore_entry_link_tags('app') }}
