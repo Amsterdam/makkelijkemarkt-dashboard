@@ -28,7 +28,7 @@ class HomeController extends AbstractController
     public function indexAction(): RedirectResponse
     {
         if($this->isGranted('ROLE_ACCOUNTANT')){
-            return $this->redirectToRoute('app_rapport_facturen');
+            return $this->redirectToRoute('app_rapport_factuurdetail');
         }
         return $this->redirectToRoute('app_dagvergunning_index');
     }

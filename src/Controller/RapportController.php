@@ -200,7 +200,7 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/facturen/")
      * @Template()
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') or is_granted('ROLE_ACCOUNTANT')")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function facturenAction(Request $request, MarktApi $api)
     {
@@ -1285,7 +1285,7 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/factuurdetail/")
      * @Template()
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') or is_granted('ROLE_ACCOUNTANT')")
      */
     public function factuurDetailAction(MarktApi $api, Request $request)
     {
@@ -1359,58 +1359,70 @@ class RapportController extends AbstractController
             $sheet->setCellValueByColumnAndRow(2, 1, implode(', ', $selectedMarktNamen));
 
             $sheet->setCellValueByColumnAndRow(1, 2, 'Periode');
-            $sheet->setCellValueByColumnAndRow(2, 2, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($dagStart));
-            $sheet->getCellByColumnAndRow(2, 2)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
-            $sheet->setCellValueByColumnAndRow(2, 2, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($dagEind));
-            $sheet->getCellByColumnAndRow(3, 2)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
+            $sheet->setCellValueByColumnAndRow(2, 2, 'Start:');
+            $sheet->setCellValueByColumnAndRow(2, 3, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($dagStart));
+            $sheet->getCellByColumnAndRow(2, 3)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
+            $sheet->setCellValueByColumnAndRow(3, 2, 'Eind:');
+            $sheet->setCellValueByColumnAndRow(3, 3, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($dagEind));
+            $sheet->getCellByColumnAndRow(3, 3)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
 
-            $sheet->setCellValueByColumnAndRow(1, 3, 'Voorkomens');
-            $sheet->getColumnDimension('A')->setWidth(15);
-
-            $sheet->setCellValueByColumnAndRow(2, 3, 'Product');
-            $sheet->getColumnDimension('B')->setWidth(30);
-
-            $sheet->setCellValueByColumnAndRow(3, 3, 'Markt');
-            $sheet->getColumnDimension('B')->setWidth(30);
-
-            $sheet->setCellValueByColumnAndRow(4, 3, 'Datum');
-            $sheet->getColumnDimension('C')->setWidth(15);
-
-            $sheet->setCellValueByColumnAndRow(5, 3, 'Bedrag');
-            $sheet->getColumnDimension('D')->setWidth(15);
-
-            $sheet->setCellValueByColumnAndRow(6, 3, 'Aantal');
-            $sheet->getColumnDimension('E')->setWidth(15);
-
-            $sheet->setCellValueByColumnAndRow(7, 3, 'Som');
-            $sheet->getColumnDimension('F')->setWidth(15);
-
-            $sheet->setCellValueByColumnAndRow(8, 3, 'Totaal');
-            $sheet->getColumnDimension('G')->setWidth(15);
+            $sheet->setCellValueByColumnAndRow(1, 4, 'Voorkomens');
+            $sheet->setCellValueByColumnAndRow(2, 4, 'Product');
+            $sheet->setCellValueByColumnAndRow(3, 4, 'Markt');
+            $sheet->setCellValueByColumnAndRow(4, 4, 'Maand');
+            $sheet->setCellValueByColumnAndRow(5, 4, 'Datum');
+            $sheet->setCellValueByColumnAndRow(6, 4, 'Bedrag');
+            $sheet->setCellValueByColumnAndRow(7, 4, 'Aantal');
+            $sheet->setCellValueByColumnAndRow(8, 4, 'Som');
+            $sheet->setCellValueByColumnAndRow(9, 4, 'Totaal excl. BTW');
+            $sheet->setCellValueByColumnAndRow(10, 4, 'BTW');
+            $sheet->setCellValueByColumnAndRow(11, 4, 'Totaal incl. BTW');
 
             $sheet->getStyle('A1:A2')->getFont()->setBold(true);
-            $sheet->getStyle('A3:H3')->getFont()->setBold(true);
+            $sheet->getStyle('A4:K4')->getFont()->setBold(true);
+
+            $currencyFormatCode = '_("$"* #,##0.00_);_("$"* \(#,##0.00\);_("$"* "-"??_);_(@_)';
+            $sheet->getStyle('F')->getNumberFormat()->setFormatCode($currencyFormatCode);
+            $sheet->getStyle('H')->getNumberFormat()->setFormatCode($currencyFormatCode);
+            $sheet->getStyle('I')->getNumberFormat()->setFormatCode($currencyFormatCode);
+            $sheet->getStyle('J')->getNumberFormat()->setFormatCode($currencyFormatCode);
+            $sheet->getStyle('K')->getNumberFormat()->setFormatCode($currencyFormatCode);
+
+            $sheet->getColumnDimension('A')->setWidth(15);
+            $sheet->getColumnDimension('B')->setWidth(30);
+            $sheet->getColumnDimension('C')->setWidth(30);
+            $sheet->getColumnDimension('D')->setWidth(15);
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(15);
+            $sheet->getColumnDimension('G')->setWidth(15);
+            $sheet->getColumnDimension('H')->setWidth(15);
+            $sheet->getColumnDimension('I')->setWidth(15);
+            $sheet->getColumnDimension('J')->setWidth(15);
+            $sheet->getColumnDimension('K')->setWidth(15);
 
             foreach ($rapport['output'] as $i => $row) {
-                $sheet->setCellValueByColumnAndRow(1, $i + 4, $row['voorkomens']);
+                $sheet->setCellValueByColumnAndRow(1, $i + 5, $row['voorkomens']);
 
-                $sheet->setCellValueByColumnAndRow(2, $i + 4, $row['product_naam']);
+                $sheet->setCellValueByColumnAndRow(2, $i + 5, $row['product_naam']);
 
-                $sheet->setCellValueByColumnAndRow(3, $i + 4, $row['markt_naam']);
+                $sheet->setCellValueByColumnAndRow(3, $i + 5, $row['markt_naam']);
 
-                $sheet->setCellValueByColumnAndRow(4, $i + 4, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($row['dag']));
-                $sheet->getCellByColumnAndRow(4, $i + 4)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
+                $sheet->setCellValueByColumnAndRow(4, $i + 5, date("F", strtotime($row['dag'])));
 
-                $sheet->setCellValueByColumnAndRow(5, $i + 4, $row['bedrag']);
-                $sheet->getCellByColumnAndRow(5, $i + 4)->getStyle()->getNumberFormat()->setFormatCode('€ #,##0.00_-');
+                $sheet->setCellValueByColumnAndRow(5, $i + 5, \PhpOffice\PhpSpreadsheet\Shared\Date::stringToExcel($row['dag']));
+                $sheet->getCellByColumnAndRow(5, $i + 5)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_DATE_YYYYMMDD2);
 
-                $sheet->setCellValueByColumnAndRow(6, $i + 4, $row['aantal']);
+                $sheet->setCellValueByColumnAndRow(6, $i + 5, $row['bedrag']);
 
-                $sheet->setCellValueByColumnAndRow(7, $i + 4, $row['som']);
-                $sheet->getCellByColumnAndRow(7, $i + 4)->getStyle()->getNumberFormat()->setFormatCode('€ #,##0.00_-');
+                $sheet->setCellValueByColumnAndRow(7, $i + 5, $row['aantal']);
 
-                $sheet->setCellValueByColumnAndRow(8, $i + 4, $row['totaal']);
-                $sheet->getCellByColumnAndRow(8, $i + 4)->getStyle()->getNumberFormat()->setFormatCode('€ #,##0.00_-');
+                $sheet->setCellValueByColumnAndRow(8, $i + 5, $row['som']);
+
+                $sheet->setCellValueByColumnAndRow(9, $i + 5, $row['totaalexcl']);
+
+                $sheet->setCellValueByColumnAndRow(10, $i + 5, $row['btw']);
+
+                $sheet->setCellValueByColumnAndRow(11, $i + 5, $row['totaalincl']);
             }
             $spreadsheet->getActiveSheet()->setTitle('Overzicht');
             $spreadsheet->setActiveSheetIndex(0);
