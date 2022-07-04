@@ -19,7 +19,7 @@
 {% block document %}
     <div class="container">
         <h1>Frequentie dagmarkt - {{ markt.naam }}</h1>
-        <h4><a href="{{ path('app_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': lastQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&lt;</a> {{ startDate|date('d-m-Y') }} - {{ endDate|date('d-m-Y') }} {% if today > endDate %}<a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>{% endif %}</h4>
+        <h4><a href="{{ path('app_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': lastQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&lt;</a> {{ startDate|date('d-m-Y') }} - {{ endDate|date('d-m-Y') }} {% if today > endDate %}<a href="{{ path('app_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>{% endif %}</h4>
 
         <h2>Totaaloverzicht verplichting niet gehaald</h2>
         <a target="_blank" class="btn btn-primary" href="{{ path('app_rapport_frequentiemarktenweek_excel_datum', {'marktId': markt.id, 'datum': startDate|date('Y-m-d')}) }}">Excel</a>
