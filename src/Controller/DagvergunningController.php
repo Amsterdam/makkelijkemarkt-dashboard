@@ -25,7 +25,7 @@ class DagvergunningController extends AbstractController
      * @Route("/dagvergunningen")
      * @Route("/dagvergunningen/")
      * @Template()
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function indexAction(Request $request, MarktApi $api)
     {
@@ -45,7 +45,7 @@ class DagvergunningController extends AbstractController
     /**
      * @Route("/dagvergunningen/{marktId}/{dag}")
      * @Template
-     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function dayviewAction(MarktApi $api, int $marktId, string $dag): array
     {

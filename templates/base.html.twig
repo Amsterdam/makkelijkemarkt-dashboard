@@ -42,32 +42,38 @@
                         </li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_USER') %}
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
                         <li class="nav-item"><a class="nav-link"  href="{{ path('app_dagvergunning_index') }}">Dagvergunningen</a></li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_USER') %}
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
                         <li class="nav-item"><a class="nav-link" href="{{ path('app_lijst_index') }}">Lijsten</a></li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                    {% if is_granted('ROLE_USER') %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Rapportages
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a class="dropdown-item" href="{{ path('app_scanspeed_index') }}">Scan snelheid</a>
-                                <a class="dropdown-item" href="{{ path('app_rapport_dubbelstaan') }}">Dubbel staan</a>
-                                <a class="dropdown-item" href="{{ path('app_rapport_staanverplichting') }}">Staanverplichting</a>
-                                <a class="dropdown-item" href="{{ path('app_rapport_facturen') }}">Facturen</a>
-                                <a class="dropdown-item" href="{{ path('app_rapport_factuurdetail') }}">Facturen (detail)</a>
-                                <a class="dropdown-item" href="{{ path('app_rapport_frequentiemarkten') }}">Frequentie</a>
-                                <a class="dropdown-item" href="{{ path('app_rapport_capaciteit') }}">Gebruik capaciteit</a>
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                                    <a class="dropdown-item" href="{{ path('app_scanspeed_index') }}">Scan snelheid</a>
+                                    <a class="dropdown-item" href="{{ path('app_rapport_dubbelstaan') }}">Dubbel staan</a>
+                                    <a class="dropdown-item" href="{{ path('app_rapport_staanverplichting') }}">Staanverplichting</a>
+                                    <a class="dropdown-item" href="{{ path('app_rapport_facturen') }}">Facturen</a>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') or is_granted('ROLE_ACCOUNTANT') %}
+                                    <a class="dropdown-item" href="{{ path('app_rapport_factuurdetail') }}">Facturen (detail)</a>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                                    <a class="dropdown-item" href="{{ path('app_rapport_frequentiemarkten') }}">Frequentie</a>
+                                    <a class="dropdown-item" href="{{ path('app_rapport_capaciteit') }}">Gebruik capaciteit</a>
+                                {% endif %}
                             </div>
                         </li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_USER') %}
+                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Stamgegevens

@@ -103,11 +103,14 @@
                     <th>Voorkomens</th>
                     <th>Product</th>
                     <th>Markt</th>
+                    <th>Maand</th>
                     <th>Datum</th>
                     <th>Bedrag</th>
                     <th>Aantal</th>
                     <th>Som</th>
-                    <th>Totaal</th>
+                    <th>Totaal excl. BTW</th>
+                    <th>BTW</th>
+                    <th>Totaal incl. BTW</th>
                 </tr>
             </thead>
             <tbody>
@@ -116,11 +119,14 @@
                         <td>{{ row["voorkomens"] }}</td>
                         <td>{{ row.product_naam }}</td>
                         <td>{{ row.markt_naam }}</td>
+                        <td>{{ row.dag|date('M') }}</td>
                         <td>{{ row.dag }}</td>
-                        <td>&euro; {{ row.bedrag|format(2, ',', '.') }}</td>
+                        <td>&euro;{{ row.bedrag|number_format(2, ',', '.') }}</td>
                         <td>{{ row.aantal }}</td>
-                        <td>&euro; {{ row.som|format(2, ',', '.') }}</td>
-                        <td>&euro; {{ row.totaal|format(2, ',', '.') }}</td>
+                        <td>&euro;{{ row.som|number_format(2, ',', '.') }}</td>
+                        <td>&euro;{{ row.totaalexcl|number_format(2, ',', '.') }}</td>
+                        <td>&euro;{{ row.btw|number_format(2, ',', '.') }}</td>
+                        <td>&euro;{{ row.totaalincl|number_format(2, ',', '.') }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
