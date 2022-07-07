@@ -26,7 +26,7 @@
 			-
 			{{ endDate|date('d-m-Y') }}
 			{% if today > endDate %}
-				<a href="{{ path('gemeenteamsterdam_makkelijkemarkt_dashboard_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>
+				<a href="{{ path('app_rapport_frequentiemarktenweek_datum', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>
 			{% endif %}
 		</h4>
 

@@ -614,9 +614,9 @@ class RapportController extends AbstractController
      * @Route("/rapport/frequentie/markten/excel/week/{marktId}/{datum}")
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function frequentieMarktenWeekExcelAction($marktId, $datum = null): StreamedResponse
+    public function frequentieMarktenWeekExcelAction(MarktApi $api, int $marktId, $datum = null): StreamedResponse
     {
-        $data = $this->frequentieMarktenWeek($marktId, $datum);
+        $data = $this->frequentieMarktenWeek($api, $marktId, $datum);
 
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getProperties()->setCreator("Gemeente Amsterdam")
@@ -1168,7 +1168,7 @@ class RapportController extends AbstractController
     }
 
     /**
-     * @Route("/rapport/aanwezigheid/markten/excel/week/{marktId}/{datum}", name="app_rapport_frequentiemarktenweek_excel_datum")
+     * @Route("/rapport/aanwezigheid/markten/excel/week/{marktId}/{datum}")
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function persoonlijkeAanwezigheidExcelAction(MarktApi $api, int $marktId, string $datum = null): StreamedResponse
