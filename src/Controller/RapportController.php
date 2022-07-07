@@ -188,7 +188,6 @@ class RapportController extends AbstractController
 
                 return $response;
             }
-
         } else {
             $dagStart = (new \DateTime())->sub(new \DateInterval('P1M'));
             $dagEind = (new \DateTime());
@@ -305,7 +304,7 @@ class RapportController extends AbstractController
 
         $requiredAttendancePercentage = 1 / 13 * 10;
 
-        $requiredAttendance = ceil($startDate->diff($endDate)->days/7 * $requiredAttendancePercentage);
+        $requiredAttendance = ceil($startDate->diff($endDate)->days / 7 * $requiredAttendancePercentage);
 
         $lastQuarterDate = clone $startDate;
         $lastQuarterDate->modify("-1 day");
@@ -407,131 +406,18 @@ class RapportController extends AbstractController
         $activeSheet = $spreadsheet->getActiveSheet();
 
         $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
-        $activeSheet->getStyleByColumnAndRow(1,1)->getFont()->setSize(18)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 1)->getFont()->setSize(18)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
-        $activeSheet->getStyleByColumnAndRow(1,2)->getFont()->setSize(16)->setBold(false);
+        $activeSheet->getStyleByColumnAndRow(1, 2)->getFont()->setSize(16)->setBold(false);
 
         $activeSheet->setCellValueByColumnAndRow(1, 4, 'Totaaloverzicht verplichting niet gehaald');
-        $activeSheet->getStyleByColumnAndRow(1,4)->getFont()->setSize(17)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 4)->getFont()->setSize(17)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 6, 'erkenningsnummer');
         $activeSheet->setCellValueByColumnAndRow(2, 6, 'achternaam');
         $activeSheet->setCellValueByColumnAndRow(3, 6, 'voorletters');
-        $activeSheet->getStyleByColumnAndRow(1,6,3,6)->getFont()->setBold(true);
-
-        $i = 7;
-        foreach ($data['koopmannen'] as $koopman) {
-            if (!$koopman['aanwezigheid_voldaan']) {
-                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer']);
-                $activeSheet->setCellValueByColumnAndRow(2, $i, $koopman['achternaam']);
-                $activeSheet->setCellValueByColumnAndRow(3, $i, $koopman['voorletters']);
-                $i++;
-            }
-        }
-
-        $activeSheet->getColumnDimension('B')->setAutoSize(true);
-        $activeSheet->getColumnDimension('C')->setAutoSize(true);
-
-        $i++;
-
-        $activeSheet->setCellValueByColumnAndRow(1, $i, 'Rapportage per koopman');
-        $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(17)->setBold(true);
-
-        $i++;;
-
-        foreach ($data['koopmannen'] as $koopman) {
-            if (!$koopman['aanwezigheid_voldaan']) {
-                $i++;
-                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'] . '. ' . $koopman['achternaam'] . ', ' . $koopman['voorletters']);
-                $activeSheet->getStyleByColumnAndRow(1,$i)->getFont()->setSize(15)->setBold(true);
-
-                $i++;
-
-                $activeSheet->setCellValueByColumnAndRow(1, $i, 'Week nummer');
-                $activeSheet->setCellValueByColumnAndRow(2, $i, 'Status');
-                $activeSheet->setCellValueByColumnAndRow(3, $i, 'dagen aanwezig');
-
-                foreach ($koopman['weken_afwezig'] as $week_nummer => $aanwezig) {
-                    $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
-                    $activeSheet->setCellValueByColumnAndRow(2, $i, 'Afwezig');
-                    $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
-                    $activeSheet->getStyleByColumnAndRow(1,$i,3,$i)->getFill()
-                                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                                ->getStartColor()
-                                ->setRGB('ebcccc');
-                    $i++;
-                }
-
-                foreach ($koopman['weken_aanwezig'] as $week_nummer => $aanwezig) {
-                    $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
-                    $activeSheet->setCellValueByColumnAndRow(2, $i, 'Aanwezig');
-                    $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
-                    $activeSheet->getStyleByColumnAndRow(1,$i,3,$i)->getFill()
-                                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                                ->getStartColor()
-                                ->setRGB('d0e9c6');
-                    $i++;
-                }
-            }
-        }
-
-        $activeSheet->setTitle('Rapportage');
-
-
-        $writer = new Xlsx($spreadsheet);
-        $response =  new StreamedResponse(
-            function () use ($writer) {
-                $writer->save('php://output');
-            }
-        );
-
-        // adding headers
-        $dispositionHeader = $response->headers->makeDisposition(
-            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'report.xlsx'
-        );
-        $response->headers->set('Content-Type', 'text/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8');
-        $response->headers->set('Pragma', 'public');
-        $response->headers->set('Cache-Control', 'maxage=1');
-        $response->headers->set('Content-Disposition', $dispositionHeader);
-
-        return $response;
-    }
-
-    /**
-     * @Route("/rapport/frequentie/markten/excel/soll/{marktId}/{datum}")
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
-     */
-    public function frequentieMarktenSollExcelAction( MarktApi $api, int $marktId, $datum = null): StreamedResponse
-    {
-        $data = $this->frequentieMarktenSoll($api, $marktId, $datum);
-
-        $spreadsheet = new Spreadsheet();
-        $spreadsheet->getProperties()->setCreator("Gemeente Amsterdam")
-            ->setLastModifiedBy("Gemeente Amsterdam")
-            ->setTitle("Frequentie rapportage")
-            ->setSubject("Frequentie rapportage")
-            ->setDescription("Frequentie rapportage")
-            ->setKeywords("Frequentie rapportage")
-            ->setCategory("Frequentie rapportage");
-
-        $spreadsheet->setActiveSheetIndex(0);
-        $activeSheet = $spreadsheet->getActiveSheet();
-
-        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
-        $activeSheet->getStyleByColumnAndRow(1,1)->getFont()->setSize(18)->setBold(true);
-
-        $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
-        $activeSheet->getStyleByColumnAndRow(1,2)->getFont()->setSize(16)->setBold(false);
-
-        $activeSheet->setCellValueByColumnAndRow(1, 4, 'Totaaloverzicht verplichting niet gehaald');
-        $activeSheet->getStyleByColumnAndRow(1,4)->getFont()->setSize(17)->setBold(true);
-
-        $activeSheet->setCellValueByColumnAndRow(1, 6, 'erkenningsnummer');
-        $activeSheet->setCellValueByColumnAndRow(2, 6, 'achternaam');
-        $activeSheet->setCellValueByColumnAndRow(3, 6, 'voorletters');
-        $activeSheet->getStyleByColumnAndRow(1,6,3,6)->getFont()->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 6, 3, 6)->getFont()->setBold(true);
 
         $i = 7;
         foreach ($data['koopmannen'] as $koopman) {
@@ -569,7 +455,7 @@ class RapportController extends AbstractController
                     $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
                     $activeSheet->setCellValueByColumnAndRow(2, $i, 'Afwezig');
                     $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
-                    $activeSheet->getStyleByColumnAndRow(1,$i,3,$i)->getFill()
+                    $activeSheet->getStyleByColumnAndRow(1, $i, 3, $i)->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setRGB('ebcccc');
@@ -580,7 +466,120 @@ class RapportController extends AbstractController
                     $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
                     $activeSheet->setCellValueByColumnAndRow(2, $i, 'Aanwezig');
                     $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
-                    $activeSheet->getStyleByColumnAndRow(1,$i,3,$i)->getFill()
+                    $activeSheet->getStyleByColumnAndRow(1, $i, 3, $i)->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('d0e9c6');
+                    $i++;
+                }
+            }
+        }
+
+        $activeSheet->setTitle('Rapportage');
+
+
+        $writer = new Xlsx($spreadsheet);
+        $response =  new StreamedResponse(
+            function () use ($writer) {
+                $writer->save('php://output');
+            }
+        );
+
+        // adding headers
+        $dispositionHeader = $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'report.xlsx'
+        );
+        $response->headers->set('Content-Type', 'text/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8');
+        $response->headers->set('Pragma', 'public');
+        $response->headers->set('Cache-Control', 'maxage=1');
+        $response->headers->set('Content-Disposition', $dispositionHeader);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/rapport/frequentie/markten/excel/soll/{marktId}/{datum}")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     */
+    public function frequentieMarktenSollExcelAction(MarktApi $api, int $marktId, $datum = null): StreamedResponse
+    {
+        $data = $this->frequentieMarktenSoll($api, $marktId, $datum);
+
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()->setCreator("Gemeente Amsterdam")
+            ->setLastModifiedBy("Gemeente Amsterdam")
+            ->setTitle("Frequentie rapportage")
+            ->setSubject("Frequentie rapportage")
+            ->setDescription("Frequentie rapportage")
+            ->setKeywords("Frequentie rapportage")
+            ->setCategory("Frequentie rapportage");
+
+        $spreadsheet->setActiveSheetIndex(0);
+        $activeSheet = $spreadsheet->getActiveSheet();
+
+        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
+        $activeSheet->getStyleByColumnAndRow(1, 1)->getFont()->setSize(18)->setBold(true);
+
+        $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
+        $activeSheet->getStyleByColumnAndRow(1, 2)->getFont()->setSize(16)->setBold(false);
+
+        $activeSheet->setCellValueByColumnAndRow(1, 4, 'Totaaloverzicht verplichting niet gehaald');
+        $activeSheet->getStyleByColumnAndRow(1, 4)->getFont()->setSize(17)->setBold(true);
+
+        $activeSheet->setCellValueByColumnAndRow(1, 6, 'erkenningsnummer');
+        $activeSheet->setCellValueByColumnAndRow(2, 6, 'achternaam');
+        $activeSheet->setCellValueByColumnAndRow(3, 6, 'voorletters');
+        $activeSheet->getStyleByColumnAndRow(1, 6, 3, 6)->getFont()->setBold(true);
+
+        $i = 7;
+        foreach ($data['koopmannen'] as $koopman) {
+            if (!$koopman['aanwezigheid_voldaan']) {
+                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer']);
+                $activeSheet->setCellValueByColumnAndRow(2, $i, $koopman['achternaam']);
+                $activeSheet->setCellValueByColumnAndRow(3, $i, $koopman['voorletters']);
+                $i++;
+            }
+        }
+
+        $activeSheet->getColumnDimension('B')->setAutoSize(true);
+        $activeSheet->getColumnDimension('C')->setAutoSize(true);
+
+        $i++;
+
+        $activeSheet->setCellValueByColumnAndRow(1, $i, 'Rapportage per koopman');
+        $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(17)->setBold(true);
+
+        $i++;;
+
+        foreach ($data['koopmannen'] as $koopman) {
+            if (!$koopman['aanwezigheid_voldaan']) {
+                $i++;
+                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'] . '. ' . $koopman['achternaam'] . ', ' . $koopman['voorletters']);
+                $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(15)->setBold(true);
+
+                $i++;
+
+                $activeSheet->setCellValueByColumnAndRow(1, $i, 'Week nummer');
+                $activeSheet->setCellValueByColumnAndRow(2, $i, 'Status');
+                $activeSheet->setCellValueByColumnAndRow(3, $i, 'dagen aanwezig');
+
+                foreach ($koopman['weken_afwezig'] as $week_nummer => $aanwezig) {
+                    $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
+                    $activeSheet->setCellValueByColumnAndRow(2, $i, 'Afwezig');
+                    $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
+                    $activeSheet->getStyleByColumnAndRow(1, $i, 3, $i)->getFill()
+                        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                        ->getStartColor()
+                        ->setRGB('ebcccc');
+                    $i++;
+                }
+
+                foreach ($koopman['weken_aanwezig'] as $week_nummer => $aanwezig) {
+                    $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
+                    $activeSheet->setCellValueByColumnAndRow(2, $i, 'Aanwezig');
+                    $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
+                    $activeSheet->getStyleByColumnAndRow(1, $i, 3, $i)->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setRGB('d0e9c6');
@@ -615,9 +614,9 @@ class RapportController extends AbstractController
      * @Route("/rapport/frequentie/markten/excel/week/{marktId}/{datum}")
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function frequentieMarktenWeekExcelAction($marktId, $datum = null): StreamedResponse
+    public function frequentieMarktenWeekExcelAction(MarktApi $api, int $marktId, $datum = null): StreamedResponse
     {
-        $data = $this->frequentieMarktenWeek($marktId, $datum);
+        $data = $this->frequentieMarktenWeek($api, $marktId, $datum);
 
         $spreadsheet = new Spreadsheet();
         $spreadsheet->getProperties()->setCreator("Gemeente Amsterdam")
@@ -632,18 +631,18 @@ class RapportController extends AbstractController
         $activeSheet = $spreadsheet->getActiveSheet();
 
         $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
-        $activeSheet->getStyleByColumnAndRow(1,1)->getFont()->setSize(18)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 1)->getFont()->setSize(18)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
-        $activeSheet->getStyleByColumnAndRow(1,2)->getFont()->setSize(16)->setBold(false);
+        $activeSheet->getStyleByColumnAndRow(1, 2)->getFont()->setSize(16)->setBold(false);
 
         $activeSheet->setCellValueByColumnAndRow(1, 4, 'Totaaloverzicht verplichting niet gehaald');
-        $activeSheet->getStyleByColumnAndRow(1,4)->getFont()->setSize(17)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 4)->getFont()->setSize(17)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 6, 'erkenningsnummer');
         $activeSheet->setCellValueByColumnAndRow(2, 6, 'achternaam');
         $activeSheet->setCellValueByColumnAndRow(3, 6, 'voorletters');
-        $activeSheet->getStyleByColumnAndRow(1,6,3,6)->getFont()->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 6, 3, 6)->getFont()->setBold(true);
 
         $i = 7;
         foreach ($data['koopmannen'] as $koopman) {
@@ -661,7 +660,7 @@ class RapportController extends AbstractController
         $i++;
 
         $activeSheet->setCellValueByColumnAndRow(1, $i, 'Rapportage per koopman');
-        $activeSheet->getStyleByColumnAndRow(1,$i)->getFont()->setSize(17)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(17)->setBold(true);
 
         $i++;;
 
@@ -669,7 +668,7 @@ class RapportController extends AbstractController
             if (!$koopman['aanwezigheid_voldaan']) {
                 $i++;
                 $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'] . '. ' . $koopman['achternaam'] . ', ' . $koopman['voorletters']);
-                $activeSheet->getStyleByColumnAndRow(1,$i)->getFont()->setSize(15)->setBold(true);
+                $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(15)->setBold(true);
 
                 $i++;
 
@@ -681,7 +680,7 @@ class RapportController extends AbstractController
                     $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
                     $activeSheet->setCellValueByColumnAndRow(2, $i, 'Afwezig');
                     $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
-                    $activeSheet->getStyleByColumnAndRow(1,$i,3,$i)->getFill()
+                    $activeSheet->getStyleByColumnAndRow(1, $i, 3, $i)->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setRGB('ebcccc');
@@ -692,7 +691,7 @@ class RapportController extends AbstractController
                     $activeSheet->setCellValueByColumnAndRow(1, $i, $week_nummer);
                     $activeSheet->setCellValueByColumnAndRow(2, $i, 'Aanwezig');
                     $activeSheet->setCellValueByColumnAndRow(3, $i, $aanwezig);
-                    $activeSheet->getStyleByColumnAndRow(1,$i,3,$i)->getFill()
+                    $activeSheet->getStyleByColumnAndRow(1, $i, 3, $i)->getFill()
                         ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                         ->getStartColor()
                         ->setRGB('d0e9c6');
@@ -791,7 +790,7 @@ class RapportController extends AbstractController
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function frequentieMarktenSollAction( MarktApi $api, int $marktId, string $datum = null): array
+    public function frequentieMarktenSollAction(MarktApi $api, int $marktId, string $datum = null): array
     {
         return $this->frequentieMarktenSoll($api, $marktId, $datum);
     }
@@ -861,7 +860,6 @@ class RapportController extends AbstractController
                 case "7":
                     $output .= 'zondag';
                     break;
-
             }
             $output .= ' ' . $date->format('d-m');
         }
@@ -882,7 +880,7 @@ class RapportController extends AbstractController
 
         $requiredAttendancePercentage = 1 / 13 * 10;
 
-        $requiredAttendance = ceil($startDate->diff($endDate)->days/7 * $requiredAttendancePercentage);
+        $requiredAttendance = ceil($startDate->diff($endDate)->days / 7 * $requiredAttendancePercentage);
 
         $lastQuarterDate = clone $startDate;
         $lastQuarterDate->modify("-1 day");
@@ -921,84 +919,84 @@ class RapportController extends AbstractController
                 $koopmannen[$id]['weken_aanwezig'][(int)$item['week_nummer']] = $this->getDagen($item['dagen']);
             } else {
 
-        $markt = $api->getMarkt($marktId);
+                $markt = $api->getMarkt($marktId);
 
-        $today = new \DateTime();
-        $inputDate = null === $datum ? $today : new \DateTime($datum);
+                $today = new \DateTime();
+                $inputDate = null === $datum ? $today : new \DateTime($datum);
 
-        list($startDate, $endDate) = $this->getQuarter($inputDate);
+                list($startDate, $endDate) = $this->getQuarter($inputDate);
 
-        $endDate = $endDate > $today ? $today : $endDate;
+                $endDate = $endDate > $today ? $today : $endDate;
 
-        $requiredAttendancePercentage = 1 / 13 * 10;
+                $requiredAttendancePercentage = 1 / 13 * 10;
 
-        $requiredAttendance = ceil($startDate->diff($endDate)->days/7 * $requiredAttendancePercentage);
+                $requiredAttendance = ceil($startDate->diff($endDate)->days / 7 * $requiredAttendancePercentage);
 
-        $lastQuarterDate = clone $startDate;
-        $lastQuarterDate->modify("-1 day");
-        $nextQuarterDate = clone $endDate;
-        $nextQuarterDate->modify("+1 day");
+                $lastQuarterDate = clone $startDate;
+                $lastQuarterDate->modify("-1 day");
+                $nextQuarterDate = clone $endDate;
+                $nextQuarterDate->modify("+1 day");
 
-        $response = $api->getFrequentieReport($marktId, 'week', $startDate, $endDate);
+                $response = $api->getFrequentieReport($marktId, 'week', $startDate, $endDate);
 
-        $koopmannen = [];
+                $koopmannen = [];
 
-        $emptyWeek = [];
-        $s = clone $startDate;
-        while ($s->format('W') != $endDate->format('W')) {
-            $emptyWeek[(int)$s->format('W')] = 'Geen plaatsbezetting';
-            $s->modify('+7 days');
-        }
-        $emptyWeek[(int)$s->format('W')] = 'Geen plaatsbezetting';
-
-        foreach ($response as $item) {
-            $id = $item['id'];
-            if (!isset($koopmannen[$id])) {
-                $koopmannen[$id]['voorletters'] = $item['voorletters'];
-                $koopmannen[$id]['achternaam'] = $item['achternaam'];
-                $koopmannen[$id]['id'] = $item['id'];
-                $koopmannen[$id]['weken_aanwezig'] = [];
-                $koopmannen[$id]['weken_afwezig'] = [];
-                $koopmannen[$id]['aanwezigheid_voldaan'] = false;
-            }
-            if (null === $item['week_nummer']) {
-                $koopmannen[$id]['weken_afwezig'] = $emptyWeek;
-                continue;
-            }
-
-            if ($item['aantal'] >= 1) {
-                $koopmannen[$id]['weken_aanwezig'][(int)$item['week_nummer']] = $this->getDagen($item['dagen']);
-            } else {
-                $koopmannen[$id]['weken_afwezig'][(int)$item['week_nummer']] = $this->getDagen($item['dagen']);
-            }
-
-            if (count($koopmannen[$id]['weken_aanwezig']) >= $requiredAttendance) {
-                $koopmannen[$id]['aanwezigheid_voldaan'] = true;
-            }
-        }
-
-        foreach ($koopmannen as &$koopman) {
-            foreach ($emptyWeek as $weeknumber => $text) {
-                if (
-                    !isset($koopman['weken_aanwezig'][$weeknumber]) &&
-                    !isset($koopman['weken_afwezig'][$weeknumber])
-                ) {
-                    $koopman['weken_afwezig'][$weeknumber] = $text;
+                $emptyWeek = [];
+                $s = clone $startDate;
+                while ($s->format('W') != $endDate->format('W')) {
+                    $emptyWeek[(int)$s->format('W')] = 'Geen plaatsbezetting';
+                    $s->modify('+7 days');
                 }
-            }
-        }
+                $emptyWeek[(int)$s->format('W')] = 'Geen plaatsbezetting';
 
-        return [
-            'markt'              => $markt,
-            'startDate'          => $startDate,
-            'endDate'            => $endDate,
-            'inputDate'          => $inputDate,
-            'today'              => $today,
-            'lastQuarterDate'    => $lastQuarterDate,
-            'nextQuarterDate'    => $nextQuarterDate,
-            'requiredAttendance' => $requiredAttendance,
-            'koopmannen'         => $koopmannen
-        ];
+                foreach ($response as $item) {
+                    $id = $item['id'];
+                    if (!isset($koopmannen[$id])) {
+                        $koopmannen[$id]['voorletters'] = $item['voorletters'];
+                        $koopmannen[$id]['achternaam'] = $item['achternaam'];
+                        $koopmannen[$id]['id'] = $item['id'];
+                        $koopmannen[$id]['weken_aanwezig'] = [];
+                        $koopmannen[$id]['weken_afwezig'] = [];
+                        $koopmannen[$id]['aanwezigheid_voldaan'] = false;
+                    }
+                    if (null === $item['week_nummer']) {
+                        $koopmannen[$id]['weken_afwezig'] = $emptyWeek;
+                        continue;
+                    }
+
+                    if ($item['aantal'] >= 1) {
+                        $koopmannen[$id]['weken_aanwezig'][(int)$item['week_nummer']] = $this->getDagen($item['dagen']);
+                    } else {
+                        $koopmannen[$id]['weken_afwezig'][(int)$item['week_nummer']] = $this->getDagen($item['dagen']);
+                    }
+
+                    if (count($koopmannen[$id]['weken_aanwezig']) >= $requiredAttendance) {
+                        $koopmannen[$id]['aanwezigheid_voldaan'] = true;
+                    }
+                }
+
+                foreach ($koopmannen as &$koopman) {
+                    foreach ($emptyWeek as $weeknumber => $text) {
+                        if (
+                            !isset($koopman['weken_aanwezig'][$weeknumber]) &&
+                            !isset($koopman['weken_afwezig'][$weeknumber])
+                        ) {
+                            $koopman['weken_afwezig'][$weeknumber] = $text;
+                        }
+                    }
+                }
+
+                return [
+                    'markt'              => $markt,
+                    'startDate'          => $startDate,
+                    'endDate'            => $endDate,
+                    'inputDate'          => $inputDate,
+                    'today'              => $today,
+                    'lastQuarterDate'    => $lastQuarterDate,
+                    'nextQuarterDate'    => $nextQuarterDate,
+                    'requiredAttendance' => $requiredAttendance,
+                    'koopmannen'         => $koopmannen
+                ];
                 $koopmannen[$id]['weken_afwezig'][(int)$item['week_nummer']] = $this->getDagen($item['dagen']);
             }
 
@@ -1037,7 +1035,7 @@ class RapportController extends AbstractController
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function frequentieMarktenWeekAction( MarktApi $api, int $marktId, string $datum = null): array
+    public function frequentieMarktenWeekAction(MarktApi $api, int $marktId, string $datum = null): array
     {
         return $this->frequentieMarktenWeek($api, $marktId, $datum);
     }
@@ -1097,7 +1095,6 @@ class RapportController extends AbstractController
             'nextQuarterDate'    => $nextQuarterDate,
             'koopmannen'         => $result
         ];
-
     }
 
     protected function persoonlijkeAanwezigheid(MarktApi $api, int $marktId, string $datum = null): array
@@ -1148,11 +1145,11 @@ class RapportController extends AbstractController
             $koopmannen[$id]['totaal'] = $koopmannen[$id]['totaal'] + $item['aantal'];
         }
 
-        foreach($koopmannen as &$koopman) {
+        foreach ($koopmannen as &$koopman) {
             if (!isset($koopman['types']['zelf'])) {
                 $koopman['types']['zelf'] = 0;
             }
-            if ($koopman['types']['zelf'] >= $koopman['totaal']/2) {
+            if ($koopman['types']['zelf'] >= $koopman['totaal'] / 2) {
                 unset($koopmannen[$koopman['id']]);
             }
         }
@@ -1171,10 +1168,10 @@ class RapportController extends AbstractController
     }
 
     /**
-     * @Route("/rapport/aanwezigheid/markten/excel/week/{marktId}/{datum}", name="app_rapport_frequentiemarktenweek_excel_datum")
+     * @Route("/rapport/aanwezigheid/markten/excel/week/{marktId}/{datum}")
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function persoonlijkeAanwezigheidExcelAction( MarktApi $api, int $marktId, string $datum = null): StreamedResponse
+    public function persoonlijkeAanwezigheidExcelAction(MarktApi $api, int $marktId, string $datum = null): StreamedResponse
     {
         $data = $this->persoonlijkeAanwezigheid($api, $marktId, $datum);
 
@@ -1191,18 +1188,18 @@ class RapportController extends AbstractController
         $activeSheet = $spreadsheet->getActiveSheet();
 
         $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
-        $activeSheet->getStyleByColumnAndRow(1,1)->getFont()->setSize(18)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 1)->getFont()->setSize(18)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
-        $activeSheet->getStyleByColumnAndRow(1,2)->getFont()->setSize(16)->setBold(false);
+        $activeSheet->getStyleByColumnAndRow(1, 2)->getFont()->setSize(16)->setBold(false);
 
         $activeSheet->setCellValueByColumnAndRow(1, 4, 'Totaaloverzicht verplichting niet gehaald');
-        $activeSheet->getStyleByColumnAndRow(1,4)->getFont()->setSize(17)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 4)->getFont()->setSize(17)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 6, 'erkenningsnummer');
         $activeSheet->setCellValueByColumnAndRow(2, 6, 'achternaam');
         $activeSheet->setCellValueByColumnAndRow(3, 6, 'voorletters');
-        $activeSheet->getStyleByColumnAndRow(1,6,3,6)->getFont()->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, 6, 3, 6)->getFont()->setBold(true);
 
         $i = 7;
         foreach ($data['koopmannen'] as $koopman) {
@@ -1218,18 +1215,18 @@ class RapportController extends AbstractController
         $i++;
 
         $activeSheet->setCellValueByColumnAndRow(1, $i, 'Rapportage per koopman');
-        $activeSheet->getStyleByColumnAndRow(1,$i)->getFont()->setSize(17)->setBold(true);
+        $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(17)->setBold(true);
 
         $i++;;
 
         foreach ($data['koopmannen'] as $koopman) {
             $i++;
             $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'] . '. ' . $koopman['achternaam'] . ', ' . $koopman['voorletters']);
-            $activeSheet->getStyleByColumnAndRow(1,$i)->getFont()->setSize(15)->setBold(true);
+            $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(15)->setBold(true);
 
             $i++;
             $activeSheet->setCellValueByColumnAndRow(1, $i, 'Inschrijfdatum:' . $koopman['inschrijf_datum']->format('d-m-Y'));
-            $activeSheet->getStyleByColumnAndRow(1,$i)->getFont()->setSize(14)->setBold(false);
+            $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(14)->setBold(false);
 
             $i++;
 
@@ -1240,7 +1237,7 @@ class RapportController extends AbstractController
                 $activeSheet->setCellValueByColumnAndRow(1, $i, $type);
                 $activeSheet->setCellValueByColumnAndRow(2, $i, $aanwezig);
                 $color = $koopman['inschrijf_datum_jaar_geleden'] ? 'ebcccc' : 'fcf8e3';
-                $activeSheet->getStyleByColumnAndRow(1,$i,2,$i)->getFill()
+                $activeSheet->getStyleByColumnAndRow(1, $i, 2, $i)->getFill()
                     ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
                     ->getStartColor()
                     ->setRGB($color);
@@ -1277,7 +1274,7 @@ class RapportController extends AbstractController
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function persoonlijkeAanwezigheidAction( MarktApi $api, int $marktId, string $datum = null): array
+    public function persoonlijkeAanwezigheidAction(MarktApi $api, int $marktId, string $datum = null): array
     {
         return $this->persoonlijkeAanwezigheid($api, $marktId, $datum);
     }
@@ -1294,7 +1291,7 @@ class RapportController extends AbstractController
         $maand = $request->query->get('maand', date('m'));
         $jaar = $request->query->get('jaar', date('Y'));
         $kwartaal = $request->query->get('kwartaal', floor(date('m') / 4));
-        $dagStart = $request->query->get('dagStart', date('Y-m-d', time() - (7*24*60*60)));
+        $dagStart = $request->query->get('dagStart', date('Y-m-d', time() - (7 * 24 * 60 * 60)));
         $dagEind = $request->query->get('dagEind', date('Y-m-d'));
         $huidige_dag = Date('Y-m-d');
 
@@ -1333,7 +1330,9 @@ class RapportController extends AbstractController
 
         $marktIds = $request->query->get('marktIds', []);
         if (count($marktIds) === 0) {
-            $marktIds = array_map(function ($o) { return $o['id']; }, $markten);
+            $marktIds = array_map(function ($o) {
+                return $o['id'];
+            }, $markten);
         }
 
         $rapport = $api->getRapportFactuurDetail($marktIds,  date("Y-m-d", strtotime($dagStart)), date("Y-m-d", strtotime($dagEind)));
@@ -1448,7 +1447,7 @@ class RapportController extends AbstractController
             'dag' => $dag,
             'maand' => $maand,
             'jaar' => $jaar,
-            'jaartallen' => range(2015,2100),
+            'jaartallen' => range(2015, 2100),
             'kwartaal' => $kwartaal,
             'periode' => $periode,
             'dagStart' => date("d-m-Y", strtotime($dagStart)),
@@ -1711,11 +1710,9 @@ class RapportController extends AbstractController
                     $activeSheet->setCellValueByColumnAndRow(60, $i, $recordArray['totaalAantalMeter']);
                     $activeSheet->setCellValueByColumnAndRow(61, $i, $recordArray['totaalAantalMeter%']);
                     $activeSheet->getCellByColumnAndRow(61, $i)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE);
-
-
                 }
                 $spreadsheet->getActiveSheet()->setAutoFilter($spreadsheet->getActiveSheet()->calculateWorksheetDimension());
-                $activeSheet->freezePaneByColumnAndRow(9,2);
+                $activeSheet->freezePaneByColumnAndRow(9, 2);
 
                 $writer = new Xlsx($spreadsheet);
                 $response =  new StreamedResponse(
@@ -1731,7 +1728,6 @@ class RapportController extends AbstractController
                 $response->headers->set('Content-Disposition', $dispositionHeader);
 
                 return $response;
-
             }
         }
 
