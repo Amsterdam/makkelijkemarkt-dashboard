@@ -143,10 +143,6 @@ class AccountController extends AbstractController
      */
     public function unlockAction(MarktApi $api, int $id, Request $client): RedirectResponse
     {
-        if($this->isCsrfTokenValid('unlock-account', $client->request->get('csrf')) === false){
-           throw $this->createAccessDeniedException();
-        }
-
         $api->unlockAccount($id);
 
         return $this->redirectToRoute('app_account_index');
