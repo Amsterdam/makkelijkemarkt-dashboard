@@ -237,10 +237,6 @@ class DagvergunningController extends AbstractController
         $markt = $api->getMarkt($marktId);
         $dag = new \DateTime($date);
 
-        if($this->isCsrfTokenValid('delete-controlelijst', $client->request->get('csrf')) === false){
-            throw $this->createAccessDeniedException();
-        }
-        
         $api->resetAudit($marktId, $dag);
 
         return [
