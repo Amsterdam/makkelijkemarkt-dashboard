@@ -90,7 +90,7 @@
                     {% endif %}
                 </ul>
 
-                {% if is_granted('ROLE_USER') %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <ul class="nav navbar-nav navbar-right ml-auto">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
