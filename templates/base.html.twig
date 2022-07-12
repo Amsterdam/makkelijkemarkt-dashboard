@@ -42,15 +42,15 @@
                         </li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                    {% if is_granted('ROLE_USER') %}
                         <li class="nav-item"><a class="nav-link"  href="{{ path('app_dagvergunning_index') }}">Dagvergunningen</a></li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                    {% if is_granted('ROLE_USER') %}
                         <li class="nav-item"><a class="nav-link" href="{{ path('app_lijst_index') }}">Lijsten</a></li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_USER') %}
+                    {% if is_granted('ROLE_USER') or is_granted('ROLE_ACCOUNTANT') %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Rapportages
@@ -73,7 +73,7 @@
                         </li>
                     {% endif %}
 
-                    {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') %}
+                    {% if is_granted('ROLE_USER') %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Stamgegevens
