@@ -139,7 +139,7 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/accounts/unlock/{id}",  methods={"POST"})
-     * @Security("is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function unlockAction(MarktApi $api, int $id, Request $client): RedirectResponse
     {
