@@ -84,6 +84,10 @@ class TariefplanController extends AbstractController
      */
     public function deleteAction(Request $request, MarktApi $api, int $tariefPlanId): RedirectResponse
     {
+        if ($this->isCsrfTokenValid('app_tariefplan_delete', $request->request->get('_csrf')) === false) {
+            throw $this->createAccessDeniedException();
+        }
+
         $tariefplan = $api->getTariefPlan($tariefPlanId);
         $api->deleteTariefPlan($tariefplan['id']);
 
