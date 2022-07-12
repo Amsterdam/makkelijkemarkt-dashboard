@@ -10,7 +10,7 @@
 
 {% extends "base.html.twig" %}
 
-{% block title %}Frequentie Dag - {% endblock %}
+{% block title %}Frequentie persoonlijke aanwezigheid - {% endblock %}
 
 {% block css %}
         {{ encore_entry_link_tags('app') }}
@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block document %}
-    <h1>Frequentie dagmarkt - {{ markt.naam }}</h1>
+    <h1>Frequentie persoonlijke aanwezigheid - {{ markt.naam }}</h1>
     <h4><a href="{{ path('app_rapport_persoonlijkeaanwezigheid', {'marktId': markt.id, 'datum': lastQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&lt;</a> {{ startDate|date('d-m-Y') }} - {{ endDate|date('d-m-Y') }} {% if today > endDate %}<a href="{{ path('app_rapport_persoonlijkeaanwezigheid', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>{% endif %}</h4>
 
     <h2>Totaaloverzicht verplichting niet gehaald</h2>

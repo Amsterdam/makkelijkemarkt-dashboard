@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block document %}
-    <h1>Frequentie dagmarkt - {{ markt.naam }}</h1>
+    <h1>Frequentie invoer - {{ markt.naam }}</h1>
     <h4><a href="{{ path('app_rapport_invoer', {'marktId': markt.id, 'datum': lastQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&lt;</a> {{ startDate|date('d-m-Y') }} - {{ endDate|date('d-m-Y') }} {% if today > endDate %}<a href="{{ path('app_rapport_invoer', {'marktId': markt.id, 'datum': nextQuarterDate|date('Y-m-d')}) }}" class="btn btn-info">&gt;</a>{% endif %}</h4>
 
     <h2>Invoer rapportage per koopman</h2>

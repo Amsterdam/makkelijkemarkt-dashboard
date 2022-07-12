@@ -518,7 +518,7 @@ class RapportController extends AbstractController
         $spreadsheet->setActiveSheetIndex(0);
         $activeSheet = $spreadsheet->getActiveSheet();
 
-        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
+        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie sollicitanten - ' . $data['markt']['naam']);
         $activeSheet->getStyleByColumnAndRow(1, 1)->getFont()->setSize(18)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
@@ -630,7 +630,7 @@ class RapportController extends AbstractController
         $spreadsheet->setActiveSheetIndex(0);
         $activeSheet = $spreadsheet->getActiveSheet();
 
-        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
+        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie weekmarkt - ' . $data['markt']['naam']);
         $activeSheet->getStyleByColumnAndRow(1, 1)->getFont()->setSize(18)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
@@ -1030,7 +1030,7 @@ class RapportController extends AbstractController
     }
 
     /**
-     * @Route("/rapport/frequentie/markten/week/{marktId}/{datum}", name="app_rapport_frequentiemarktenweek_datum")
+     * @Route("/rapport/frequentie/markten/week/{marktId}/{datum}")
      * @Route("/rapport/frequentie/markten/week/{marktId}")
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
@@ -1187,7 +1187,7 @@ class RapportController extends AbstractController
         $spreadsheet->setActiveSheetIndex(0);
         $activeSheet = $spreadsheet->getActiveSheet();
 
-        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie dagmarkt - ' . $data['markt']['naam']);
+        $activeSheet->setCellValueByColumnAndRow(1, 1, 'Frequentie persoonlijke aanwezigheid - ' . $data['markt']['naam']);
         $activeSheet->getStyleByColumnAndRow(1, 1)->getFont()->setSize(18)->setBold(true);
 
         $activeSheet->setCellValueByColumnAndRow(1, 2, 'Bereik: ' . $data['startDate']->format('d-m-Y') . ' - ' . $data['endDate']->format('d-m-Y'));
