@@ -27,7 +27,7 @@ class LijstController extends AbstractController
      * @Route("/lijsten")
      * @Route("/lijsten/{dag}", name="app_index_met_dag")
      * @Template()
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function indexAction( string $dag = null, MarktApi $api): array
     {
@@ -62,7 +62,7 @@ class LijstController extends AbstractController
 
     /**
      * @Route("/lijsten/week/sollicitanten/{marktId}/{dag}")
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function weeklijstSollicitantenPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
@@ -87,7 +87,7 @@ class LijstController extends AbstractController
 
     /**
      * @Route("/lijsten/barcode/{marktId}/{dag}")
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function lijstBarcodePdfAction(int $marktId, string $dag, MarktApi $api, PdfBarcodeService $pdfBarcode): void
     {
@@ -111,7 +111,7 @@ class LijstController extends AbstractController
 
     /**
      * @Route("/lijsten/week/vasteplaatsen/{marktId}/{dag}")
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function weeklijstVastePlaatsenPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
@@ -136,7 +136,7 @@ class LijstController extends AbstractController
 
     /**
      * @Route("/lijsten/a/{marktId}/{dag}")
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function alijstPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void 
     {
@@ -162,7 +162,7 @@ class LijstController extends AbstractController
 
     /**
      * @Route("/lijsten/b/{marktId}/{dag}")
-     * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
+     * @Security("is_granted('ROLE_USER')")
      */
     public function blijstPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
