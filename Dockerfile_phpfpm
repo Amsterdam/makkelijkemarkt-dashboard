@@ -45,6 +45,6 @@ RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
 RUN chown -R www-data: /var/www
 
-RUN vendor/bin/grumphp run
+RUN vendor/bin/grumphp run -n
 
 CMD ["php-fpm"]
