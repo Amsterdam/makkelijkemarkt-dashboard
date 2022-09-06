@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -27,27 +28,27 @@ class MarktType extends AbstractType
         $builder
             ->add('aantalKramen', IntegerType::class, [
                 'label' => 'Aantal kramen (capaciteit)',
-                'required' => true
+                'required' => true,
             ])
             ->add('maxAantalKramenPerOndernemer', IntegerType::class, [
                 'label' => 'Maximaal aantal kramen per ondernemer',
-                'required' => false
+                'required' => false,
             ])
             ->add('aantalMeter', IntegerType::class, [
                 'label' => 'Aantal meters (capaciteit)',
-                'required' => true
+                'required' => true,
             ])
             ->add('auditMax', IntegerType::class, [
                 'label' => 'Steekproef maximaal aanvullen tot',
-                'required' => true
+                'required' => true,
             ])
             ->add('indelingstype', ChoiceType::class, [
                 'label' => 'Indelingstype',
                 'required' => true,
                 'choices' => [
                     'traditioneel' => 'traditioneel',
-                    'a/b-lijst' => 'a/b-lijst'
-                ]
+                    'a/b-lijst' => 'a/b-lijst',
+                ],
             ])
             ->add('marktDagenTekst', TextType::class, [
                 'label' => 'Marktdagen, als tekstuele omschrijving',
@@ -56,7 +57,7 @@ class MarktType extends AbstractType
             ->add('marktDagen', ChoiceType::class, [
                 'label' => 'Marktdagen',
                 'expanded' => true,
-                'multiple'=> true,
+                'multiple' => true,
                 'required' => false,
                 'choices' => [
                     'Maandag' => 'ma',
@@ -66,7 +67,7 @@ class MarktType extends AbstractType
                     'Vrijdag' => 'vr',
                     'Zaterdag' => 'za',
                     'Zondag' => 'zo',
-                ]
+                ],
             ])
             ->add('indelingsTijdstipTekst', TextType::class, [
                 'label' => 'Indelingstijdstip, als tekstuele omschrijving',
@@ -78,15 +79,15 @@ class MarktType extends AbstractType
             ])
             ->add('makkelijkeMarktActief', CheckboxType::class, [
                 'label' => 'Zichtbaar in Makkelijke Markt app?',
-                'required' => false
+                'required' => false,
             ])
             ->add('kiesJeKraamActief', CheckboxType::class, [
                 'label' => 'Zichtbaar in Kies Je Kraam app?',
-                'required' => false
+                'required' => false,
             ])
             ->add('marktBeeindigd', CheckboxType::class, [
                 'label' => 'Einddatum verstreken',
-                'required' => false
+                'required' => false,
             ])
             ->add('kiesJeKraamFase', ChoiceType::class, [
                 'label' => 'In welke fase bevind zich de implementatie van Kies je kraam op deze markt?',
@@ -95,12 +96,12 @@ class MarktType extends AbstractType
                     'voorbereiding' => 'voorbereiding',
                     'activatie' => 'activatie',
                     'wenperiode' => 'wenperiode',
-                    'live' => 'live'
-                ]
+                    'live' => 'live',
+                ],
             ])
             ->add('kiesJeKraamMededelingActief', CheckboxType::class, [
                 'label' => 'Mededeling binnen Kies je kraam weergeven',
-                'required' => false
+                'required' => false,
             ])
             ->add('kiesJeKraamMededelingTitel', TextType::class, [
                 'label' => 'Mededeling: Titel',
@@ -131,4 +132,3 @@ class MarktType extends AbstractType
         return str_replace('\\', '_', __CLASS__);
     }
 }
-

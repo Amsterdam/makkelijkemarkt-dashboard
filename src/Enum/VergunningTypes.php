@@ -13,15 +13,15 @@ namespace App\Enum;
 
 class VergunningTypes
 {
-    const soll = 'Sollicitant';
-    const vpl  = 'Vaste plaats';
-    const vkk  = 'Voorkeurskaart';
+    const SOLL = 'Sollicitant';
+    const VPL = 'Vaste plaats';
+    const VKK = 'Voorkeurskaart';
 
-    public static function all(): array 
+    public static function all(): array
     {
         $object = new self();
         $reflection = new \ReflectionClass($object);
-        
+
         return $reflection->getConstants();
     }
 }

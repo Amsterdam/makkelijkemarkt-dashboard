@@ -10,11 +10,12 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Enum;
 
 class ActiveStates
 {
-    const ROLE_ACTIVE   = '1';
+    const ROLE_ACTIVE = '1';
     const ROLE_INACTIVE = '0';
 
     public static function all(): array

@@ -10,15 +10,16 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
+use App\Form\MarktType;
 use App\Service\MarktApi;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use App\Form\MarktType;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MarktController extends AbstractController
 {
@@ -31,9 +32,9 @@ class MarktController extends AbstractController
     {
         $markten = $api->getNonExpiredMarkten();
 
-        return ['markten' => $markten, 'title' => "Markten", 'index' => true];
+        return ['markten' => $markten, 'title' => 'Markten', 'index' => true];
     }
-    
+
     /**
      * @Route("/markten/archief")
      * @Template("markt/index.html.twig")
@@ -43,7 +44,7 @@ class MarktController extends AbstractController
     {
         $markten = $api->getExpiredMarkten();
 
-        return ['markten' => $markten, 'title' => "Markten archief", 'index' => false];
+        return ['markten' => $markten, 'title' => 'Markten archief', 'index' => false];
     }
 
     /**
@@ -62,6 +63,7 @@ class MarktController extends AbstractController
             if ($form->isValid()) {
                 $api->postMarkt($markt['id'], $form->getData());
                 $this->addFlash('success', 'Opgeslagen');
+
                 return $this->redirectToRoute('app_markt_index');
             }
 

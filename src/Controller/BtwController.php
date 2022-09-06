@@ -10,15 +10,16 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
-use App\Service\MarktApi;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\HttpFoundation\Request;
 use App\Form\BtwCreateType;
+use App\Service\MarktApi;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class BtwController extends AbstractController
 {
@@ -44,7 +45,7 @@ class BtwController extends AbstractController
     {
         $formModel = [
             'jaar' => null === $jaar ? '' : $jaar,
-            'hoog' => ''
+            'hoog' => '',
         ]
         ;
         $form = $this->createForm(BtwCreateType::class, $formModel);
@@ -54,6 +55,7 @@ class BtwController extends AbstractController
             if ($form->isValid()) {
                 $api->postBtw($form->getData());
                 $this->addFlash('success', 'Aangemaakt');
+
                 return $this->redirectToRoute('app_btw_index');
             }
 
@@ -62,7 +64,7 @@ class BtwController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 }

@@ -79,7 +79,7 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator
         try {
             $user = $this->api->login($credentials['username'], $credentials['password']);
         } catch (ClientException $e) {
-            if ($e->getResponse()->getStatusCode() === 403 || $e->getResponse()->getStatusCode() === 401 || $e->getResponse()->getStatusCode() === 404) {
+            if (403 === $e->getResponse()->getStatusCode() || 401 === $e->getResponse()->getStatusCode() || 404 === $e->getResponse()->getStatusCode()) {
                 throw new AuthenticationException('Username or password invalid or account is locked');
             }
             throw $e;

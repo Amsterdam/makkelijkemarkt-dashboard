@@ -10,15 +10,15 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class ConcreetPlanType extends AbstractType
 {
@@ -27,34 +27,34 @@ class ConcreetPlanType extends AbstractType
         $builder
             ->add('naam', TextType::class, [])
             ->add('geldigVanaf', DateType::class, [
-                'label'   => 'Geldig vanaf'
+                'label' => 'Geldig vanaf',
             ])
             ->add('geldigTot', DateType::class, [
-                'label'   => 'Geldig tot'
+                'label' => 'Geldig tot',
             ])
             ->add('een_meter', NumberType::class, [
-                'label'   => 'Een meter'
+                'label' => 'Een meter',
             ])
             ->add('drie_meter', NumberType::class, [
-                'label'   => 'Drie meter'
+                'label' => 'Drie meter',
             ])
             ->add('vier_meter', NumberType::class, [
-                'label'   => 'Vier meter'
+                'label' => 'Vier meter',
             ])
             ->add('elektra', NumberType::class, [
-                'label'   => 'Elektra'
+                'label' => 'Elektra',
             ])
             ->add('promotieGeldenPerMeter', NumberType::class, [
-                'label'   => 'Promotie gelden per meter'
+                'label' => 'Promotie gelden per meter',
             ])
             ->add('promotieGeldenPerKraam', NumberType::class, [
-                'label'   => 'Promotie gelden per kraam'
+                'label' => 'Promotie gelden per kraam',
             ])
             ->add('afvaleiland', NumberType::class, [
-                'label'   => 'Afvaleiland'
+                'label' => 'Afvaleiland',
             ])
             ->add('eenmaligElektra', NumberType::class, [
-                'label'   => 'Eenmalig elektra'
+                'label' => 'Eenmalig elektra',
             ])
             ->add('save', SubmitType::class, ['label' => 'Opslaan']);
     }

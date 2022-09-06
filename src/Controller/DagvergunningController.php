@@ -10,14 +10,15 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use App\Service\MarktApi;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class DagvergunningController extends AbstractController
 {
@@ -32,8 +33,10 @@ class DagvergunningController extends AbstractController
         if ($request->query->get('marktId') && $request->query->get('datum')) {
             $dag = implode('-', array_reverse(explode('-', $request->query->get('datum'))));
 
-            return $this->redirectToRoute('app_dagvergunning_dayview',
-                ['marktId' => $request->query->get('marktId'), 'dag' => $dag]);
+            return $this->redirectToRoute(
+                'app_dagvergunning_dayview',
+                ['marktId' => $request->query->get('marktId'), 'dag' => $dag]
+            );
         }
 
         $markten = $api->getNonExpiredMarkten();
@@ -41,7 +44,7 @@ class DagvergunningController extends AbstractController
 
         return ['markten' => $markten, 'dag' => $defaultDag];
     }
-    
+
     /**
      * @Route("/dagvergunningen/{marktId}/{dag}")
      * @Template
@@ -52,7 +55,7 @@ class DagvergunningController extends AbstractController
         $markten = $api->getNonExpiredMarkten();
         $selectedMarkt = '';
         foreach ($markten as $markt) {
-            if($markt['id'] == $marktId){
+            if ($markt['id'] == $marktId) {
                 $selectedMarkt = $markt;
             }
         }
@@ -100,7 +103,7 @@ class DagvergunningController extends AbstractController
             'extra.elektra_totaal' => 0,
             'extra.krachtstroom' => 0,
             'extra.reiniging' => 0,
-            'extra.agf' => 0
+            'extra.agf' => 0,
         ];
 
         $multipleOnSameMarket = [];
@@ -108,29 +111,29 @@ class DagvergunningController extends AbstractController
         $audits = [
             'total' => 0,
             'first' => 0,
-            'second' => 0
+            'second' => 0,
         ];
-        
+
         foreach ($dagvergunningen as &$dagvergunning) {
-            if ($dagvergunning['doorgehaald'] === false) {
-                if (isset($multipleOnSameMarket[$dagvergunning['erkenningsnummer']]) === false) {
+            if (false === $dagvergunning['doorgehaald']) {
+                if (false === isset($multipleOnSameMarket[$dagvergunning['erkenningsnummer']])) {
                     $multipleOnSameMarket[$dagvergunning['erkenningsnummer']] = 0;
                 }
-                $multipleOnSameMarket[$dagvergunning['erkenningsnummer']] ++;
+                ++$multipleOnSameMarket[$dagvergunning['erkenningsnummer']];
 
                 // totaal dagvergunningen (actief)
-                $stats['total'] ++;
+                ++$stats['total'];
                 // dagvergunningen per status
-                if (isset($stats['status.'.$dagvergunning['status']]) === true) {
-                    $stats['status.'.$dagvergunning['status']] ++;
+                if (true === isset($stats['status.'.$dagvergunning['status']])) {
+                    ++$stats['status.'.$dagvergunning['status']];
                 } else {
-                    $stats['status.?'] ++;
+                    ++$stats['status.?'];
                 }
                 // per aanwezigheid
-                if (isset($stats['aanwezig.'.$dagvergunning['aanwezig']]) === true) {
-                    $stats['aanwezig.'.$dagvergunning['aanwezig']] ++;
+                if (true === isset($stats['aanwezig.'.$dagvergunning['aanwezig']])) {
+                    ++$stats['aanwezig.'.$dagvergunning['aanwezig']];
                 } else {
-                    $stats['aanwezig.?'] ++;
+                    ++$stats['aanwezig.?'];
                 }
                 // per kraamlengte en totale kraamlengte
                 $stats['meters.aantal_3m'] += $dagvergunning['aantal3MeterKramen'];
@@ -147,14 +150,14 @@ class DagvergunningController extends AbstractController
                     + ($dagvergunning['kleinPerMeter'] * 1);
                 // extra's
                 if ($dagvergunning['aantalElektra'] > 0) {
-                    $stats['extra.elektra_afgenomen'] ++;
+                    ++$stats['extra.elektra_afgenomen'];
                 }
                 $stats['extra.elektra_totaal'] = $stats['extra.elektra_totaal'] + $dagvergunning['aantalElektra'];
-                if ($dagvergunning['krachtstroom'] === true) {
-                    $stats['extra.krachtstroom'] ++;
+                if (true === $dagvergunning['krachtstroom']) {
+                    ++$stats['extra.krachtstroom'];
                 }
-                if ($dagvergunning['reiniging'] === true) {
-                    $stats['extra.reiniging'] ++;
+                if (true === $dagvergunning['reiniging']) {
+                    ++$stats['extra.reiniging'];
                 }
 
                 if ($dagvergunning['afvalEilandAgf'] > 0) {
@@ -162,32 +165,32 @@ class DagvergunningController extends AbstractController
                 }
             } else {
                 // doorgehaald
-                $stats['doorgehaald'] ++;
+                ++$stats['doorgehaald'];
             }
 
             if ($dagvergunning['audit']) {
-                $audits['total'] ++;
+                ++$audits['total'];
             }
 
             if (isset($dagvergunning['controles'])) {
                 foreach ($dagvergunning['controles'] as &$controle) {
-                    $controle['registratieDatumtijd']= new \DateTime($controle['registratieDatumtijd']);
+                    $controle['registratieDatumtijd'] = new \DateTime($controle['registratieDatumtijd']);
 
                     switch ($controle['ronde']) {
                         case 1:
-                            $audits['first'] ++;
+                            $audits['first']++;
                             break;
                         case 2:
-                            $audits['second'] ++;
+                            $audits['second']++;
                             break;
                     }
                 }
             }
 
             if (isset($dagvergunning['factuur']) && isset($dagvergunning['factuur']['producten'])) {
-                if ($dagvergunning['doorgehaald']=== false) {
+                if (false === $dagvergunning['doorgehaald']) {
                     foreach ($dagvergunning['factuur']['producten'] as $product) {
-                        $pinTotaalInclusief += (float)$product['totaal_inclusief'];
+                        $pinTotaalInclusief += (float) $product['totaal_inclusief'];
                     }
                 }
             }
@@ -197,11 +200,9 @@ class DagvergunningController extends AbstractController
             }
         }
 
-        
         $multipleOnSameMarket = array_filter($multipleOnSameMarket, function ($value) {
             return $value > 1;
         });
-
 
         $methodes = [
             'handmatig' => 'HND',
@@ -222,7 +223,7 @@ class DagvergunningController extends AbstractController
             'methodes' => $methodes,
             'pinTotaalInclusief' => $pinTotaalInclusief,
             'audits' => $audits,
-            'marktId' => $marktId
+            'marktId' => $marktId,
         ];
     }
 
@@ -230,14 +231,13 @@ class DagvergunningController extends AbstractController
      * @Route("/dagvergunningen/controlelijst_delete/{marktId}/{date}", methods={"POST"})
      * @Template
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
-     *
      */
     public function deleteControlelijstAction(Request $client, MarktApi $api, int $marktId, string $date): array
     {
         $markt = $api->getMarkt($marktId);
         $dag = new \DateTime($date);
 
-        if($this->isCsrfTokenValid('delete-controlelijst', $client->request->get('csrf')) === false){
+        if (false === $this->isCsrfTokenValid('delete-controlelijst', $client->request->get('csrf'))) {
             throw $this->createAccessDeniedException();
         }
 
@@ -249,4 +249,3 @@ class DagvergunningController extends AbstractController
         ];
     }
 }
-

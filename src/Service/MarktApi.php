@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
 
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class MarktApi
@@ -46,12 +47,12 @@ class MarktApi
         if ($this->security->getUser() && $addAuthorization) {
             /** @var User $user */
             $user = $this->security->getUser();
-            $options['headers']['Authorization'] = 'Bearer ' .  $user->getToken();
+            $options['headers']['Authorization'] = 'Bearer '.$user->getToken();
         }
 
         $options['headers']['MmAppKey'] = $this->mmAppKey;
 
-        return $this->client->request($method, rtrim($this->marktApi, '/') . $url, $options);
+        return $this->client->request($method, rtrim($this->marktApi, '/').$url, $options);
     }
 
     public function login(string $username, string $password)
@@ -62,11 +63,11 @@ class MarktApi
             ['json' => ['username' => $username, 'password' => $password, 'clientApp' => 'dashboard']],
             false
         )->toArray();
-   }
+    }
 
     public function getMarkt(int $id): array
     {
-        return $this->makeRequest('GET', '/markt/' . $id)->toArray();
+        return $this->makeRequest('GET', '/markt/'.$id)->toArray();
     }
 
     public function getMarkten(): array
@@ -74,33 +75,39 @@ class MarktApi
         return $this->makeRequest('GET', '/markt/')->toArray();
     }
 
-    public function getNonExpiredMarkten(): array{
+    public function getNonExpiredMarkten(): array
+    {
         $markten = $this->getMarkten();
-        $filteredMarkten = array_filter($markten, function($markt){
-            if($markt["marktBeeindigd"] === true){
+        $filteredMarkten = array_filter($markten, function ($markt) {
+            if (true === $markt['marktBeeindigd']) {
                 return false;
             }
+
             return true;
         });
+
         return $filteredMarkten;
     }
 
-    public function getExpiredMarkten(): array{
+    public function getExpiredMarkten(): array
+    {
         $markten = $this->getMarkten();
-        $filteredMarkten = array_filter($markten, function($markt){
-            if($markt["marktBeeindigd"] === true){
+        $filteredMarkten = array_filter($markten, function ($markt) {
+            if (true === $markt['marktBeeindigd']) {
                 return true;
             }
+
             return false;
         });
+
         return $filteredMarkten;
     }
 
     public function getMarktenByName(): array
     {
-        $markten= $this->makeRequest('GET', '/markt/')->toArray();
+        $markten = $this->makeRequest('GET', '/markt/')->toArray();
 
-        $marktNamen = array();
+        $marktNamen = [];
         foreach ($markten as $markt) {
             $marktNamen[] = $markt['naam'];
         }
@@ -121,7 +128,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'GET',
-            '/dagvergunning_by_date/' . $koopmanId . '/' . $startDate->format('Y-m-d') . '/' . $endDate->format('Y-m-d')
+            '/dagvergunning_by_date/'.$koopmanId.'/'.$startDate->format('Y-m-d').'/'.$endDate->format('Y-m-d')
         )->toArray();
     }
 
@@ -129,7 +136,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'GET',
-            '/koopman/id/' . $id
+            '/koopman/id/'.$id
         )->toArray();
     }
 
@@ -146,8 +153,9 @@ class MarktApi
         $content = [
             'fullListLength' => (int) reset($fullListLengthHeaders),
             'responseListLength' => count($content),
-            'results' => $content
+            'results' => $content,
         ];
+
         return $content;
     }
 
@@ -155,7 +163,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'POST',
-            '/koopman/toggle_handhavingsverzoek/' . $id. '/' . $date->format('Y-m-d')
+            '/koopman/toggle_handhavingsverzoek/'.$id.'/'.$date->format('Y-m-d')
         );
     }
 
@@ -163,7 +171,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'POST',
-            '/markt/' . $id,
+            '/markt/'.$id,
             ['json' => $data]
         );
     }
@@ -172,21 +180,21 @@ class MarktApi
     {
         return $this->makeRequest(
             'POST',
-            '/audit_reset/' . $marktId . '/' . $datum->format('Y-m-d')
+            '/audit_reset/'.$marktId.'/'.$datum->format('Y-m-d')
         );
     }
 
-    public function getLijstenMetDatum(int $marktId, array $types = array(), \DateTime $startDate, \DateTime $endDate): array
+    public function getLijstenMetDatum(int $marktId, \DateTime $startDate, \DateTime $endDate, array $types = []): array
     {
         return $this->makeRequest(
             'GET',
-            '/lijst/week/' . $marktId .'/' . implode('|', $types) . '/' . $startDate->format('Y-m-d') . '/' . $endDate->format('Y-m-d')
+            '/lijst/week/'.$marktId.'/'.implode('|', $types).'/'.$startDate->format('Y-m-d').'/'.$endDate->format('Y-m-d')
         )->toArray();
     }
 
     public function getAccount(int $id): array
     {
-        return $this->makeRequest('GET', '/account/' . $id)->toArray();
+        return $this->makeRequest('GET', '/account/'.$id)->toArray();
     }
 
     public function getAccounts(int $active = -1, int $locked = -1)
@@ -202,7 +210,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'PUT',
-            '/account/' . $id,
+            '/account/'.$id,
             ['json' => $data]
         )->toArray();
     }
@@ -211,7 +219,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'PUT',
-            '/account_password/' . $id,
+            '/account_password/'.$id,
             ['json' => $data]
         )->toArray();
     }
@@ -227,14 +235,14 @@ class MarktApi
 
     public function unlockAccount(int $accountId)
     {
-        return $this->makeRequest('POST', '/account/unlock/' . $accountId);
+        return $this->makeRequest('POST', '/account/unlock/'.$accountId);
     }
 
     public function getTokensByAccount(int $accountId, int $listOffset, int $listLength)
     {
         $response = $this->makeRequest(
             'GET',
-            '/account/' . $accountId . '/tokens',
+            '/account/'.$accountId.'/tokens',
             ['query' => ['listOffset' => $listOffset, 'listLength' => $listLength]]
         );
 
@@ -243,56 +251,57 @@ class MarktApi
         $content = [
             'fullListLength' => (int) reset($fullListLengthHeaders),
             'responseListLength' => count($content),
-            'results' => $content
+            'results' => $content,
         ];
+
         return $content;
     }
 
     public function getTariefPlan(int $id): array
     {
-        return $this->makeRequest('GET', '/tariefplannen/get/' . $id)->toArray();
+        return $this->makeRequest('GET', '/tariefplannen/get/'.$id)->toArray();
     }
 
     public function getTariefplannenByMarktId(int $marktId): array
     {
-        return $this->makeRequest('GET', '/tariefplannen/list/' . $marktId)->toArray();
+        return $this->makeRequest('GET', '/tariefplannen/list/'.$marktId)->toArray();
     }
 
     public function postLineairTariefplan(int $marktId, array $data)
     {
-        return $this->makeRequest('POST', '/tariefplannen/' . $marktId . '/create/lineair', ['json' => $data]);
+        return $this->makeRequest('POST', '/tariefplannen/'.$marktId.'/create/lineair', ['json' => $data]);
     }
 
     public function postConcreetTariefplan(int $marktId, array $data)
     {
-        return $this->makeRequest('POST', '/tariefplannen/' . $marktId . '/create/concreet', ['json' => $data]);
+        return $this->makeRequest('POST', '/tariefplannen/'.$marktId.'/create/concreet', ['json' => $data]);
     }
 
     public function updateLineairTariefplan(int $tariefPlanId, array $data)
     {
-        return  $this->makeRequest('POST', '/tariefplannen/' . $tariefPlanId . '/update/lineair', ['json' => $data]);
+        return $this->makeRequest('POST', '/tariefplannen/'.$tariefPlanId.'/update/lineair', ['json' => $data]);
     }
 
     public function updateConcreetTariefplan(int $tariefPlanId, array $data)
     {
-        return $this->makeRequest('POST', '/tariefplannen/' . $tariefPlanId . '/update/concreet', ['json' => $data]);
+        return $this->makeRequest('POST', '/tariefplannen/'.$tariefPlanId.'/update/concreet', ['json' => $data]);
     }
 
     public function deleteTariefPlan(int $id): void
     {
-        $this->makeRequest('DELETE', '/tariefplannen/delete/' . $id);
+        $this->makeRequest('DELETE', '/tariefplannen/delete/'.$id);
     }
 
     public function getRapportDubbelstaan(string $dag): array
     {
-        return $this->makeRequest('GET', '/rapport/dubbelstaan/' . $dag)->toArray();
+        return $this->makeRequest('GET', '/rapport/dubbelstaan/'.$dag)->toArray();
     }
 
     public function getRapportStaanverplichting(array $marktIds, string $dagStart, string $dagEind, string $vergunningType): array
     {
         return $this->makeRequest(
             'GET',
-            '/rapport/staanverplichting/' . $dagStart . '/' . $dagEind . '/' . $vergunningType,
+            '/rapport/staanverplichting/'.$dagStart.'/'.$dagEind.'/'.$vergunningType,
             ['query' => ['marktId' => $marktIds]]
         )->toArray();
     }
@@ -301,7 +310,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'GET',
-            '/rapport/invoer/' . $marktId . '/' . $dagStart->format('Y-m-d') . '/' . $dagEind->format('Y-m-d')
+            '/rapport/invoer/'.$marktId.'/'.$dagStart->format('Y-m-d').'/'.$dagEind->format('Y-m-d')
         )->toArray();
     }
 
@@ -309,7 +318,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'GET',
-            '/rapport/aanwezigheid/' . $marktId . '/' . $dagStart->format('Y-m-d') . '/' . $dagEind->format('Y-m-d')
+            '/rapport/aanwezigheid/'.$marktId.'/'.$dagStart->format('Y-m-d').'/'.$dagEind->format('Y-m-d')
         )->toArray();
     }
 
@@ -322,23 +331,24 @@ class MarktApi
                 'query' => [
                     'marktId' => $marktId,
                     'dagStart' => $dagStart->format('Y-m-d'),
-                    'dagEind' => $dagEind->format('Y-m-d')
-                ]
+                    'dagEind' => $dagEind->format('Y-m-d'),
+                ],
             ]
         )->toArray();
     }
 
-    public function getFactuurOverzicht( string $van, string $tot): array
+    public function getFactuurOverzicht(string $van, string $tot): array
     {
-        return $this->makeRequest('GET', '/report/factuur/overzicht/' . $van . '/' . $tot)->toArray();
+        return $this->makeRequest('GET', '/report/factuur/overzicht/'.$van.'/'.$tot)->toArray();
     }
 
     public function getFactuurMarktOverzicht(int $marktId, string $van, string $tot): array
     {
         return $this->makeRequest(
             'GET',
-            '/report/factuur/overzichtmarkt/' . $marktId. '/' . $van . '/' . $tot, []
-         )->toArray();
+            '/report/factuur/overzichtmarkt/'.$marktId.'/'.$van.'/'.$tot,
+            []
+        )->toArray();
     }
 
     public function getRapportFactuurDetail($marktIds, $dagStart, $dagEind): array
@@ -350,8 +360,8 @@ class MarktApi
                 'query' => [
                     'marktIds' => $marktIds,
                     'dagStart' => $dagStart,
-                    'dagEind' => $dagEind
-                ]
+                    'dagEind' => $dagEind,
+                ],
             ]
         )->toArray();
     }
@@ -360,7 +370,7 @@ class MarktApi
     {
         return $this->makeRequest(
             'GET',
-            '/rapport/frequentie/' . $marktId . '/' . $type . '/' . $dagStart->format('Y-m-d') . '/' . $dagEind->format('Y-m-d'),
+            '/rapport/frequentie/'.$marktId.'/'.$type.'/'.$dagStart->format('Y-m-d').'/'.$dagEind->format('Y-m-d'),
         )->toArray();
     }
 
@@ -378,5 +388,4 @@ class MarktApi
     {
         return $this->makeRequest('GET', '/version/')->toArray();
     }
-
 }

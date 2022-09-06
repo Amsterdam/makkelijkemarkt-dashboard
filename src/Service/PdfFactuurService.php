@@ -1,15 +1,15 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Service;
 
-use App\Controller\KoopmanController;
 use TCPDF;
 
 class PdfFactuurService
 {
     /**
-     * @var \TCPDF $pdf
+     * @var \TCPDF
      */
     protected $pdf;
 
@@ -24,13 +24,13 @@ class PdfFactuurService
         $this->projectDir = $projectDir;
 
         $this->fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir .'/public/resources/fonts/Avenir-Roman.ttf',
+            $this->projectDir.'/public/resources/fonts/Avenir-Roman.ttf',
             'TrueTypeUnicode',
             '',
             96
         );
         $this->fontnameBold = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir .'/public/resources/fonts/Avenir-Heavy.ttf',
+            $this->projectDir.'/public/resources/fonts/Avenir-Heavy.ttf',
             'TrueTypeUnicode',
             '',
             96
@@ -55,7 +55,7 @@ class PdfFactuurService
         $this->pdf->AddPage();
 
         $this->pdf->Image(
-            $this->projectDir .'/public/resources/fonts/GASD_1.png',
+            $this->projectDir.'/public/resources/fonts/GASD_1.png',
             10,
             10,
             50
@@ -68,18 +68,18 @@ class PdfFactuurService
         $this->pdf->Cell(180, 6, 'Factuur overzicht marktbureau', 0, 1);
         $this->pdf->Ln(2);
         $this->pdf->SetFont($this->fontname, '', 14);
-        $this->pdf->SetFillColor(220,220,220);
-        $this->pdf->Cell(50, 6, 'Erkenningsnummer:', 0, 0, '' , true);
-        $this->pdf->Cell(130, 6, $koopman['erkenningsnummer'], 0, 1, '' , true);
-        $this->pdf->SetFillColor(255,255,255);
-        $this->pdf->Cell(50, 6, 'Naam:', 0, 0, '' , true);
-        $this->pdf->Cell(130, 6, $koopman['voorletters'] . ' ' . $koopman['achternaam'], 0, 1, '' , true);
-        $this->pdf->SetFillColor(220,220,220);
-        $this->pdf->Cell(50, 6, 'Periode:', 0, 0, '' , true);
-        $this->pdf->Cell(130, 6, $startDate->format('d-m-Y') . ' - ' . $endDate->format('d-m-Y'), 0, 1, '' , true);
+        $this->pdf->SetFillColor(220, 220, 220);
+        $this->pdf->Cell(50, 6, 'Erkenningsnummer:', 0, 0, '', true);
+        $this->pdf->Cell(130, 6, $koopman['erkenningsnummer'], 0, 1, '', true);
+        $this->pdf->SetFillColor(255, 255, 255);
+        $this->pdf->Cell(50, 6, 'Naam:', 0, 0, '', true);
+        $this->pdf->Cell(130, 6, $koopman['voorletters'].' '.$koopman['achternaam'], 0, 1, '', true);
+        $this->pdf->SetFillColor(220, 220, 220);
+        $this->pdf->Cell(50, 6, 'Periode:', 0, 0, '', true);
+        $this->pdf->Cell(130, 6, $startDate->format('d-m-Y').' - '.$endDate->format('d-m-Y'), 0, 1, '', true);
 
-        $totaalIncl      = 0;
-        $totaalExcl      = 0;
+        $totaalIncl = 0;
+        $totaalExcl = 0;
         $totaalProducten = 0;
 
         $vergunningenMetFactuur = [];
@@ -99,15 +99,15 @@ class PdfFactuurService
         $this->pdf->Cell(180, 6, 'Totalen:', 0, 1);
         $this->pdf->Ln(2);
         $this->pdf->SetFont($this->fontname, '', 14);
-        $this->pdf->SetFillColor(220,220,220);
-        $this->pdf->Cell(50, 6, 'Producten:', 0, 0, '' , true);
-        $this->pdf->Cell(130, 6, $totaalProducten, 0, 1, '' , true);
-        $this->pdf->SetFillColor(255,255,255);
-        $this->pdf->Cell(50, 6, 'Totaal inclusief btw:', 0, 0, '' , true);
-        $this->pdf->Cell(130, 6, '€ ' . $totaalIncl, 0, 1, '' , true);
-        $this->pdf->SetFillColor(220,220,220);
-        $this->pdf->Cell(50, 6, 'Totaal exclusief btw:', 0, 0, '' , true);
-        $this->pdf->Cell(130, 6, '€ ' . $totaalExcl, 0, 1, '' , true);
+        $this->pdf->SetFillColor(220, 220, 220);
+        $this->pdf->Cell(50, 6, 'Producten:', 0, 0, '', true);
+        $this->pdf->Cell(130, 6, $totaalProducten, 0, 1, '', true);
+        $this->pdf->SetFillColor(255, 255, 255);
+        $this->pdf->Cell(50, 6, 'Totaal inclusief btw:', 0, 0, '', true);
+        $this->pdf->Cell(130, 6, '€ '.$totaalIncl, 0, 1, '', true);
+        $this->pdf->SetFillColor(220, 220, 220);
+        $this->pdf->Cell(50, 6, 'Totaal exclusief btw:', 0, 0, '', true);
+        $this->pdf->Cell(130, 6, '€ '.$totaalExcl, 0, 1, '', true);
 
         foreach ($vergunningenMetFactuur as $vergunning) {
             $this->addVergunning($koopman, $vergunning);
@@ -118,10 +118,9 @@ class PdfFactuurService
 
     protected function addVergunning(array $koopman, array $vergunning): void
     {
-
         $this->pdf->AddPage();
         $this->pdf->Image(
-            $this->projectDir . '/public/resources/fonts/GASD_1.png',
+            $this->projectDir.'/public/resources/fonts/GASD_1.png',
             10,
             10,
             50
@@ -137,7 +136,7 @@ class PdfFactuurService
 
         $this->pdf->SetFont($this->fontname, 'b', 11);
         $this->pdf->Cell(16, 6, '', 0, 0);
-        $this->pdf->Cell(164, 6, $koopman['achternaam'] . ' ' . $koopman['voorletters'], 0, 1);
+        $this->pdf->Cell(164, 6, $koopman['achternaam'].' '.$koopman['voorletters'], 0, 1);
 
         $this->pdf->SetY(10);
 
@@ -186,11 +185,11 @@ class PdfFactuurService
         $this->pdf->SetFont($this->fontnameBold, 'b', 9);
         $this->pdf->Cell(26, 6, 'Factuurnummer', 0, 0);
         $this->pdf->SetFont($this->fontname, 'b', 9);
-        $this->pdf->Cell(26, 6, 'mm' . $vergunning['factuur']['id'], 0, 0);
+        $this->pdf->Cell(26, 6, 'mm'.$vergunning['factuur']['id'], 0, 0);
         $this->pdf->SetFont($this->fontnameBold, 'b', 9);
         $this->pdf->Cell(26, 6, 'Factuurdatum', 0, 0);
         $this->pdf->SetFont($this->fontname, 'b', 9);
-        $dag = implode('-',array_reverse(explode('-', $vergunning['dag'])));
+        $dag = implode('-', array_reverse(explode('-', $vergunning['dag'])));
         $this->pdf->Cell(26, 6, $dag, 0, 1);
 
         $this->pdf->Cell(16, 6, '', 0, 0);
@@ -201,16 +200,15 @@ class PdfFactuurService
         $this->pdf->SetFont($this->fontname, 'b', 9);
 
         $this->pdf->Cell(16, 6, '', 0, 0);
-        $this->pdf->Cell(164, 6, 'Markt: ' . $vergunning['markt']['naam'], '', 1);
-
+        $this->pdf->Cell(164, 6, 'Markt: '.$vergunning['markt']['naam'], '', 1);
 
         $btwTotaal = [];
-        $btwOver   = [];
+        $btwOver = [];
 
         foreach ($vergunning['factuur']['producten'] as $product) {
             $this->pdf->Cell(16, 6, '', 0, 0);
-            $btwText = $product['btw_percentage'] > 0 ? '. excl. ' . $product['btw_percentage'] . '% BTW' : '';
-            $this->pdf->Cell(144, 6, $product['aantal'] . ' maal ' . $product['naam'] . $btwText , '', 0);
+            $btwText = $product['btw_percentage'] > 0 ? '. excl. '.$product['btw_percentage'].'% BTW' : '';
+            $this->pdf->Cell(144, 6, $product['aantal'].' maal '.$product['naam'].$btwText, '', 0);
             $this->pdf->Cell(20, 6, $product['totaal'], 0, 0, 'R');
             if (!isset($btwTotaal[$product['btw_percentage']])) {
                 $btwTotaal[$product['btw_percentage']] = 0;
@@ -231,8 +229,8 @@ class PdfFactuurService
         $this->pdf->Ln(5);
         foreach ($btwTotaal as $key => $value) {
             $this->pdf->Cell(98, 6, '', 0, 0);
-            $this->pdf->Cell(41, 6, 'BTW ' . $key . '% over ' . number_format($btwOver[$key],2), 0, 0);
-            $this->pdf->Cell(41, 6, number_format($value,2), 0, 0, 'R');
+            $this->pdf->Cell(41, 6, 'BTW '.$key.'% over '.number_format($btwOver[$key], 2), 0, 0);
+            $this->pdf->Cell(41, 6, number_format($value, 2), 0, 0, 'R');
             $this->pdf->Ln(5);
         }
 
@@ -240,7 +238,6 @@ class PdfFactuurService
         $this->pdf->Cell(98, 6, '', 0, 0);
         $this->pdf->Cell(41, 6, 'Totaal', 'T', 0);
         $this->pdf->Cell(41, 6, $vergunning['factuur']['totaal'], 'T', 0, 'R');
-
 
         /*
                 $this->pdf->Cell(15, 6, $product->totaal_inclusief, $top, 0, '' , $fillColor);
@@ -254,6 +251,5 @@ class PdfFactuurService
 
 //        $this->pdf->Cell(90, 6, $vergunning->factuur->totaal, 'T', 0, '' , $fillColor);
 //        $this->pdf->Cell(90, 6, 'Totaal', 'T', 1, '' , $fillColor);
-
     }
 }

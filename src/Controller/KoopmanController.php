@@ -10,19 +10,20 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use App\Service\MarktApi;
 use App\Service\PdfFactuurService;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 class KoopmanController extends AbstractController
 {
@@ -46,7 +47,7 @@ class KoopmanController extends AbstractController
             'pageSize' => $size,
             'q' => $request->query->get('q'),
             'erkenningsnummer' => $request->query->get('erkenningsnummer'),
-            'status' => $request->query->get('status', -1)
+            'status' => $request->query->get('status', -1),
         ];
     }
 
@@ -57,7 +58,6 @@ class KoopmanController extends AbstractController
      */
     public function detailAction(Request $request, MarktApi $api, int $id)
     {
-
         $formBuilder = $this->createFormBuilder();
 
         $formBuilder->add('beginDatum', DateType::class, [
@@ -75,23 +75,22 @@ class KoopmanController extends AbstractController
         ]);
 
         $formBuilder->add('download', SubmitType::class, [
-            'label' => 'Download'
+            'label' => 'Download',
         ]);
-
 
         $form = $formBuilder->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $startDate =  $form->getData()['beginDatum']->format('d-m-Y');
-            $endDate =  $form->getData()['eindDatum']->format('d-m-Y');
+            $startDate = $form->getData()['beginDatum']->format('d-m-Y');
+            $endDate = $form->getData()['eindDatum']->format('d-m-Y');
 
-            return $this->redirectToRoute('app_koopman_factuuroverzicht', array(
+            return $this->redirectToRoute('app_koopman_factuuroverzicht', [
                 'id' => $id,
                 'startDate' => $startDate,
                 'endDate' => $endDate,
-                ));
-        };
+                ]);
+        }
 
         $koopman = $api->getKoopman($id);
 
@@ -101,7 +100,7 @@ class KoopmanController extends AbstractController
             $dagvergunningenStartDatum = \DateTime::createFromFormat('d-m-Y', $request->query->get('dagvergunningenStartDatum'));
             $dagvergunningenEindDatum = \DateTime::createFromFormat('d-m-Y', $request->query->get('dagvergunningenEindDatum'));
         }
-        if ($dagvergunningenStartDatum === false || $dagvergunningenEindDatum === false || $dagvergunningenEindDatum->diff($dagvergunningenStartDatum)->days > 732) {
+        if (false === $dagvergunningenStartDatum || false === $dagvergunningenEindDatum || $dagvergunningenEindDatum->diff($dagvergunningenStartDatum)->days > 732) {
             $dagvergunningenEindDatum = new \DateTime();
             $dagvergunningenStartDatum = clone $dagvergunningenEindDatum;
             $dagvergunningenStartDatum->sub(new \DateInterval('P1M'));
@@ -117,11 +116,12 @@ class KoopmanController extends AbstractController
             if ($markt['id'] == $marktId) {
                 return $markt;
             }
+
             return $carry;
         });
 
         $params = ['koopmanId' => $koopman['id'], 'dagStart' => $dagvergunningenStartDatum->format('Y-m-d'), 'dagEind' => $dagvergunningenEindDatum->format('Y-m-d')];
-        if ($markt !== null) {
+        if (null !== $markt) {
             $params['marktId'] = $markt['id'];
         }
         $dagvergunningen = $api->getDagvergunningen($params, 0, 500);
@@ -154,35 +154,40 @@ class KoopmanController extends AbstractController
             'extra.reiniging' => 0,
         ];
         foreach ($dagvergunningen as $dagvergunning) {
-            if ($dagvergunning['doorgehaald'] === false) {
+            if (false === $dagvergunning['doorgehaald']) {
                 // totaal dagvergunningen (actief)
-                $stats['total'] ++;
+                ++$stats['total'];
                 // dagvergunningen per status
-                if (isset($stats['status.' . $dagvergunning['status']]) === true)
-                    $stats['status.' . $dagvergunning['status']] ++;
-                else
-                    $stats['status.?'] ++;
+                if (true === isset($stats['status.'.$dagvergunning['status']])) {
+                    ++$stats['status.'.$dagvergunning['status']];
+                } else {
+                    ++$stats['status.?'];
+                }
                 // per aanwezigheid
-                if (isset($stats['aanwezig.' . $dagvergunning['aanwezig']]) === true)
-                    $stats['aanwezig.' . $dagvergunning['aanwezig']] ++;
-                else
-                    $stats['aanwezig.?'] ++;
+                if (true === isset($stats['aanwezig.'.$dagvergunning['aanwezig']])) {
+                    ++$stats['aanwezig.'.$dagvergunning['aanwezig']];
+                } else {
+                    ++$stats['aanwezig.?'];
+                }
                 // per kraamlengte en totale kraamlengte
                 $stats['meters.aantal_3m'] = $stats['meters.aantal_3m'] + $dagvergunning['aantal3MeterKramen'];
                 $stats['meters.aantal_4m'] = $stats['meters.aantal_4m'] + $dagvergunning['aantal4MeterKramen'];
                 $stats['meters.aantal_1m'] = $stats['meters.aantal_1m'] + $dagvergunning['extraMeters'];
                 $stats['meters.totaal'] = $stats['meters.totaal'] + ($dagvergunning['aantal3MeterKramen'] * 3) + ($dagvergunning['aantal4MeterKramen'] * 4) + ($dagvergunning['extraMeters'] * 1);
                 // extra's
-                if ($dagvergunning['aantalElektra'] > 0)
-                    $stats['extra.elektra_afgenomen'] ++;
-                    $stats['extra.elektra_totaal'] = $stats['extra.elektra_totaal'] + $dagvergunning['aantalElektra'];
-                if ($dagvergunning['krachtstroom']=== true)
-                    $stats['extra.krachtstroom'] ++;
-                if ($dagvergunning['reiniging'] === true)
-                    $stats['extra.reiniging'] ++;
+                if ($dagvergunning['aantalElektra'] > 0) {
+                    ++$stats['extra.elektra_afgenomen'];
+                }
+                $stats['extra.elektra_totaal'] = $stats['extra.elektra_totaal'] + $dagvergunning['aantalElektra'];
+                if (true === $dagvergunning['krachtstroom']) {
+                    ++$stats['extra.krachtstroom'];
+                }
+                if (true === $dagvergunning['reiniging']) {
+                    ++$stats['extra.reiniging'];
+                }
             } else {
                 // doorgehaald
-                $stats['doorgehaald'] ++;
+                ++$stats['doorgehaald'];
             }
 
             if (isset($dagvergunning['controles'])) {
@@ -194,29 +199,29 @@ class KoopmanController extends AbstractController
 
         $lastQuarter = new \DateTime();
         $lastQuarter->modify('-3 months');
-        list($startDate , $endDate) = $this->getQuarter($lastQuarter);
+        list($startDate, $endDate) = $this->getQuarter($lastQuarter);
 
         $laatsteMaanden = [];
         $eersteDagVanDeMaand = new \DateTime();
-        $eersteDagVanDeMaand->setDate((int)$eersteDagVanDeMaand->format('Y'), (int)$eersteDagVanDeMaand->format('m'), 1);
+        $eersteDagVanDeMaand->setDate((int) $eersteDagVanDeMaand->format('Y'), (int) $eersteDagVanDeMaand->format('m'), 1);
         $laatsteDagVanDeMaand = clone $eersteDagVanDeMaand;
-        $laatsteDagVanDeMaand->setDate((int)$laatsteDagVanDeMaand->format('Y'), (int)$laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int)$laatsteDagVanDeMaand->format('m'), (int)$laatsteDagVanDeMaand->format('Y')));
+        $laatsteDagVanDeMaand->setDate((int) $laatsteDagVanDeMaand->format('Y'), (int) $laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int) $laatsteDagVanDeMaand->format('m'), (int) $laatsteDagVanDeMaand->format('Y')));
         $laatsteMaanden[] = ['label' => $eersteDagVanDeMaand->format('m-Y'), 'start' => clone $eersteDagVanDeMaand, 'eind' => clone $laatsteDagVanDeMaand];
         $eersteDagVanDeMaand->sub(new \DateInterval('P1M'));
         $laatsteDagVanDeMaand = clone $eersteDagVanDeMaand;
-        $laatsteDagVanDeMaand->setDate((int)$laatsteDagVanDeMaand->format('Y'), (int)$laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int)$laatsteDagVanDeMaand->format('m'), (int)$laatsteDagVanDeMaand->format('Y')));
+        $laatsteDagVanDeMaand->setDate((int) $laatsteDagVanDeMaand->format('Y'), (int) $laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int) $laatsteDagVanDeMaand->format('m'), (int) $laatsteDagVanDeMaand->format('Y')));
         $laatsteMaanden[] = ['label' => $eersteDagVanDeMaand->format('m-Y'), 'start' => clone $eersteDagVanDeMaand, 'eind' => clone $laatsteDagVanDeMaand];
         $eersteDagVanDeMaand->sub(new \DateInterval('P1M'));
         $laatsteDagVanDeMaand = clone $eersteDagVanDeMaand;
-        $laatsteDagVanDeMaand->setDate((int)$laatsteDagVanDeMaand->format('Y'), (int)$laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int)$laatsteDagVanDeMaand->format('m'), (int)$laatsteDagVanDeMaand->format('Y')));
+        $laatsteDagVanDeMaand->setDate((int) $laatsteDagVanDeMaand->format('Y'), (int) $laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int) $laatsteDagVanDeMaand->format('m'), (int) $laatsteDagVanDeMaand->format('Y')));
         $laatsteMaanden[] = ['label' => $eersteDagVanDeMaand->format('m-Y'), 'start' => clone $eersteDagVanDeMaand, 'eind' => clone $laatsteDagVanDeMaand];
         $eersteDagVanDeMaand->sub(new \DateInterval('P1M'));
         $laatsteDagVanDeMaand = clone $eersteDagVanDeMaand;
-        $laatsteDagVanDeMaand->setDate((int)$laatsteDagVanDeMaand->format('Y'), (int)$laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int)$laatsteDagVanDeMaand->format('m'), (int)$laatsteDagVanDeMaand->format('Y')));
+        $laatsteDagVanDeMaand->setDate((int) $laatsteDagVanDeMaand->format('Y'), (int) $laatsteDagVanDeMaand->format('m'), cal_days_in_month(CAL_GREGORIAN, (int) $laatsteDagVanDeMaand->format('m'), (int) $laatsteDagVanDeMaand->format('Y')));
         $laatsteMaanden[] = ['label' => $eersteDagVanDeMaand->format('m-Y'), 'start' => clone $eersteDagVanDeMaand, 'eind' => clone $laatsteDagVanDeMaand];
 
         $vandaag = new \DateTime();
-        $vandaag->setTime(0,0,0);
+        $vandaag->setTime(0, 0, 0);
 
         return [
             'form' => $form->createView(),
@@ -230,7 +235,7 @@ class KoopmanController extends AbstractController
             'markten' => $markten,
             'markt' => $markt,
             'laatsteMaanden' => $laatsteMaanden,
-            'vandaag' => $vandaag
+            'vandaag' => $vandaag,
         ];
     }
 
@@ -241,7 +246,7 @@ class KoopmanController extends AbstractController
      */
     public function controleAction(Request $request, int $id, MarktApi $api): array
     {
-        $koopman = $api ->getKoopman($id);
+        $koopman = $api->getKoopman($id);
         $start = $request->query->get('startdatum');
         $eind = $request->query->get('einddatum');
         if (null !== $start && null !== $eind) {
@@ -252,7 +257,6 @@ class KoopmanController extends AbstractController
             $startdatum->modify('-1 month');
             $einddatum = new \DateTime();
         }
-
 
         $vergunningen = $api->getDagvergunningenByDate($koopman['id'], $startdatum, $einddatum);
         $vergunningen = $vergunningen;
@@ -273,7 +277,7 @@ class KoopmanController extends AbstractController
             'scan-barcode' => 'BAR',
         ];
 
-        $vandaag= new \DateTime;
+        $vandaag = new \DateTime();
 
         return [
             'koopman' => $koopman,
@@ -281,7 +285,7 @@ class KoopmanController extends AbstractController
             'einddatum' => $einddatum,
             'vergunningen' => $vergunningen,
             'vandaag' => $vandaag,
-            'methodes' => $methodes
+            'methodes' => $methodes,
         ];
     }
 
@@ -292,7 +296,7 @@ class KoopmanController extends AbstractController
      */
     public function toggleHandhavingsVerzoek(Request $request, int $id, MarktApi $api): RedirectResponse
     {
-        $datum = implode('-',array_reverse(explode('-', $request->request->get('handhavingDatum'))));
+        $datum = implode('-', array_reverse(explode('-', $request->request->get('handhavingDatum'))));
         $date = new \DateTime($datum);
         $api->toggleHandhavingsverzoek($id, $date);
 
@@ -313,23 +317,21 @@ class KoopmanController extends AbstractController
         $dagvergunningen = $api->getDagvergunningenByDate($id, $sDate, $eDate);
 
         $pdf = $pdfFactuur->generate($koopman, $dagvergunningen, $sDate, $eDate);
-        $pdf->Output('factuur_' . $koopman['erkenningsnummer'] . '_' . $sDate->format('d-m-Y') . '_'  . $eDate->format('d-m-Y') . '.pdf', 'I');
-        die;
+        $pdf->Output('factuur_'.$koopman['erkenningsnummer'].'_'.$sDate->format('d-m-Y').'_'.$eDate->format('d-m-Y').'.pdf', 'I');
+        exit;
     }
 
     /**
-     * @param \DateTime $date
      * @return \DateTime[]
      */
     protected function getQuarter(\DateTime $date): array
     {
         $startMonth = 1 + (ceil($date->format('m') / 3) - 1) * 3;
-        $startDate = new \DateTime($date->format('Y') . '-' . $startMonth . '-' . '01');
+        $startDate = new \DateTime($date->format('Y').'-'.$startMonth.'-'.'01');
         $endDate = clone $startDate;
         $endDate->modify('+2 months');
         $endDate->modify('last day of this month');
 
         return [$startDate, $endDate];
     }
-
 }

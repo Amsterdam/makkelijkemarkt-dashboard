@@ -10,18 +10,19 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
-use App\Service\MarktApi;
-use App\Form\AccountEditType;
 use App\Form\AccountCreateType;
+use App\Form\AccountEditType;
 use App\Form\AccountPasswordType;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\MarktApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class AccountController extends AbstractController
 {
@@ -57,6 +58,7 @@ class AccountController extends AbstractController
                 $api->putAccount($account['id'], $form->getData());
 
                 $this->addFlash('success', 'Opgeslagen');
+
                 return $this->redirectToRoute('app_account_index');
             }
 
@@ -66,7 +68,7 @@ class AccountController extends AbstractController
         return [
             'account' => $account,
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 
@@ -90,6 +92,7 @@ class AccountController extends AbstractController
                 $api->putPassword($account['id'], $form->getData());
 
                 $this->addFlash('success', 'Opgeslagen');
+
                 return $this->redirectToRoute('app_account_index');
             }
 
@@ -99,7 +102,7 @@ class AccountController extends AbstractController
         return [
             'account' => $account,
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 
@@ -115,7 +118,7 @@ class AccountController extends AbstractController
             'email' => '',
             'username' => '',
             'password' => '',
-            'role' => 'ROLE_USER'
+            'role' => 'ROLE_USER',
         ];
         $form = $this->createForm(AccountCreateType::class, $formModel);
 
@@ -125,6 +128,7 @@ class AccountController extends AbstractController
                 $api->postAccount($form->getData());
 
                 $this->addFlash('success', 'Aangemaakt');
+
                 return $this->redirectToRoute('app_account_index');
             }
 
@@ -133,7 +137,7 @@ class AccountController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 
@@ -143,8 +147,8 @@ class AccountController extends AbstractController
      */
     public function unlockAction(MarktApi $api, int $id, Request $client): RedirectResponse
     {
-        if($this->isCsrfTokenValid('unlock-account', $client->request->get('csrf')) === false){
-           throw $this->createAccessDeniedException();
+        if (false === $this->isCsrfTokenValid('unlock-account', $client->request->get('csrf'))) {
+            throw $this->createAccessDeniedException();
         }
 
         $api->unlockAccount($id);
@@ -169,7 +173,7 @@ class AccountController extends AbstractController
                 'pageNumber' => $pageNumber,
                 'pageSize' => $pageSize,
                 'account' => $account,
-                'tokens' => $tokens
+                'tokens' => $tokens,
             ];
     }
 }

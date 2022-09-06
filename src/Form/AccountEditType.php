@@ -10,18 +10,17 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Enum\Roles;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-
-
 
 class AccountEditType extends AbstractType
 {
@@ -34,11 +33,11 @@ class AccountEditType extends AbstractType
             ->add('password', PasswordType::class, ['required' => false, 'label' => 'Wachtwoord'])
             ->add('role', ChoiceType::class, [
                 'choices' => array_flip(Roles::all()),
-                'label'   => 'Rol'
+                'label' => 'Rol',
             ])
             ->add('active', ChoiceType::class, [
                 'choices' => ['Actief' => true, 'Inactief' => false],
-                'label'   => 'Actief?'
+                'label' => 'Actief?',
             ])
             ->add('save', SubmitType::class, ['label' => 'Opslaan']);
     }
