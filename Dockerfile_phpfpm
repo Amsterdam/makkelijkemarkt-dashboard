@@ -6,6 +6,7 @@ RUN update-ca-certificates --fresh
 RUN apk update && apk upgrade
 
 RUN apk add \
+    git \
     libzip-dev \
     icu-dev \
     zlib-dev \
@@ -43,5 +44,7 @@ RUN composer install --prefer-dist --no-progress --no-suggest --no-scripts
 RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
 RUN chown -R www-data: /var/www
+
+RUN vendor/bin/grumphp run
 
 CMD ["php-fpm"]
