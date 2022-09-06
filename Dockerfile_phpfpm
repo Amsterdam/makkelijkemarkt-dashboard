@@ -6,6 +6,7 @@ RUN update-ca-certificates --fresh
 RUN apk update && apk upgrade
 
 RUN apk add \
+    git \
     libzip-dev \
     icu-dev \
     zlib-dev \
