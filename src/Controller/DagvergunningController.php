@@ -178,10 +178,10 @@ class DagvergunningController extends AbstractController
 
                     switch ($controle['ronde']) {
                         case 1:
-                            $audits['first']++;
+                            ++$audits['first'];
                             break;
                         case 2:
-                            $audits['second']++;
+                            ++$audits['second'];
                             break;
                     }
                 }
