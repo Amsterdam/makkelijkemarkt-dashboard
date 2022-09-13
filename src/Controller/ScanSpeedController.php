@@ -10,18 +10,19 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Service\MarktApi;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class ScanSpeedController extends AbstractController
 {
- /**
+    /**
      * @Route("/scan-speed")
      * @Template()
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
@@ -31,24 +32,24 @@ class ScanSpeedController extends AbstractController
         $accounts = $api->getAccounts();
         $markten = $api->getMarkten();
 
-        $marktId   = $request->query->get('markt');
+        $marktId = $request->query->get('markt');
         $accountId = $request->query->get('account');
-        $datum     = $request->query->get('datum');
-        $pauze     = $request->query->get('pauze');
+        $datum = $request->query->get('datum');
+        $pauze = $request->query->get('pauze');
 
         if (!is_null($marktId) && !is_null($accountId) && !is_null($datum) && !is_null($pauze)) {
             $settings = (object) [
                 'marktId' => null,
                 'dag' => new \DateTime(),
                 'accountId' => null,
-                'pauseDetect' => 60*5
+                'pauseDetect' => 60 * 5,
             ];
 
             $dagvergunningen = $api->getDagvergunningen([
-                'marktId'   => $marktId,
-                'dag'       => $datum,
+                'marktId' => $marktId,
+                'dag' => $datum,
                 'accountId' => $accountId,
-                'doorgehaald' => -1
+                'doorgehaald' => -1,
             ], 0, 10000);
 
             $periods = [];
@@ -61,34 +62,35 @@ class ScanSpeedController extends AbstractController
                     'duration' => 0,
                     'scans' => 0,
                     'avgTimePerScan' => 0,
-                    'avgScansPerHour' => 0
+                    'avgScansPerHour' => 0,
                 ];
                 $periods[] = $new;
+
                 return $new;
             };
             $dagvergunningen = array_reverse($dagvergunningen);
 
             foreach ($dagvergunningen as $dagvergunning) {
-                if ($currentPeriod === null || $prevDagvergunning === null) {
+                if (null === $currentPeriod || null === $prevDagvergunning) {
                     $currentPeriod = $fnNewPeriod(strtotime($dagvergunning['registratieDatumtijd']));
-                    $currentPeriod->scans ++;
+                    ++$currentPeriod->scans;
                     $prevDagvergunning = $dagvergunning;
-                } else if ((strtotime($dagvergunning['registratieDatumtijd']) - strtotime($prevDagvergunning['registratieDatumtijd'])) > $settings->pauseDetect) {
+                } elseif ((strtotime($dagvergunning['registratieDatumtijd']) - strtotime($prevDagvergunning['registratieDatumtijd'])) > $settings->pauseDetect) {
                     $currentPeriod->end = strtotime($prevDagvergunning['registratieDatumtijd']);
                     $currentPeriod = $fnNewPeriod(strtotime($dagvergunning['registratieDatumtijd']));
-                    $currentPeriod->scans ++;
+                    ++$currentPeriod->scans;
                     $prevDagvergunning = $dagvergunning;
                 } else {
-                    $currentPeriod->scans ++;
+                    ++$currentPeriod->scans;
                     $prevDagvergunning = $dagvergunning;
                 }
             }
-            if ($currentPeriod !== null) {
+            if (null !== $currentPeriod) {
                 $currentPeriod->end = strtotime($prevDagvergunning['registratieDatumtijd']);
             }
             foreach ($periods as $period) {
                 $period->duration = $period->end - $period->start;
-                if ($period->duration === 0) {
+                if (0 === $period->duration) {
                     $period->duration = 1;
                     $period->avgTimePerScan = -1;
                     $period->avgScansPerHour = -1;
@@ -96,28 +98,26 @@ class ScanSpeedController extends AbstractController
                     $period->avgTimePerScan = $period->duration / $period->scans;
                     $period->avgScansPerHour = (60 * 60) / $period->avgTimePerScan;
                 }
-
             }
 
             return [
-                'accounts'  => $accounts,
+                'accounts' => $accounts,
                 'accountId' => $accountId,
-                'markten'   => $markten,
-                'marktId'   => $marktId,
-                'datum'     => $datum,
-                'pauze'     => $pauze,
-                'periods'   => $periods
+                'markten' => $markten,
+                'marktId' => $marktId,
+                'datum' => $datum,
+                'pauze' => $pauze,
+                'periods' => $periods,
             ];
-
         }
 
         $pauze = null === $pauze ? 300 : $pauze;
 
         return [
             'accounts' => $accounts,
-            'markten'  => $markten,
-            'pauze'    => $pauze,
-            'marktId'   => $marktId,
+            'markten' => $markten,
+            'pauze' => $pauze,
+            'marktId' => $marktId,
         ];
     }
 }

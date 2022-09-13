@@ -10,11 +10,12 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Enum;
 
 class Roles
 {
-    const ROLE_USER  = 'Gebruiker';
+    const ROLE_USER = 'Gebruiker';
     const ROLE_SENIOR = 'Senior gebruiker';
     const ROLE_ADMIN = 'Beheerder';
     const ROLE_ACCOUNTANT = 'Accountant';

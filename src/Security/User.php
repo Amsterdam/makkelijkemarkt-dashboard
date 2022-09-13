@@ -1,13 +1,13 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class User implements UserInterface
 {
-
     private $username;
 
     private $password;
@@ -17,7 +17,7 @@ class User implements UserInterface
     private $salt;
 
     private $roles;
-    
+
     public function __construct($username, $password, $token, $salt, array $roles)
     {
         $this->username = $username;
@@ -64,7 +64,7 @@ class User implements UserInterface
      */
     public function eraseCredentials(): void
     {
-        $this->plainPassword = null;
+        $this->password = null;
     }
 
     /**

@@ -10,6 +10,7 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Form;
 
 use App\Enum\Roles;
@@ -18,9 +19,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormBuilderInterface;
-
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
 
 class AccountCreateType extends AbstractType
 {
@@ -33,7 +33,7 @@ class AccountCreateType extends AbstractType
             ->add('password', PasswordType::class, ['label' => 'Wachtwoord'])
             ->add('role', ChoiceType::class, [
                 'choices' => array_flip(Roles::all()),
-                'label'   => 'Rol'
+                'label' => 'Rol',
             ])
             ->add('save', SubmitType::class, ['label' => 'Aanmaken']);
     }

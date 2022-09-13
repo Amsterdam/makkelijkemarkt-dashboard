@@ -20,7 +20,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
-
 class LineairplanType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -28,52 +27,52 @@ class LineairplanType extends AbstractType
         $builder
             ->add('naam', TextType::class, [])
             ->add('geldigVanaf', DateType::class, [
-                'label' => 'Geldig vanaf'
+                'label' => 'Geldig vanaf',
             ])
             ->add('geldigTot', DateType::class, [
-                'label' => 'Geldig tot'
+                'label' => 'Geldig tot',
             ])
             ->add('tariefPerMeterGroot', NumberType::class, [
-                'label' => 'Tarief per meter (Groot Tarief)'
+                'label' => 'Tarief per meter (Groot Tarief)',
             ])
             ->add('tariefPerMeter', NumberType::class, [
-                'label' => 'Tarief per meter'
+                'label' => 'Tarief per meter',
             ])
             ->add('tariefPerMeterKlein', NumberType::class, [
-                'label' => 'Tarief per meter (Klein Tarief)'
+                'label' => 'Tarief per meter (Klein Tarief)',
             ])
             ->add('reinigingPerMeterGroot', NumberType::class, [
-                'label' => 'Reiniging per meter (Groot Tarief)'
+                'label' => 'Reiniging per meter (Groot Tarief)',
             ])
             ->add('reinigingPerMeter', NumberType::class, [
-                'label' => 'Reiniging per meter'
+                'label' => 'Reiniging per meter',
             ])
             ->add('reinigingPerMeterKlein', NumberType::class, [
-                'label' => 'Reiniging per meter (Klein Tarief)'
+                'label' => 'Reiniging per meter (Klein Tarief)',
             ])
             ->add('toeslagBedrijfsafvalPerMeter', NumberType::class, [
-                'label' => 'Toeslag bedrijfsafval per meter'
+                'label' => 'Toeslag bedrijfsafval per meter',
             ])
             ->add('toeslagKrachtstroomPerAansluiting', NumberType::class, [
-                'label' => 'Toeslag krachtstroom per aansluiting'
+                'label' => 'Toeslag krachtstroom per aansluiting',
             ])
             ->add('promotieGeldenPerMeter', NumberType::class, [
-                'label' => 'Promotie gelden per meter'
+                'label' => 'Promotie gelden per meter',
             ])
             ->add('promotieGeldenPerKraam', NumberType::class, [
-                'label' => 'Promotie gelden per kraam'
+                'label' => 'Promotie gelden per kraam',
             ])
             ->add('afvaleiland', NumberType::class, [
-                'label' => 'Afvaleiland'
+                'label' => 'Afvaleiland',
             ])
             ->add('elektra', NumberType::class, [
-                'label' => 'Elektra per aansluiting'
+                'label' => 'Elektra per aansluiting',
             ])
             ->add('eenmaligElektra', NumberType::class, [
-                'label' => 'Eenmalig elektra'
+                'label' => 'Eenmalig elektra',
             ])
             ->add('agfPerMeter', NumberType::class, [
-                'label' => 'AGF per meter'
+                'label' => 'AGF per meter',
             ])
             ->add('save', SubmitType::class, ['label' => 'Opslaan']);
     }

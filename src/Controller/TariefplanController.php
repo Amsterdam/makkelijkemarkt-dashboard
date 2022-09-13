@@ -1,14 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Service\MarktApi;
-use App\Form\LineairplanType;
 use App\Form\ConcreetPlanType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use App\Form\LineairplanType;
+use App\Service\MarktApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +26,7 @@ class TariefplanController extends AbstractController
         $markten = $api->getNonExpiredMarkten();
 
         return [
-            'markten'=> $markten
+            'markten' => $markten,
         ];
     }
 
@@ -41,12 +42,12 @@ class TariefplanController extends AbstractController
 
         foreach ($tariefplannen as &$tariefplan) {
             $tariefplan['geldigVanaf'] = new \DateTime($tariefplan['geldigVanaf']['date']);
-            $tariefplan['geldigTot'] =  new \DateTime($tariefplan['geldigTot']['date']);
+            $tariefplan['geldigTot'] = new \DateTime($tariefplan['geldigTot']['date']);
         }
 
         return [
             'markt' => $markt,
-            'tariefplannen' => $tariefplannen
+            'tariefplannen' => $tariefplannen,
         ];
     }
 
@@ -66,6 +67,7 @@ class TariefplanController extends AbstractController
             if ($form->isValid()) {
                 $api->postLineairTariefplan($marktId, $form->getData());
                 $this->addFlash('success', 'Aangemaakt');
+
                 return $this->redirectToRoute('app_tariefplan_marktindex', ['marktId' => $marktId]);
             }
 
@@ -74,7 +76,7 @@ class TariefplanController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 
@@ -84,7 +86,7 @@ class TariefplanController extends AbstractController
      */
     public function deleteAction(Request $request, MarktApi $api, int $tariefPlanId): RedirectResponse
     {
-        if ($this->isCsrfTokenValid('app_tariefplan_delete', $request->request->get('_csrf')) === false) {
+        if (false === $this->isCsrfTokenValid('app_tariefplan_delete', $request->request->get('_csrf'))) {
             throw $this->createAccessDeniedException();
         }
 
@@ -112,6 +114,7 @@ class TariefplanController extends AbstractController
             if ($form->isValid()) {
                 $api->updateLineairTariefplan($tariefPlanId, $form->getData());
                 $this->addFlash('success', 'Aangepast');
+
                 return $this->redirectToRoute('app_tariefplan_marktindex', ['marktId' => $tariefPlanObject['marktId']]);
             }
 
@@ -120,15 +123,16 @@ class TariefplanController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 
-    protected function getLineairPlanObject( array $tariefPlanObject = null): array
+    protected function getLineairPlanObject(array $tariefPlanObject = null): array
     {
         if (null !== $tariefPlanObject) {
             $geldigVanaf = new \DateTime($tariefPlanObject['geldigVanaf']['date']);
             $geldigTot = new \DateTime($tariefPlanObject['geldigTot']['date']);
+
             return [
                 'naam' => $tariefPlanObject['naam'],
                 'geldigVanaf' => $geldigVanaf,
@@ -146,7 +150,7 @@ class TariefplanController extends AbstractController
                 'afvaleiland' => $tariefPlanObject['lineairplan']['afvaleiland'],
                 'eenmaligElektra' => $tariefPlanObject['lineairplan']['eenmaligElektra'],
                 'elektra' => $tariefPlanObject['lineairplan']['elektra'],
-                'agfPerMeter' => $tariefPlanObject['lineairplan']['agfPerMeter']
+                'agfPerMeter' => $tariefPlanObject['lineairplan']['agfPerMeter'],
             ];
         } else {
             return [
@@ -166,16 +170,17 @@ class TariefplanController extends AbstractController
                 'afvaleiland' => null,
                 'eenmaligElektra' => null,
                 'elektra' => null,
-                'agfPerMeter' => null
+                'agfPerMeter' => null,
             ];
         }
     }
 
-    protected function getConcreetPlanObject(array $tariefPlanObject = null) : array
+    protected function getConcreetPlanObject(array $tariefPlanObject = null): array
     {
         if (null !== $tariefPlanObject) {
             $geldigVanaf = new \DateTime($tariefPlanObject['geldigVanaf']['date']);
             $geldigTot = new \DateTime($tariefPlanObject['geldigTot']['date']);
+
             return [
                 'naam' => $tariefPlanObject['naam'],
                 'geldigVanaf' => $geldigVanaf,
@@ -187,7 +192,7 @@ class TariefplanController extends AbstractController
                 'promotieGeldenPerMeter' => $tariefPlanObject['concreetplan']['promotieGeldenPerMeter'],
                 'promotieGeldenPerKraam' => $tariefPlanObject['concreetplan']['promotieGeldenPerKraam'],
                 'afvaleiland' => $tariefPlanObject['concreetplan']['afvaleiland'],
-                'eenmaligElektra' => $tariefPlanObject['concreetplan']['eenmaligElektra']
+                'eenmaligElektra' => $tariefPlanObject['concreetplan']['eenmaligElektra'],
             ];
         } else {
             return [
@@ -201,7 +206,7 @@ class TariefplanController extends AbstractController
                 'promotieGeldenPerMeter' => null,
                 'promotieGeldenPerKraam' => null,
                 'afvaleiland' => null,
-                'eenmaligElektra' => null
+                'eenmaligElektra' => null,
             ];
         }
     }
@@ -213,7 +218,7 @@ class TariefplanController extends AbstractController
      */
     public function createConcreetAction(Request $request, MarktApi $api, int $marktId)
     {
-        $formModel =  $this->getConcreetPlanObject();
+        $formModel = $this->getConcreetPlanObject();
         $form = $this->createForm(ConcreetplanType::class, $formModel);
 
         $form->handleRequest($request);
@@ -222,6 +227,7 @@ class TariefplanController extends AbstractController
             if ($form->isValid()) {
                 $api->postConcreetTariefplan($marktId, $form->getData());
                 $this->addFlash('success', 'Aangemaakt');
+
                 return $this->redirectToRoute('app_tariefplan_marktindex', ['marktId' => $marktId]);
             }
 
@@ -230,7 +236,7 @@ class TariefplanController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 
@@ -252,6 +258,7 @@ class TariefplanController extends AbstractController
             if ($form->isValid()) {
                 $api->updateConcreetTariefplan($tariefPlanId, $form->getData());
                 $this->addFlash('success', 'Aangepast');
+
                 return $this->redirectToRoute('app_tariefplan_marktindex', ['marktId' => $tariefPlanObject['marktId']]);
             }
 
@@ -260,7 +267,7 @@ class TariefplanController extends AbstractController
 
         return [
             'form' => $form->createView(),
-            'formModel' => $formModel
+            'formModel' => $formModel,
         ];
     }
 }

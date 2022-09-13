@@ -10,16 +10,16 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Service\MarktApi;
-use App\Service\PdfLijstService;
 use App\Service\PdfBarcodeService;
+use App\Service\PdfLijstService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
 
 class LijstController extends AbstractController
 {
@@ -29,7 +29,7 @@ class LijstController extends AbstractController
      * @Template()
      * @Security("is_granted('ROLE_USER')")
      */
-    public function indexAction( string $dag = null, MarktApi $api): array
+    public function indexAction(string $dag = null, MarktApi $api): array
     {
         $markten = $api->getNonExpiredMarkten();
 
@@ -50,13 +50,12 @@ class LijstController extends AbstractController
         $volgendeMaandag = clone $maandag;
         $volgendeMaandag = $volgendeMaandag->modify('+7 days');
 
-
         return [
-            'markten'         => $markten,
-            'maandag'         => $maandag,
-            'zondag'          => $zondag,
-            'vorigeMaandag'   => $vorigeMaandag,
-            'volgendeMaandag' => $volgendeMaandag
+            'markten' => $markten,
+            'maandag' => $maandag,
+            'zondag' => $zondag,
+            'vorigeMaandag' => $vorigeMaandag,
+            'volgendeMaandag' => $volgendeMaandag,
         ];
     }
 
@@ -66,7 +65,6 @@ class LijstController extends AbstractController
      */
     public function weeklijstSollicitantenPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
-
         $maandag = new \DateTime($dag);
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
@@ -75,14 +73,14 @@ class LijstController extends AbstractController
 
         $markt = $api->getMarkt($marktId);
 
-        $parts = array(
-            'Personen'  => $api->getLijstenMetDatum($marktId,array('soll'),$tweeMaandenTerug, $maandag)
-        );
+        $parts = [
+            'Personen' => $api->getLijstenMetDatum($marktId, $tweeMaandenTerug, $maandag, ['soll']),
+        ];
 
-        $pdf = $pdfLijst->generate($markt['naam'], 'Weeklijst Sollicitanten ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
+        $pdf = $pdfLijst->generate($markt['naam'], 'Weeklijst Sollicitanten '.$maandag->format('d-m-Y').' - '.$zondag->format('d-m-Y'), $parts);
         $pdf->Output('weeklijst_sollicitanten.pdf', 'I');
 
-        die;
+        exit;
     }
 
     /**
@@ -91,7 +89,6 @@ class LijstController extends AbstractController
      */
     public function lijstBarcodePdfAction(int $marktId, string $dag, MarktApi $api, PdfBarcodeService $pdfBarcode): void
     {
-
         $maandag = new \DateTime($dag);
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
@@ -100,13 +97,13 @@ class LijstController extends AbstractController
 
         $markt = $api->getMarkt($marktId);
 
-        $parts = array(
-            'Personen'  => $api->getLijstenMetDatum($marktId,array('vpl','soll','vkk', 'tvpl', 'tvplz', 'exp', 'expf'),$tweeMaandenTerug, $maandag)
-        );
+        $parts = [
+            'Personen' => $api->getLijstenMetDatum($marktId, $tweeMaandenTerug, $maandag, ['vpl', 'soll', 'vkk', 'tvpl', 'tvplz', 'exp', 'expf']),
+        ];
 
-        $pdf = $pdfBarcode->generate($markt['naam'], 'Barcode lijst ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
+        $pdf = $pdfBarcode->generate($markt['naam'], 'Barcode lijst '.$maandag->format('d-m-Y').' - '.$zondag->format('d-m-Y'), $parts);
         $pdf->Output('barcode_lijst.pdf', 'I');
-        die;
+        exit;
     }
 
     /**
@@ -115,7 +112,6 @@ class LijstController extends AbstractController
      */
     public function weeklijstVastePlaatsenPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
-
         $maandag = new \DateTime($dag);
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
@@ -124,23 +120,22 @@ class LijstController extends AbstractController
 
         $markt = $api->getMarkt($marktId);
 
-        $parts = array(
-            'Vaste plaatsen'  => $api->getLijstenMetDatum($marktId,array('vpl'),$tweeMaandenTerug, $maandag),
-            'Voorkeurs kaart, Tijdelijke Vaste Plaatshouders, Experimentele zone' => $api->getLijstenMetDatum($marktId,array('vkk', 'tvpl', 'tvplz', 'exp', 'expf'),$tweeMaandenTerug, $maandag)
-        );
+        $parts = [
+            'Vaste plaatsen' => $api->getLijstenMetDatum($marktId, $tweeMaandenTerug, $maandag, ['vpl']),
+            'Voorkeurs kaart, Tijdelijke Vaste Plaatshouders, Experimentele zone' => $api->getLijstenMetDatum($marktId, $tweeMaandenTerug, $maandag, ['vkk', 'tvpl', 'tvplz', 'exp', 'expf']),
+        ];
 
-        $pdf = $pdfLijst->generate($markt['naam'], 'Weeklijst ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
+        $pdf = $pdfLijst->generate($markt['naam'], 'Weeklijst '.$maandag->format('d-m-Y').' - '.$zondag->format('d-m-Y'), $parts);
         $pdf->Output('weeklijst_vaste_plaatsen.pdf', 'I');
-        die;
+        exit;
     }
 
     /**
      * @Route("/lijsten/a/{marktId}/{dag}")
      * @Security("is_granted('ROLE_USER')")
      */
-    public function alijstPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void 
+    public function alijstPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
-
         $maandag = new \DateTime($dag);
         $zondag = clone $maandag;
         $zondag->modify('+6 days');
@@ -149,15 +144,15 @@ class LijstController extends AbstractController
 
         $markt = $api->getMarkt($marktId);
 
-        $parts = array(
-            'Personen'  => array_merge(
-                $api->getLijstenMetDatum($marktId,array('soll'),$maandag, $donderdag)
-                ),
-        );
+        $parts = [
+            'Personen' => array_merge(
+                $api->getLijstenMetDatum($marktId, $maandag, $donderdag, ['soll'])
+            ),
+        ];
 
-        $pdf = $pdfLijst->generate($markt['naam'], 'A-lijst Weekend ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
+        $pdf = $pdfLijst->generate($markt['naam'], 'A-lijst Weekend '.$maandag->format('d-m-Y').' - '.$zondag->format('d-m-Y'), $parts);
         $pdf->Output('weekend_a_lijst.pdf', 'I');
-        die;
+        exit;
     }
 
     /**
@@ -166,7 +161,6 @@ class LijstController extends AbstractController
      */
     public function blijstPdfAction(int $marktId, string $dag, MarktApi $api, PdfLijstService $pdfLijst): void
     {
-
         $maandag = new \DateTime($dag);
         $zondag = clone $maandag;
         $zondag->modify('+6 days');
@@ -176,15 +170,15 @@ class LijstController extends AbstractController
         $tweeMaandenTerug = clone $maandag;
         $tweeMaandenTerug->modify('-2 months');
 
-        $personenAlijst = $api->getLijstenMetDatum($marktId,array('soll'),$maandag, $donderdag);
-        $laatsteMaanden = $api->getLijstenMetDatum($marktId,array('soll'),$tweeMaandenTerug, $donderdag);
+        $personenAlijst = $api->getLijstenMetDatum($marktId, $maandag, $donderdag, ['soll']);
+        $laatsteMaanden = $api->getLijstenMetDatum($marktId, $tweeMaandenTerug, $donderdag, ['soll']);
 
-        $ids = array();
+        $ids = [];
         foreach ($personenAlijst as $persoon) {
             $ids[] = $persoon['id'];
         }
 
-        $personen = array();
+        $personen = [];
         foreach ($laatsteMaanden as $persoon) {
             if (!in_array($persoon['id'], $ids)) {
                 $personen[] = $persoon;
@@ -193,13 +187,12 @@ class LijstController extends AbstractController
 
         $markt = $api->getMarkt($marktId);
 
-        $parts = array(
-            'Personen'  => $personen,
-        );
+        $parts = [
+            'Personen' => $personen,
+        ];
 
-        $pdf = $pdfLijst->generate($markt['naam'], 'B-lijst Weekend ' . $maandag->format('d-m-Y') . ' - ' . $zondag->format('d-m-Y'), $parts);
+        $pdf = $pdfLijst->generate($markt['naam'], 'B-lijst Weekend '.$maandag->format('d-m-Y').' - '.$zondag->format('d-m-Y'), $parts);
         $pdf->Output('weekend_b_lijst.pdf', 'I');
-        die;
+        exit;
     }
 }
-

@@ -1,15 +1,15 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Service;
 
-use App\Controller\KoopmanController;
 use TCPDF;
 
 class PdfLijstService
 {
     /**
-     * @var \TCPDF $pdf
+     * @var \TCPDF
      */
     protected $pdf;
     protected $projectDir;
@@ -18,6 +18,7 @@ class PdfLijstService
     {
         $this->projectDir = $projectDir;
     }
+
     public function generate(string $markt, string $naam, array $parts): TCPDF
     {
         $this->pdf = new TCPDF();
@@ -36,14 +37,14 @@ class PdfLijstService
         $this->pdf->AddPage();
 
         $fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir . '/public/resources/fonts/Avenir-Roman.ttf',
+            $this->projectDir.'/public/resources/fonts/Avenir-Roman.ttf',
             'TrueTypeUnicode',
             '',
             96
         );
 
         $this->pdf->Image(
-            $this->projectDir . '/public/resources/images/GASD_1.png',
+            $this->projectDir.'/public/resources/images/GASD_1.png',
             10,
             10,
             50
@@ -69,7 +70,7 @@ class PdfLijstService
                 $cols = [[], []];
                 foreach ($sollicitaties as $sollicitatie) {
                     $cols[$col][] = $sollicitatie;
-                    $i++;
+                    ++$i;
                     if ((0 === $p && 34 === $i) || (0 != $p && 44 === $i)) {
                         $col = 0 === $col ? 1 : 0;
                         $i = 0;
@@ -77,7 +78,7 @@ class PdfLijstService
                         if ($pb) {
                             $page[$p] = $cols;
                             $cols = [[], []];
-                            $p++;
+                            ++$p;
                         }
                     }
                 }
@@ -103,7 +104,7 @@ class PdfLijstService
                 if (0 !== $key) {
                     $this->pdf->AddPage();
                 }
-                for ($i = 0; $i < count($cols[0]); $i++) {
+                for ($i = 0; $i < count($cols[0]); ++$i) {
                     if ($even) {
                         $this->pdf->SetFillColor(237, 237, 237);
                         $even = false;
@@ -125,29 +126,29 @@ class PdfLijstService
         return $this->pdf;
     }
 
-    protected function addSollicitatie(array $sollicitatie, bool $break=false): void
+    protected function addSollicitatie(array $sollicitatie, bool $break = false): void
     {
         $koopman = $sollicitatie['koopman'];
-        $this->pdf->Cell(20,6,$sollicitatie['sollicitatieNummer'], 0, 0,'',true);
-        switch($sollicitatie['status']) {
+        $this->pdf->Cell(20, 6, $sollicitatie['sollicitatieNummer'], 0, 0, '', true);
+        switch ($sollicitatie['status']) {
             case 'soll':
-                $this->pdf->SetTextColor(3,192,60);
+                $this->pdf->SetTextColor(3, 192, 60);
                 break;
             case 'vpl':
-                $this->pdf->SetTextColor(255,179,71);
+                $this->pdf->SetTextColor(255, 179, 71);
                 break;
             case 'vkk':
             case 'tvpl':
             case 'tvplz':
             case 'exp':
             case 'expf':
-                $this->pdf->SetTextColor(150,111,214);
+                $this->pdf->SetTextColor(150, 111, 214);
                 break;
         }
-        $this->pdf->Cell(10,6,$sollicitatie['status'], 0, 0,'',true);
-        $this->pdf->SetTextColor(0,0,0);
-        $this->pdf->Cell(50,6,substr($koopman['achternaam'] . ', ' . $koopman['voorletters'], 0, 20), 0, 0,'',true);
-        $this->pdf->Cell(10,6,'',0, 0,'',true);
+        $this->pdf->Cell(10, 6, $sollicitatie['status'], 0, 0, '', true);
+        $this->pdf->SetTextColor(0, 0, 0);
+        $this->pdf->Cell(50, 6, substr($koopman['achternaam'].', '.$koopman['voorletters'], 0, 20), 0, 0, '', true);
+        $this->pdf->Cell(10, 6, '', 0, 0, '', true);
         if ($break) {
             $this->pdf->Ln();
         }

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace App\Security;
 
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -36,5 +37,4 @@ class UserProvider implements UserProviderInterface
     {
         return User::class === $class || is_subclass_of($class, User::class);
     }
-
 }

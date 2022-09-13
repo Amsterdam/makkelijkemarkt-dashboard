@@ -10,13 +10,14 @@
  */
 
 declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Kernel;
 use App\Service\MarktApi;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -29,12 +30,12 @@ class InfoController extends AbstractController
      */
     public function versionAction(MarktApi $api, KernelInterface $kernel, string $marktApi): array
     {
-        /** @var Kernel $kernel */
+        /* @var Kernel $kernel */
 
         return [
             'apiVersion' => $api->getVersion(),
             'dashboardVersion' => $kernel->getVersion(),
-            'apiUrl' => $marktApi
+            'apiUrl' => $marktApi,
         ];
     }
 }
