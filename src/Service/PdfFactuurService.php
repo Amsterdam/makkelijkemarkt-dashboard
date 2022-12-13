@@ -24,13 +24,13 @@ class PdfFactuurService
         $this->projectDir = $projectDir;
 
         $this->fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/Avenir-Roman.ttf',
+            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
             'TrueTypeUnicode',
             '',
             96
         );
         $this->fontnameBold = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/Avenir-Heavy.ttf',
+            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Bold.ttf',
             'TrueTypeUnicode',
             '',
             96

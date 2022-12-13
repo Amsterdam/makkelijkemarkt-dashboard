@@ -1,6 +1,8 @@
+node_modules
 composer.phar
 vendor/
 public/bundles/
+public/build
 .project
 .settings
 var/data/*
