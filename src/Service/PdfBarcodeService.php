@@ -43,7 +43,7 @@ class PdfBarcodeService
         $this->pdf->AddPage();
 
         $fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/Avenir-Roman.ttf',
+            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
             'TrueTypeUnicode',
             '',
             96
