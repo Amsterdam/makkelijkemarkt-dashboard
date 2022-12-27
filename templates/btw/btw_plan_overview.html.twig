@@ -1,0 +1,49 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}BTW Plannen{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+<div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tarief soort</th>
+                <th>Type plan</th>
+                <th>Vanaf datum</th>
+                <th>BTW tarief</th>
+                <th>BTW specifiek voor markt</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in plans %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.tariefSoort.label }}
+                    <td>{{ item.tariefSoort.tariefType }}
+                    <td>{{ item.dateFrom }}</td>
+                    <td>{{ item.btwType.label }}</td>
+                    <td>{{ item.markt }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}
