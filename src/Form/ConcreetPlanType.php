@@ -56,6 +56,9 @@ class ConcreetPlanType extends AbstractType
             ->add('eenmaligElektra', NumberType::class, [
                 'label' => 'Eenmalig elektra',
             ])
+            ->add('agfPerMeter', NumberType::class, [
+                'label' => 'AGF per meter',
+            ])
             ->add('save', SubmitType::class, ['label' => 'Opslaan']);
     }
 

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Form\BtwCreateType;
+use App\Form\BtwImportType;
 use App\Service\MarktApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -66,5 +67,43 @@ class BtwController extends AbstractController
             'form' => $form->createView(),
             'formModel' => $formModel,
         ];
+    }
+
+    /**
+     * @Route("btw/import")
+     * @Template("btw/import_form.html.twig")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function import(Request $request, MarktApi $api)
+    {
+        $formModel = [
+            'file' => null,
+            'planType' => null,
+        ]
+        ;
+        $form = $this->createForm(BtwImportType::class, $formModel);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+            $api->importBtw($data);
+
+            $this->addFlash('error', 'Het formulier is niet correct ingevuld');
+        }
+
+        return [
+            'form' => $form->createView(),
+            'formModel' => $formModel,
+        ];
+    }
+
+    /**
+     * @Route("btw/get_plans")
+     * @Template("btw/btw_plan_overview.html.twig")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function getPlans(MarktApi $api)
+    {
+        return ['plans' => $api->getBtwPlans()];
     }
 }

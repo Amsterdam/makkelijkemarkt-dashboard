@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\Multipart\FormDataPart;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -382,6 +384,23 @@ class MarktApi
     public function postBtw($data)
     {
         return $this->makeRequest('POST', '/btw/', ['json' => $data]);
+    }
+
+    public function importBtw($data)
+    {
+        $data['file'] = DataPart::fromPath($_FILES['btw_import']['tmp_name']['file']);
+        $formData = new FormDataPart($data);
+        $options = [
+            'headers' => $formData->getPreparedHeaders()->toArray(),
+            'body' => $formData->bodyToIterable(),
+        ];
+
+        return $this->makeRequest('POST', '/parse_btw_csv', $options);
+    }
+
+    public function getBtwPlans(): array
+    {
+        return $this->makeRequest('GET', '/btw_plans')->toArray();
     }
 
     public function getVersion(): array

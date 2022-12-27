@@ -193,6 +193,7 @@ class TariefplanController extends AbstractController
                 'promotieGeldenPerKraam' => $tariefPlanObject['concreetplan']['promotieGeldenPerKraam'],
                 'afvaleiland' => $tariefPlanObject['concreetplan']['afvaleiland'],
                 'eenmaligElektra' => $tariefPlanObject['concreetplan']['eenmaligElektra'],
+                'agfPerMeter' => $tariefPlanObject['concreetplan']['agfPerMeter'],
             ];
         } else {
             return [
@@ -207,6 +208,7 @@ class TariefplanController extends AbstractController
                 'promotieGeldenPerKraam' => null,
                 'afvaleiland' => null,
                 'eenmaligElektra' => null,
+                'agfPerMeter' => null,
             ];
         }
     }
