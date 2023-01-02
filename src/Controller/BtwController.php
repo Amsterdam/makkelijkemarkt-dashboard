@@ -70,7 +70,7 @@ class BtwController extends AbstractController
     }
 
     /**
-     * @Route("btw/import")
+     * @Route("import/btw")
      * @Template("btw/import_form.html.twig")
      * @Security("is_granted('ROLE_ADMIN')")
      */
