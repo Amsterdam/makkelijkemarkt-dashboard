@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Form\ConcreetPlanType;
 use App\Form\LineairplanType;
+use App\Form\TariefEnBtwImportType;
 use App\Service\MarktApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -263,6 +264,34 @@ class TariefplanController extends AbstractController
 
                 return $this->redirectToRoute('app_tariefplan_marktindex', ['marktId' => $tariefPlanObject['marktId']]);
             }
+
+            $this->addFlash('error', 'Het formulier is niet correct ingevuld');
+        }
+
+        return [
+            'form' => $form->createView(),
+            'formModel' => $formModel,
+        ];
+    }
+
+    /**
+     * @Route("import/tariefplan")
+     * @Template("tariefplan/import_form.html.twig")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function import(Request $request, MarktApi $api)
+    {
+        $formModel = [
+            'file' => null,
+            'planType' => null,
+        ]
+        ;
+        $form = $this->createForm(TariefEnBtwImportType::class, $formModel);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            $data = $form->getData();
+            $api->importTariefplan($data);
 
             $this->addFlash('error', 'Het formulier is niet correct ingevuld');
         }
