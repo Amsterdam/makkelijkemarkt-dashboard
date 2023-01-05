@@ -51,7 +51,7 @@
     <h2>Rapportage per koopman</h2>
     {% for koopman in koopmannen %}
         {% if koopman.aanwezigheid_voldaan == false %}
-            <h3>{{ koopman.erkenningsnummer }}. {{ koopman.achternaam }}, {{ koopman.voorletters }}</h3>
+            <h3>{{ koopman.erkenningsnummer }}. {{ koopman.achternaam }}, {{ koopman.voorletters }} [{{ koopman.status }}]</h3>
             <table class="table table-hover">
                 <thead>
                     <tr>
