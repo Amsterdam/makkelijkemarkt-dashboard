@@ -38,9 +38,9 @@
                 {% if markt.soort == 'week' %}{% set url = path('app_rapport_frequentiemarktenweek', {'marktId': markt.id}) %}{% endif %}
                 <td>
                 {% if markt.soort == 'seizoen' %}
-                    <button class="btn btn-primary" disabled>VPL/VKK</button>
+                    <button class="btn btn-primary" disabled>VPH</button>
                 {% else %}
-                     <a href="{{ url }}" class="btn btn-primary">VPL/VKK</a>
+                     <a href="{{ url }}" class="btn btn-primary">VPH</a>
                 {% endif %}
                 
                 <a href="{{ path('app_rapport_frequentiemarktensoll', {'marktId': markt.id}) }}" class="btn btn-primary">Sollicitanten</a>
