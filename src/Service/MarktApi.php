@@ -294,6 +294,18 @@ class MarktApi
         $this->makeRequest('DELETE', '/tariefplannen/delete/'.$id);
     }
 
+    public function importTariefplan($data)
+    {
+        $data['file'] = DataPart::fromPath($_FILES['tarief_en_btw_import']['tmp_name']['file']);
+        $formData = new FormDataPart($data);
+        $options = [
+            'headers' => $formData->getPreparedHeaders()->toArray(),
+            'body' => $formData->bodyToIterable(),
+        ];
+
+        return $this->makeRequest('POST', '/parse_tarief_csv', $options);
+    }
+
     public function getRapportDubbelstaan(string $dag): array
     {
         return $this->makeRequest('GET', '/rapport/dubbelstaan/'.$dag)->toArray();
@@ -388,7 +400,7 @@ class MarktApi
 
     public function importBtw($data)
     {
-        $data['file'] = DataPart::fromPath($_FILES['btw_import']['tmp_name']['file']);
+        $data['file'] = DataPart::fromPath($_FILES['tarief_en_btw_import']['tmp_name']['file']);
         $formData = new FormDataPart($data);
         $options = [
             'headers' => $formData->getPreparedHeaders()->toArray(),

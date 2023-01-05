@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Form\BtwCreateType;
-use App\Form\BtwImportType;
+use App\Form\TariefEnBtwImportType;
 use App\Service\MarktApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -70,7 +70,7 @@ class BtwController extends AbstractController
     }
 
     /**
-     * @Route("btw/import")
+     * @Route("import/btw")
      * @Template("btw/import_form.html.twig")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -81,7 +81,7 @@ class BtwController extends AbstractController
             'planType' => null,
         ]
         ;
-        $form = $this->createForm(BtwImportType::class, $formModel);
+        $form = $this->createForm(TariefEnBtwImportType::class, $formModel);
 
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
