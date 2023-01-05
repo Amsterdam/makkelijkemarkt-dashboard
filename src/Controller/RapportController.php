@@ -417,7 +417,8 @@ class RapportController extends AbstractController
         $activeSheet->setCellValueByColumnAndRow(1, 6, 'erkenningsnummer');
         $activeSheet->setCellValueByColumnAndRow(2, 6, 'achternaam');
         $activeSheet->setCellValueByColumnAndRow(3, 6, 'voorletters');
-        $activeSheet->getStyleByColumnAndRow(1, 6, 3, 6)->getFont()->setBold(true);
+        $activeSheet->setCellValueByColumnAndRow(4, 6, 'status');
+        $activeSheet->getStyleByColumnAndRow(1, 6, 4, 6)->getFont()->setBold(true);
 
         $i = 7;
         foreach ($data['koopmannen'] as $koopman) {
@@ -425,6 +426,7 @@ class RapportController extends AbstractController
                 $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer']);
                 $activeSheet->setCellValueByColumnAndRow(2, $i, $koopman['achternaam']);
                 $activeSheet->setCellValueByColumnAndRow(3, $i, $koopman['voorletters']);
+                $activeSheet->setCellValueByColumnAndRow(4, $i, $koopman['status']);
                 ++$i;
             }
         }
@@ -442,7 +444,7 @@ class RapportController extends AbstractController
         foreach ($data['koopmannen'] as $koopman) {
             if (!$koopman['aanwezigheid_voldaan']) {
                 ++$i;
-                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'].'. '.$koopman['achternaam'].', '.$koopman['voorletters']);
+                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'].'. '.$koopman['achternaam'].', '.$koopman['voorletters'].' ['.$koopman['status'].']');
                 $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(15)->setBold(true);
 
                 ++$i;
@@ -641,7 +643,8 @@ class RapportController extends AbstractController
         $activeSheet->setCellValueByColumnAndRow(1, 6, 'erkenningsnummer');
         $activeSheet->setCellValueByColumnAndRow(2, 6, 'achternaam');
         $activeSheet->setCellValueByColumnAndRow(3, 6, 'voorletters');
-        $activeSheet->getStyleByColumnAndRow(1, 6, 3, 6)->getFont()->setBold(true);
+        $activeSheet->setCellValueByColumnAndRow(4, 6, 'status');
+        $activeSheet->getStyleByColumnAndRow(1, 6, 4, 6)->getFont()->setBold(true);
 
         $i = 7;
         foreach ($data['koopmannen'] as $koopman) {
@@ -649,6 +652,7 @@ class RapportController extends AbstractController
                 $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer']);
                 $activeSheet->setCellValueByColumnAndRow(2, $i, $koopman['achternaam']);
                 $activeSheet->setCellValueByColumnAndRow(3, $i, $koopman['voorletters']);
+                $activeSheet->setCellValueByColumnAndRow(3, $i, $koopman['status']);
                 ++$i;
             }
         }
@@ -666,7 +670,7 @@ class RapportController extends AbstractController
         foreach ($data['koopmannen'] as $koopman) {
             if (!$koopman['aanwezigheid_voldaan']) {
                 ++$i;
-                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'].'. '.$koopman['achternaam'].', '.$koopman['voorletters']);
+                $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer'].'. '.$koopman['achternaam'].', '.$koopman['voorletters'].' ['.$koopman['status'].']');
                 $activeSheet->getStyleByColumnAndRow(1, $i)->getFont()->setSize(15)->setBold(true);
 
                 ++$i;
