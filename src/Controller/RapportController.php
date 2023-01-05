@@ -333,6 +333,7 @@ class RapportController extends AbstractController
                 $koopmannen[$id]['weken_aanwezig'] = [];
                 $koopmannen[$id]['weken_afwezig'] = [];
                 $koopmannen[$id]['aanwezigheid_voldaan'] = false;
+                $koopmannen[$id]['status'] = $item['status'];
             }
             if (null === $item['week_nummer']) {
                 $koopmannen[$id]['weken_afwezig'] = $emptyWeek;
