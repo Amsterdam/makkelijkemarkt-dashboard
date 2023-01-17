@@ -290,10 +290,13 @@ class TariefplanController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
-            $data = $form->getData();
-            $api->importTariefplan($data);
-
-            $this->addFlash('error', 'Het formulier is niet correct ingevuld');
+            if ($form->isValid()) {
+                $data = $form->getData();
+                $api->importTariefplan($data);
+                $this->addFlash('success', 'De import is gelukt.');
+            } else {
+                $this->addFlash('error', 'Kan niet importeren');
+            }
         }
 
         return [

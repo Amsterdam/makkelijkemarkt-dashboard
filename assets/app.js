@@ -14,13 +14,16 @@ require("bootstrap");
 // start the Stimulus application
 // import './bootstrap';
 import rome from '@bevacqua/rome';
+import bsCustomFileInput from 'bs-custom-file-input'
 
-window.addEventListener('DOMContentLoaded', () => {    
+window.addEventListener('DOMContentLoaded', () => {
     const elm = document.getElementById('dayview-date');
+
+    bsCustomFileInput.init()
 
     if (elm !== null) {
         const startValue = elm.value;
-        rome(elm, { 
+        rome(elm, {
             'time': false,
             'weekStart': 1,
             'inputFormat': 'DD-MM-YYYY',
@@ -35,11 +38,10 @@ window.addEventListener('DOMContentLoaded', () => {
     for (let item of list) {
         rome(item, {
             'time': false,
-            'inputFormat': 'DD-MM-YYYY', 
+            'inputFormat': 'DD-MM-YYYY',
         });
     }
 
-    
     function showFields() {
         $('.periode-selector').hide();
         $('.periode-'+ $("#periode").children("option:selected").val()).show();

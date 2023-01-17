@@ -652,7 +652,7 @@ class RapportController extends AbstractController
                 $activeSheet->setCellValueByColumnAndRow(1, $i, $koopman['erkenningsnummer']);
                 $activeSheet->setCellValueByColumnAndRow(2, $i, $koopman['achternaam']);
                 $activeSheet->setCellValueByColumnAndRow(3, $i, $koopman['voorletters']);
-                $activeSheet->setCellValueByColumnAndRow(3, $i, $koopman['status']);
+                $activeSheet->setCellValueByColumnAndRow(4, $i, $koopman['status']);
                 ++$i;
             }
         }
@@ -908,6 +908,7 @@ class RapportController extends AbstractController
                 $koopmannen[$id]['weken_aanwezig'] = [];
                 $koopmannen[$id]['weken_afwezig'] = [];
                 $koopmannen[$id]['aanwezigheid_voldaan'] = false;
+                $koopmannen[$id]['status'] = $item['status'];
             }
             if (null === $item['week_nummer']) {
                 $koopmannen[$id]['weken_afwezig'] = $emptyWeek;
