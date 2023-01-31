@@ -15,52 +15,39 @@ namespace App\Controller;
 
 use App\Form\BtwCreateType;
 use App\Form\TariefEnBtwImportType;
+use App\Service\BtwPlanEditingService;
 use App\Service\MarktApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class BtwController extends AbstractController
 {
     /**
-     * @Route("/btw", name="app_btw_index")
-     * @Template()
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-    public function indexAction(MarktApi $api): array
-    {
-        $btw = $api->getBtw();
-
-        return ['btw' => $btw];
-    }
-
-    /**
-     * @Route("/btw/create_update")
-     * @Route("/btw/create_update/{jaar}", name="app_btw_createorupdate_jaar")
+     * @Route("/btw/create/{planType}", name="app_btw_plan_create", methods={"GET", "POST"})
      * @Template("/btw/create.html.twig")
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function createOrUpdateAction(string $jaar = null, Request $request, MarktApi $api)
-    {
-        $formModel = [
-            'jaar' => null === $jaar ? '' : $jaar,
-            'hoog' => '',
-        ]
-        ;
+    public function createBtwPlan(
+        string $planType,
+        Request $request,
+        MarktApi $api,
+        BtwPlanEditingService $planEditingService
+    ) {
+        $formModel = $api->getBtwCreate($planType);
+        $formModel['planType'] = $planType;
         $form = $this->createForm(BtwCreateType::class, $formModel);
-
         $form->handleRequest($request);
+
         if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                $api->postBtw($form->getData());
-                $this->addFlash('success', 'Aangemaakt');
+            $data = $planEditingService->handleCreateBtwPlanForm($form->getData());
+            $api->postBtwPlan($data);
+            $this->addFlash('success', 'Nieuw plan aangemaakt.');
 
-                return $this->redirectToRoute('app_btw_index');
-            }
-
-            $this->addFlash('error', 'Het formulier is niet correct ingevuld');
+            return $this->redirectToRoute('app_btw_overview');
         }
 
         return [
@@ -70,7 +57,46 @@ class BtwController extends AbstractController
     }
 
     /**
-     * @Route("import/btw")
+     * @Route("/btw/update/{planType}/{btwPlanId?}", name="app_btw_plan_update", methods={"GET", "POST"})
+     * @Template("/btw/create.html.twig")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function updateBtwPlan(
+        string $planType,
+        ?int $btwPlanId,
+        Request $request,
+        MarktApi $api,
+        BtwPlanEditingService $planEditingService
+    ) {
+        $formModel = $api->getBtwUpdate($btwPlanId);
+        $formModel['planType'] = $planType;
+
+        $form = $this->createForm(BtwCreateType::class, $formModel);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            $data = $planEditingService->handleUpdateBtwPlanForm($form->getData());
+
+            if (empty($data)) {
+                $this->addFlash('info', 'Geen wijzigingen opgeslagen.');
+
+                return $this->redirectToRoute('app_btw_overview');
+            }
+
+            $api->patchBtwPlan($data);
+            $this->addFlash('success', 'BTW Plan gewijzigd.');
+
+            return $this->redirectToRoute('app_btw_overview');
+        }
+
+        return [
+            'form' => $form->createView(),
+            'formModel' => $formModel,
+        ];
+    }
+
+    /**
+     * @Route("import/btw", name="app_import_btw", methods={"GET", "POST"})
      * @Template("btw/import_form.html.twig")
      * @Security("is_granted('ROLE_ADMIN')")
      */
@@ -101,12 +127,26 @@ class BtwController extends AbstractController
     }
 
     /**
-     * @Route("btw/get_plans")
+     * @Route("btw/{planType?lineair}", name="app_btw_overview", methods={"GET"})
      * @Template("btw/btw_plan_overview.html.twig")
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function getPlans(MarktApi $api)
+    public function getPlans(string $planType, MarktApi $api, BtwPlanEditingService $planEditingService)
     {
-        return ['plans' => $api->getBtwPlans()];
+        $plans = $planEditingService->mapActivePlans($api->getBtwPlans($planType));
+
+        return ['plans' => $plans, 'planType' => $planType];
+    }
+
+    /**
+     * @Route("btw/archive_plan/{id}", name="app_btw_plan_archive", methods={"GET"})
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function archivePlan(int $id, MarktApi $api): RedirectResponse
+    {
+        $api->archiveBtwPlan($id);
+        $this->addFlash('success', 'BTW plan gearchiveerd.');
+
+        return $this->redirectToRoute('app_btw_overview');
     }
 }

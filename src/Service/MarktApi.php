@@ -393,9 +393,14 @@ class MarktApi
         return $this->makeRequest('GET', '/btw/')->toArray();
     }
 
-    public function postBtw($data)
+    public function postBtwPlan($data)
     {
-        return $this->makeRequest('POST', '/btw/', ['json' => $data]);
+        return $this->makeRequest('POST', '/btw_plan', ['json' => $data]);
+    }
+
+    public function patchBtwPlan($data)
+    {
+        return $this->makeRequest('PATCH', '/btw_plan/'.$data['btwPlanId'], ['json' => $data]);
     }
 
     public function importBtw($data)
@@ -410,9 +415,24 @@ class MarktApi
         return $this->makeRequest('POST', '/parse_btw_csv', $options);
     }
 
-    public function getBtwPlans(): array
+    public function getBtwPlans(string $planType): array
     {
-        return $this->makeRequest('GET', '/btw_plans')->toArray();
+        return $this->makeRequest('GET', '/btw/plans/'.$planType)->toArray();
+    }
+
+    public function archiveBtwPlan(int $id): void
+    {
+        $this->makeRequest('PATCH', '/btw_plan/archive/'.$id);
+    }
+
+    public function getBtwUpdate(int $btwPlanId): array
+    {
+        return $this->makeRequest('GET', '/btw_plan/update/'.$btwPlanId)->toArray();
+    }
+
+    public function getBtwCreate($planType): array
+    {
+        return $this->makeRequest('GET', '/btw_plan/create/'.$planType)->toArray();
     }
 
     public function getVersion(): array
