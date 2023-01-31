@@ -20,30 +20,71 @@
 
 {% block document %}
 <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Tarief soort</th>
-                <th>Type plan</th>
-                <th>Vanaf datum</th>
-                <th>BTW tarief</th>
-                <th>BTW specifiek voor markt</th>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a
+                class="nav-link {% if planType == 'lineair' %} active {% endif %}"
+                href="{{ path('app_btw_overview', {planType: 'lineair'}) }}"
+            >
+                Lineair
+            </a>
+        </li>
+        <li class="nav-item">
+            <a
+                class="nav-link {% if planType == 'concreet' %} active {% endif %}"
+                href="{{ path('app_btw_overview', {planType: 'concreet'}) }}"
+            >
+                Concreet
+            </a>
+        </li>
+        <li class="nav-item ml-auto">
+            <a
+                class="nav-link btn btn-sm btn-success"
+                href="{{ path('app_btw_plan_create', {planType: planType}) }}"
+            >
+                Nieuw BTW Plan
+            </a>
+        </li>
+    </ul>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tarief soort</th>
+            <th>Type plan</th>
+            <th>Vanaf datum</th>
+            <th>BTW tarief</th>
+            <th>Specifieke markt</th>
+            <th>Aanpassen</th>
+            <th>Archiveren</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for btwPlan in plans %}
+            <tr {% if btwPlan.isActive == true %} style="font-weight: bold;"{% endif %}>
+                <td>{{ btwPlan.id }}</td>
+                <td>{{ btwPlan.tariefLabel }}
+                <td>{{ btwPlan.tariefType }}
+                <td>{{ btwPlan.dateFrom }}</td>
+                <td>{{ btwPlan.btwType }}</td>
+                <td>{{ btwPlan.marktName }}</td>
+                <td>
+                    <a href={{ path('app_btw_plan_update', {'planType': planType, 'btwPlanId': btwPlan.id }) }}>
+                        <span class="bi bi-pencil-fill"></span>
+                    </a>
+                </td>
+                 <td>
+                    <a
+                        href={{ path('app_btw_plan_archive', {'id': btwPlan.id })}}
+                        onclick="return confirm('Weet je zeker dat je dit BTW plan wilt archiveren?')"
+                    >
+                        <span class="bi bi-trash"></span>
+                    </a>
+                </td>
             </tr>
-            </thead>
-            <tbody>
-            {% for item in plans %}
-                <tr>
-                    <td>{{ item.id }}</td>
-                    <td>{{ item.tariefSoort.label }}
-                    <td>{{ item.tariefSoort.tariefType }}
-                    <td>{{ item.dateFrom }}</td>
-                    <td>{{ item.btwType.label }}</td>
-                    <td>{{ item.markt }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 {% endblock %}

@@ -275,7 +275,7 @@ class TariefplanController extends AbstractController
     }
 
     /**
-     * @Route("import/tariefplan")
+     * @Route("import/tariefplan", name="app_import_tariefplan")
      * @Template("tariefplan/import_form.html.twig")
      * @Security("is_granted('ROLE_ADMIN')")
      */
