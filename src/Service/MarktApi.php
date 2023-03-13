@@ -388,11 +388,6 @@ class MarktApi
         )->toArray();
     }
 
-    public function getBtw(): array
-    {
-        return $this->makeRequest('GET', '/btw/')->toArray();
-    }
-
     public function postBtwPlan($data)
     {
         return $this->makeRequest('POST', '/btw_plan', ['json' => $data]);
