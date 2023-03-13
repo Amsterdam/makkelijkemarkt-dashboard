@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Form\BtwCreateType;
+use App\Form\BtwPlanType;
 use App\Form\TariefEnBtwImportType;
 use App\Service\BtwPlanEditingService;
 use App\Service\MarktApi;
@@ -39,7 +39,7 @@ class BtwController extends AbstractController
     ) {
         $formModel = $api->getBtwCreate($planType);
         $formModel['planType'] = $planType;
-        $form = $this->createForm(BtwCreateType::class, $formModel);
+        $form = $this->createForm(BtwPlanType::class, $formModel);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
@@ -71,7 +71,7 @@ class BtwController extends AbstractController
         $formModel = $api->getBtwUpdate($btwPlanId);
         $formModel['planType'] = $planType;
 
-        $form = $this->createForm(BtwCreateType::class, $formModel);
+        $form = $this->createForm(BtwPlanType::class, $formModel);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
