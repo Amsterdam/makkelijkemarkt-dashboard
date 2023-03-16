@@ -38,11 +38,11 @@ class RapportController extends AbstractController
     }
 
     /**
-     * @Route("/rapport/dubbelstaan/{dag}")
-     * @Template()
+     * @Route("/rapport/meervoudig_staan/{dag}", name="app_rapport_meervoudig_staan", methods={"GET"})
+     * @Template("/rapport/meervoudig_staan.html.twig")
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
-    public function dubbelstaanAction(MarktApi $api, string $dag = null): array
+    public function meervoudigStaanAction(MarktApi $api, string $dag = null): array
     {
         if (null === $dag || '' === $dag) {
             $dag = date('Y-m-d');
@@ -55,7 +55,7 @@ class RapportController extends AbstractController
         $yesterday = clone $day;
         $yesterday->sub(new \DateInterval('P1D'));
 
-        $rapport = $api->getRapportDubbelstaan($dag);
+        $rapport = $api->getRapportMeervoudigStaan($dag);
 
         return ['rapport' => $rapport, 'dag' => $day, 'gisteren' => $yesterday, 'morgen' => $tomorrow, 'vandaag' => $today];
     }
