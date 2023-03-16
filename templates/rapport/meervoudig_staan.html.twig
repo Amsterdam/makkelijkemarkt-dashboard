@@ -10,7 +10,7 @@
 
 {% extends "base.html.twig" %}
 
-{% block title %}Rapport: Dubbelstaan {% endblock %}
+{% block title %}Rapport: Meervoudig staan {% endblock %}
 
 {% block css %}
         {{ encore_entry_link_tags('app') }}
@@ -20,30 +20,30 @@
 {% endblock %}
 
 {% block document %}
-    <h1>Rapport: Dubbel Staan</h1>
+    <h1>Rapport: Meervoudig Staan</h1>
 
     <div class="row mb-2">
         <div class="col-sm-3">
             <div class="btn-group" role="group" aria-label="...">
-                <a class="btn btn-default  btn-primary" href="{{ path('app_rapport_dubbelstaan', {'dag': gisteren|date('Y-m-d')}) }}">vorige</a>
-                <a class="btn btn-default  bg-light" href="{{ path('app_rapport_dubbelstaan', {'dag': dag|date('Y-m-d')}) }}">{{ dag|date('d-m-Y') }}</a>
-                <a class="btn btn-default btn-primary" href="{{ path('app_rapport_dubbelstaan', {'dag': morgen|date('Y-m-d')}) }}">volgende</a>
+                <a class="btn btn-default  btn-primary" href="{{ path('app_rapport_meervoudig_staan', {'dag': gisteren|date('Y-m-d')}) }}">vorige</a>
+                <a class="btn btn-default  bg-light" href="{{ path('app_rapport_meervoudig_staan', {'dag': dag|date('Y-m-d')}) }}">{{ dag|date('d-m-Y') }}</a>
+                <a class="btn btn-default btn-primary" href="{{ path('app_rapport_meervoudig_staan', {'dag': morgen|date('Y-m-d')}) }}">volgende</a>
             </div>
         </div>
         <div class="col-sm">
         {% if (dag|date('Ymd') != vandaag|date('Ymd')) %}
-            <a class="btn btn-success" href="{{ path('app_rapport_dubbelstaan', {'dag': vandaag|date('Y-m-d')}) }}">naar vandaag</a>
+            <a class="btn btn-success" href="{{ path('app_rapport_meervoudig_staan', {'dag': vandaag|date('Y-m-d')}) }}">naar vandaag</a>
         {% endif %}
         </div>
-  </div>
+    </div>
 
-    <h2>Rapport: Dubbel staan voor {{ dag|date('d-m-Y') }}</h2>
+    <h2>Rapport: Meervoudig staan voor {{ dag|date('d-m-Y') }}</h2>
     {% if rapport.output|length > 0 %}
-    <div class="alert alert-danger" role="alert"><strong>Helaas</strong> er zijn erkenningsnummers die op {{ dag|date('d-m-Y') }} meerdere dagvergunningen hebben gehad.</div>
+    <div class="alert alert-danger" role="alert"><strong>Helaas</strong> er zijn {{rapport.output|length }} erkenningsnummers die op {{ dag|date('d-m-Y') }} meerdere dagvergunningen hebben gehad.</div>
     {% endif %}
     {% for record in rapport.output %}
         <h3>Erkenningsnummer {{ record.erkenningsnummer }} {% if record.koopman is not empty %} / {{ record.koopman.voorletters }} {{ record.koopman.achternaam }}{% endif %}</h3>
-        <div class="alert alert-warning" role="alert"><strong>{{ record.dagvergunningen|length }}</strong> dagvergunningen gevonden voor {{ record.erkenningsnummer }} op {{ dag|date('d-m-Y') }}</div>
+        <div class="alert alert-{{ record.dagvergunningen|length >= 4 ? 'danger' : 'warning' }}" role="alert"><strong>{{ record.dagvergunningen|length }}</strong> dagvergunningen gevonden voor {{ record.erkenningsnummer }} op {{ dag|date('d-m-Y') }}</div>
         <table class="table">
             <thead>
                 <tr>

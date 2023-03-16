@@ -306,7 +306,7 @@ class MarktApi
         return $this->makeRequest('POST', '/parse_tarief_csv', $options);
     }
 
-    public function getRapportDubbelstaan(string $dag): array
+    public function getRapportMeervoudigStaan(string $dag): array
     {
         return $this->makeRequest('GET', '/rapport/dubbelstaan/'.$dag)->toArray();
     }
