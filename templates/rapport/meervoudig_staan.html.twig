@@ -39,11 +39,27 @@
 
     <h2>Rapport: Meervoudig staan voor {{ dag|date('d-m-Y') }}</h2>
     {% if rapport.output|length > 0 %}
-    <div class="alert alert-danger" role="alert"><strong>Helaas</strong> er zijn {{rapport.output|length }} erkenningsnummers die op {{ dag|date('d-m-Y') }} meerdere dagvergunningen hebben gehad.</div>
+        {% set under5 = 0 %}
+        {% set atleast5 = 0 %}
+        {% for record in rapport.output %}
+            {% if record.dagvergunningen|length >= 5 %}
+                {% set atleast5 = atleast5 + 1 %}
+            {% else %}
+                {% set under5 = under5 + 1 %}
+            {% endif %}
+        {% endfor %}
+        <div class="alert alert-info }}" role="alert">
+            Er zijn {{ under5 }} erkenningsnummers die op {{ dag|date('d-m-Y') }} meerdere dagvergunningen hebben gehad.
+        </div>
+        {% if atleast5 > 0 %}
+        <div class="alert alert-danger" role="alert">
+            <strong>Helaas</strong> er zijn {{ atleast5 }} erkenningsnummers die op {{ dag|date('d-m-Y') }} meer dan 4 dagvergunningen hebben gehad.
+        </div>
+        {% endif %}
     {% endif %}
     {% for record in rapport.output %}
         <h3>Erkenningsnummer {{ record.erkenningsnummer }} {% if record.koopman is not empty %} / {{ record.koopman.voorletters }} {{ record.koopman.achternaam }}{% endif %}</h3>
-        <div class="alert alert-{{ record.dagvergunningen|length >= 4 ? 'danger' : 'warning' }}" role="alert"><strong>{{ record.dagvergunningen|length }}</strong> dagvergunningen gevonden voor {{ record.erkenningsnummer }} op {{ dag|date('d-m-Y') }}</div>
+        <div class="alert alert-{{ record.dagvergunningen|length >= 5 ? 'danger' : 'info' }}" role="alert"><strong>{{ record.dagvergunningen|length }}</strong> dagvergunningen gevonden voor {{ record.erkenningsnummer }} op {{ dag|date('d-m-Y') }}</div>
         <table class="table">
             <thead>
                 <tr>
