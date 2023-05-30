@@ -1,4 +1,4 @@
-ARG NODE_VERSION=14.21.3
+ARG NODE_VERSION=16.20.0
 
 FROM node:$NODE_VERSION-alpine AS node
 FROM nginx:stable-alpine
