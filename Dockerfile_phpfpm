@@ -39,13 +39,13 @@ RUN mkdir -p /var/www/var/cache
 
 WORKDIR /var/www
 
+RUN chown -R www-data: /var/www
+USER www-data
+
 RUN composer install --prefer-dist --no-progress --no-suggest --no-scripts
 
 RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
-RUN chown -R www-data: /var/www
-
-USER www-data
 RUN composer dump-autoload --strict-psr
 RUN vendor/bin/grumphp run -n
 
