@@ -473,6 +473,26 @@ class MarktApi
         return $this->makeRequest('GET', '/dagvergunning_mapping')->toArray();
     }
 
+    public function getFeatureFlags(): array
+    {
+        return $this->makeRequest('GET', '/feature_flags')->toArray();
+    }
+
+    public function createFeatureFlag($data): void
+    {
+        $this->makeRequest('POST', '/feature_flag', ['json' => $data]);
+    }
+
+    public function updateFeatureFlag($id, $data): void
+    {
+        $this->makeRequest('PATCH', "/feature_flag/$id", ['json' => $data]);
+    }
+
+    public function getFeatureFlag($id): array
+    {
+        return $this->makeRequest('GET', "/feature_flag/$id")->toArray();
+    }
+
     public function getVersion(): array
     {
         return $this->makeRequest('GET', '/version/')->toArray();
