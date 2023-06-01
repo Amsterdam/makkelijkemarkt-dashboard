@@ -67,14 +67,14 @@ class TarievenplanType extends AbstractType
             ->add('dateFrom', DateType::class, [
                 'label' => 'Geldig vanaf',
                 'widget' => 'choice',
-                'years' => range(date('Y'), date('Y') + 3),
+                'years' => range(date('Y') - 5, date('Y') + 3),
                 'data' => $dateFrom,
             ])
             ->add('dateUntil', DateType::class, [
                 'label' => 'Geldig tot',
                 'widget' => 'choice',
                 'required' => false,
-                'years' => range(date('Y'), date('Y') + 3),
+                'years' => range(date('Y') - 5, date('Y') + 3),
                 'data' => $dateUntil,
             ])
 
