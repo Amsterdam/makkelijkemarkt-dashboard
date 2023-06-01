@@ -90,7 +90,8 @@ class LoginAuthenticator extends AbstractFormLoginAuthenticator
             $credentials['password'],
             $user['uuid'],
             '',
-            $user['account']['roles']
+            $user['account']['roles'],
+            $user['featureFlags']
         );
     }
 

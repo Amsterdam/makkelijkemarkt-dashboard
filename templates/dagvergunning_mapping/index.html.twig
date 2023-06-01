@@ -1,0 +1,58 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Tariefplannen{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Dagvergunning koppeling</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Dagvergunning key</th>
+                <th>Mercato key</th>
+                <th>Unit</th>
+                <th>Omgerekend</th>
+                <th>Tarief type</th>
+                <th>Tariefsoort</th>
+                <th>Gearchiveerd</th>
+                <th>App label</th>
+                <th>App input</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mapping in dagvergunningMapping %}
+            <tr>
+                <td>{{ mapping.dagvergunningKey }}</td>
+                <td>{{ mapping.mercatoKey }}</td>
+                <td>{{ mapping.unit }}</td>
+                <td>{{ mapping.translatedToUnit }}</td>
+                <td>{{ mapping.tariefType }} </td>
+                <td>{{ mapping.tariefSoortLabel }}</td>
+                <td>{{ mapping.archivedOn }}</td>
+                <td></td>
+                <td></td>
+                <td>
+                    <span class="bi bi-pencil-fill"></span>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

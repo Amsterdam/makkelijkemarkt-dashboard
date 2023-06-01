@@ -1,0 +1,62 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Tariefsoorten overzicht{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Tariefsoorten overzicht</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Naam</th>
+                <th>Type</th>
+                <th>Unit</th>
+                <th>Label op factuur</th>
+                <th>Gearchiveerd</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for soort in tariefSoorten %}
+            <tr>
+                <td>{{ soort.id }}</td>
+                <td>{{ soort.label }}</td>
+                <td>{{ soort.tariefType }}</td>
+                <td>{{ soort.unit }}</td>
+                <td>{{ soort.factuurLabel }}</td>
+                <td>{{ soort.deleted }}</td>
+
+
+                <td> {# TODO na eerste testfase: acties toevoegen aan controller #}
+                    {# <a href={{ path('app_btw_plan_update', {'planType': planType, 'btwPlanId': btwPlan.id }) }}> #}
+                        <span class="bi bi-pencil-fill"></span>
+                    {# </a> #}
+                    {# <a
+                        href={{ path('app_btw_plan_archive', {'id': btwPlan.id })}}
+                        onclick="return confirm('Weet je zeker dat je dit BTW plan wilt archiveren?')"
+                    > #}
+                        <span class="bi bi-trash"></span>
+                    {# </a> #}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
