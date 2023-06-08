@@ -45,7 +45,6 @@ RUN composer install --prefer-dist --no-progress --no-suggest --no-scripts
 
 RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
-
 RUN composer dump-autoload --strict-psr
 RUN vendor/bin/grumphp run -n
 
