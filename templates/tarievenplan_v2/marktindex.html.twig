@@ -24,6 +24,7 @@
     <p>
         <a class="btn btn-primary" href="{{ path('app_tarievenplan_create', {'marktId': markt.id, 'type': 'lineair'}) }}">Lineairplan toevoegen</a>
         <a class="btn btn-primary" href="{{ path('app_tarievenplan_create', {'marktId': markt.id, 'type': 'concreet'}) }}">Concreetplan toevoegen</a>
+        <a class="btn btn-warning" href="{{ path('app_tarievenplan_simulate', {'marktId': markt.id, 'tarievenPlanType': 'lineair'}) }}">Simuleer Factuur</a>
     </p>
 
     <table class="table table-striped">

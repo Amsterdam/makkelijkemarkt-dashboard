@@ -19,20 +19,20 @@
 {% endblock %}
 
 {% block document %}
-    <h1>Dagvergunning koppeling</h1>
+    <h1>Dagvergunning producten</h1>
 
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Dagvergunning key</th>
-                <th>Mercato key</th>
-                <th>Unit</th>
-                <th>Omgerekend</th>
+                <th>Key</th>
                 <th>Tarief type</th>
+                <th>Eenheid</th>
                 <th>Tariefsoort</th>
-                <th>Gearchiveerd</th>
                 <th>App label</th>
                 <th>App input</th>
+                <th>Omgerekend</th>
+                <th>Mercato naam</th>
+                <th>Gearchiveerd</th>
                 <th>Acties</th>
             </tr>
         </thead>
@@ -40,14 +40,14 @@
         {% for mapping in dagvergunningMapping %}
             <tr>
                 <td>{{ mapping.dagvergunningKey }}</td>
-                <td>{{ mapping.mercatoKey }}</td>
-                <td>{{ mapping.unit }}</td>
-                <td>{{ mapping.translatedToUnit }}</td>
                 <td>{{ mapping.tariefType }} </td>
+                <td>{{ mapping.unit }}</td>
                 <td>{{ mapping.tariefSoortLabel }}</td>
+                <td>{{ mapping.appLabel }} </td>
+                <td>{{ mapping.inputType }}</td>
+                <td>{{ mapping.translatedToUnit }}</td>
+                <td>{{ mapping.mercatoKey }}</td>
                 <td>{{ mapping.archivedOn }}</td>
-                <td></td>
-                <td></td>
                 <td>
                     <span class="bi bi-pencil-fill"></span>
                 </td>

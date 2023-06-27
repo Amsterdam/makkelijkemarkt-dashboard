@@ -54,9 +54,13 @@ class MarktController extends AbstractController
      */
     public function editAction(Request $request, int $id, MarktApi $api)
     {
-        $markt = $api->getMarkt($id);
+        $markt = $api->getMarktFlex($id);
+        $formModel = [
+            'markt' => $markt,
+            'dagvergunningMappings' => $api->getDagvergunningMapping(),
+        ];
 
-        $form = $this->createForm(MarktType::class, $markt);
+        $form = $this->createForm(MarktType::class, $formModel);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
@@ -70,6 +74,6 @@ class MarktController extends AbstractController
             $this->addFlash('error', 'Het formulier is niet correct ingevuld');
         }
 
-        return ['markt' => $markt, 'form' => $form->createView()];
+        return ['formModel' => $formModel, 'form' => $form->createView()];
     }
 }

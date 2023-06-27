@@ -9,7 +9,7 @@
 #}
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ markt.naam }} - Markt beheer - {% endblock %}
+{% block title %}{{ formModel.markt.naam }} - Markt beheer - {% endblock %}
 
 {% block css %}
         {{ encore_entry_link_tags('app') }}
@@ -19,7 +19,7 @@
 {% endblock %}
 
 {% block document %}
-    <h1>{{ markt.naam }}</h1>
+    <h1>{{ formModel.markt.naam }}</h1>
 
     <div class="btn-toolbar" role="toolbar" aria-label="...">
         <div class="btn-group" role="group">

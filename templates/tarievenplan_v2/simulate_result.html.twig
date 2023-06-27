@@ -1,0 +1,96 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Bewerk lineair plan{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Resultaat factuur </h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Aantal</th>
+                <th>Prijs</th>
+                <th>Totaal (ex BTW)</th>
+                <th>BTW percentage</th>
+                <th>BTW</th>
+                <th>Totaal (incl BTW)</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in factuur.producten %}
+            <tr>
+                <td>{{ product.naam }}</td>
+                <td>{{ product.aantal }}</td>
+                <td>{{ product.bedrag }}</td>
+                <td>{{ product.aantal * product.bedrag }}</td>
+                <td>{{ product.btw_percentage }}</td>
+                <td>{{ product.btw_totaal }}</td>
+                <td>{{ product.totaal_inclusief }}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3"></td>
+            <td><b>Totaal ex. BTW</b></td>
+            <td><b>{{ factuur.exclusief }}</b></td>
+            <td><b>Totaal incl. BTW</b></td>
+            <td><b>{{ factuur.totaal }}</b></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h1>Input</h1>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Betaald</th>
+                <th>Aantal</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in input.paid %}
+            {% if product.amount > 0 %}
+                <tr>
+                    <td>{{ product.appLabel }}</td>
+                    <td>{{ product.amount }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nog niet betaald</th>
+                <th>Aantal</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in input.unpaid %}
+            {% if product.amount > 0 %}
+                <tr>
+                    <td>{{ product.appLabel }}</td>
+                    <td>{{ product.amount }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

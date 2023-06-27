@@ -83,7 +83,7 @@
                                 {% if is_granted('ROLE_ADMIN') %}
                                     {% if has_feature('flexibele-tarieven') %}
                                         <a class="dropdown-item" href="{{ path('app_tariefsoort_index') }}">Tariefsoorten</a>
-                                        <a class="dropdown-item" href="{{ path('app_dagvergunningmapping_index') }}">Dagvergunning koppelingen</a>
+                                        <a class="dropdown-item" href="{{ path('app_dagvergunningmapping_index') }}">Dagvergunning producten</a>
                                     {% endif %}
                                     <a class="dropdown-item" href="{{ path('app_tariefplan_index') }}">Tariefplannen</a>
                                     <a class="dropdown-item" href="{{ path('app_btw_overview') }}">BTW Plannen</a>
