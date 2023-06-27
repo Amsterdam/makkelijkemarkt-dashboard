@@ -304,7 +304,7 @@ class MarktApi
 
     public function getTarievenplannenByMarktId(int $marktId): array
     {
-        return $this->makeRequest('GET', "/tarievenplannen_for_markt/$marktId")->toArray();
+        return $this->makeRequest('GET', "/tarievenplannen/markt/$marktId")->toArray();
     }
 
     public function updateTarievenplan(int $id, array $data)
@@ -325,6 +325,17 @@ class MarktApi
     public function getActiveTariefSoorten(string $type = ''): array
     {
         return $this->makeRequest('GET', "/tariefsoorten_active/$type")->toArray();
+    }
+
+    public function simulateFactuur(array $data)
+    {
+        return $this->makeRequest('POST', '/flex/dagvergunning/', ['json' => $data])->toArray();
+    }
+
+    // TODO remove this temporary endpoint when we merged it with /markt/{id}
+    public function getMarktFlex(int $id): array
+    {
+        return $this->makeRequest('GET', "/flex/markt/$id")->toArray();
     }
 
     public function importTariefplan($data)
@@ -468,9 +479,9 @@ class MarktApi
         return $this->makeRequest('GET', '/tariefsoort')->toArray();
     }
 
-    public function getDagvergunningMapping(): array
+    public function getDagvergunningMapping(string $type = ''): array
     {
-        return $this->makeRequest('GET', '/dagvergunning_mapping')->toArray();
+        return $this->makeRequest('GET', '/dagvergunning_mapping', ['query' => ['type' => $type]])->toArray();
     }
 
     public function getFeatureFlags(): array

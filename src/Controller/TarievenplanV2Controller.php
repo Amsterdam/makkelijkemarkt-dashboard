@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Form\FactuurSimulatorType;
 use App\Form\TarievenplanType;
+use App\Service\FactuurSimulationService;
 use App\Service\MarktApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -124,6 +126,48 @@ class TarievenplanV2Controller extends AbstractController
         return [
             'form' => $form->createView(),
             'formModel' => $tarievenplan,
+        ];
+    }
+
+    /**
+     * @Route("/tarievenplan/simulate/{tarievenPlanType}/{marktId}", name="app_tarievenplan_simulate", methods={"GET", "POST"})
+     * @Template
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function simulateFactuurAction(Request $request, MarktApi $api, string $tarievenPlanType, int $marktId)
+    {
+        $markt = $api->getMarktFlex($marktId);
+        // TODO V2: zorgen dat de knoppen die per markt ingesteld zijn leidend zijn
+        $formModel = [
+            'markt' => $markt,
+        ];
+
+        $form = $this->createForm(FactuurSimulatorType::class, $formModel);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $formData = $form->getData();
+                $postData = FactuurSimulationService::createPostData($formData, $markt);
+
+                $factuur = $api->simulateFactuur($postData);
+                $this->addFlash('success', 'Factuur gesimuleerd');
+
+                return $this->render('tarievenplan_v2/simulate_result.html.twig', [
+                    'factuur' => $factuur,
+                    'input' => [
+                        'paid' => FactuurSimulationService::createProductObjects($formData['paid'], $markt),
+                        'unpaid' => FactuurSimulationService::createProductObjects($formData['unpaid'], $markt),
+                    ],
+                ]);
+            }
+
+            $this->addFlash('error', 'Het formulier is niet correct ingevuld');
+        }
+
+        return [
+            'form' => $form->createView(),
+            'formModel' => $formModel,
         ];
     }
 }

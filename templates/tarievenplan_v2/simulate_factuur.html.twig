@@ -1,0 +1,35 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Bewerk lineair plan{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Simuleer FactuurService </h1>
+    {{ form_start(form) }}
+        {{ form_row(form.dag) }}
+
+        <h2>Betaalde producten</h2>
+        {{ form_row(form.paid) }}
+
+        <h2>Onbetaalde producten</h2>
+        {{ form_row(form.unpaid) }}
+
+        {{ form_row(form.save) }}
+    {{ form_end(form) }}
+
+{% endblock %}
