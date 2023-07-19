@@ -38,10 +38,9 @@ COPY --chown=www-data . /var/www
 RUN mkdir -p /var/www/var/cache
 
 WORKDIR /var/www
-RUN chown -R www-data: /var/www
-USER www-data
 
 RUN composer install --prefer-dist --no-progress --no-suggest --no-scripts
+RUN chown -R www-data: /var/www
 
 RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
