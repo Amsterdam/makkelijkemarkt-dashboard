@@ -9,7 +9,7 @@
 #}
 {% extends "base.html.twig" %}
 
-{% block title %}Tariefplannen{% endblock %}
+{% block title %}Dagvergunning Producten{% endblock %}
 
 {% block css %}
         {{ encore_entry_link_tags('app') }}
@@ -20,36 +20,39 @@
 
 {% block document %}
     <h1>Dagvergunning producten</h1>
-
+    <p>In dit scherm worden koppelingen gemaakt tussen tariefsoorten, Mercato en producten die je op de app kan zien.<br />
+       Alle producten zijn tevens knoppen in de Makkelijke Markt app.<br />
+       <strong>Let op!!</strong> Aanpassingen hieraan hebben gevolgen voor het aanmaken van facturen.
+    </p>
+    <a
+        class="nav-link btn btn-sm btn-success float-right"
+        href="{{ path('app_dagvergunningmapping_create') }}"
+    >
+        Nieuw dagvergunning product
+    </a>
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Key</th>
+                <th>Label in MM App</th>
                 <th>Tarief type</th>
                 <th>Eenheid</th>
                 <th>Tariefsoort</th>
-                <th>App label</th>
-                <th>App input</th>
-                <th>Omgerekend</th>
-                <th>Mercato naam</th>
-                <th>Gearchiveerd</th>
+                <th>Gearchiveerd op</th>
                 <th>Acties</th>
             </tr>
         </thead>
         <tbody>
         {% for mapping in dagvergunningMapping %}
             <tr>
-                <td>{{ mapping.dagvergunningKey }}</td>
+                <td>{{ mapping.appLabel }} </td>
                 <td>{{ mapping.tariefType }} </td>
                 <td>{{ mapping.unit }}</td>
                 <td>{{ mapping.tariefSoortLabel }}</td>
-                <td>{{ mapping.appLabel }} </td>
-                <td>{{ mapping.inputType }}</td>
-                <td>{{ mapping.translatedToUnit }}</td>
-                <td>{{ mapping.mercatoKey }}</td>
                 <td>{{ mapping.archivedOn }}</td>
                 <td>
-                    <span class="bi bi-pencil-fill"></span>
+                    <a href={{ path('app_dagvergunningmapping_edit', {'id': mapping.id }) }}>
+                        <span class="bi bi-pencil-fill"></span>
+                    </a>
                 </td>
             </tr>
         {% endfor %}

@@ -11,7 +11,7 @@ class FactuurSimulationService
         $total = self::makeTotal($data['paid'], $data['unpaid']);
 
         return [
-            'dag' => $data['dag'],
+            'dag' => $data['dag']->format('Y-m-d'),
             'marktId' => $markt['id'],
             'products' => [
                 'paid' => self::createProductObjects($data['paid'], $markt),

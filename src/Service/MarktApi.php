@@ -327,6 +327,21 @@ class MarktApi
         return $this->makeRequest('GET', "/tariefsoorten_active/$type")->toArray();
     }
 
+    public function createTariefSoort(array $data = []): void
+    {
+        $this->makeRequest('POST', '/tariefsoort', ['json' => $data]);
+    }
+
+    public function getTariefSoortById(int $id): array
+    {
+        return $this->makeRequest('GET', "/tariefsoort/$id")->toArray();
+    }
+
+    public function updateTariefSoort(int $id, array $data): void
+    {
+        $this->makeRequest('PUT', "/tariefsoort/$id", ['json' => $data]);
+    }
+
     public function simulateFactuur(array $data)
     {
         return $this->makeRequest('POST', '/flex/dagvergunning/', ['json' => $data])->toArray();
@@ -482,6 +497,21 @@ class MarktApi
     public function getDagvergunningMapping(string $type = ''): array
     {
         return $this->makeRequest('GET', '/dagvergunning_mapping', ['query' => ['type' => $type]])->toArray();
+    }
+
+    public function getDagvergunningMappingById(int $id): array
+    {
+        return $this->makeRequest('GET', '/dagvergunning_mapping/'.$id)->toArray();
+    }
+
+    public function updateDagvergunningMapping(int $id, array $data): void
+    {
+        $this->makeRequest('PUT', '/dagvergunning_mapping/'.$id, ['json' => $data]);
+    }
+
+    public function createDagvergunningMapping(array $data): void
+    {
+        $this->makeRequest('POST', '/dagvergunning_mapping', ['json' => $data]);
     }
 
     public function getFeatureFlags(): array
