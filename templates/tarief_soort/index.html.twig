@@ -9,7 +9,7 @@
 #}
 {% extends "base.html.twig" %}
 
-{% block title %}Tariefsoorten overzicht{% endblock %}
+{% block title %}Tariefsoorten{% endblock %}
 
 {% block css %}
         {{ encore_entry_link_tags('app') }}
@@ -19,8 +19,15 @@
 {% endblock %}
 
 {% block document %}
-    <h1>Tariefsoorten overzicht</h1>
-
+    <div class="d-inline-flex align-items-center justify-content-between w-100">
+        <h1>Tariefsoorten</h1>
+        <a
+            class="nav-link btn btn-sm btn-success h-100"
+            href="{{ path('app_tariefsoort_create') }}"
+        >
+            Nieuwe tariefsoort
+        </a>
+    </div>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -41,19 +48,11 @@
                 <td>{{ soort.tariefType }}</td>
                 <td>{{ soort.unit }}</td>
                 <td>{{ soort.factuurLabel }}</td>
-                <td>{{ soort.deleted }}</td>
-
-
-                <td> {# TODO na eerste testfase: acties toevoegen aan controller #}
-                    {# <a href={{ path('app_btw_plan_update', {'planType': planType, 'btwPlanId': btwPlan.id }) }}> #}
+                <td>{{ soort.deleted ? 'Ja' : '' }}</td>
+                <td>
+                    <a href={{ path('app_tariefsoort_edit', {'id': soort.id  }) }}>
                         <span class="bi bi-pencil-fill"></span>
-                    {# </a> #}
-                    {# <a
-                        href={{ path('app_btw_plan_archive', {'id': btwPlan.id })}}
-                        onclick="return confirm('Weet je zeker dat je dit BTW plan wilt archiveren?')"
-                    > #}
-                        <span class="bi bi-trash"></span>
-                    {# </a> #}
+                    </a>
                 </td>
             </tr>
         {% endfor %}

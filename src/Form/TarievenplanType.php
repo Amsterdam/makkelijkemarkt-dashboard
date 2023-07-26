@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace App\Form;
 
+use App\Constants\Translations;
+use App\Service\TarievenplanService;
+use App\Service\TranslationService;
 use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -25,18 +28,33 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class TarievenplanType extends AbstractType
 {
+    const VARIANTS = TarievenplanService::VARIANTS;
+    const WEEKDAYS = Translations::WEEKDAYS;
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // New plans will typically miss a lot of data about the plan
         $tarievenplan = $options['data']['tarievenplan'];
         $tarieven = $tarievenplan['tarieven'] ?? [];
+
+        $currentWeekdays = ($tarievenplan['weekdays']) ?? [];
+        $chosen = TranslationService::translateArray($currentWeekdays, self::WEEKDAYS, false);
+
         $tariefSoortIdsInTarieven = array_column($tarieven, 'tariefSoortId');
         $dateFrom = (isset($tarievenplan['dateFrom']) && $tarievenplan['dateFrom'])
             ? new DateTime($tarievenplan['dateFrom'])
-            : null;
+            : new DateTime();
         $dateUntil = (isset($tarievenplan['dateUntil']) && $tarievenplan['dateUntil'])
             ? new DateTime($tarievenplan['dateUntil'])
             : null;
+
+        $isNonStandardPlan = in_array(
+            $tarievenplan['variant'],
+            [
+                    self::VARIANTS['DAYS_OF_WEEK'],
+                    self::VARIANTS['SPECIFIC'],
+                ]
+        );
 
         $builder
             ->add('name', TextType::class, [
@@ -50,78 +68,59 @@ class TarievenplanType extends AbstractType
                 'disabled' => true,
             ])
 
-            // TODO toevoegen tijdens werk aan flexibele tarievenplannen
-            // $builder->add('isDefault', ChoiceType::class, [
-            //     'label' => 'Voorwaarden',
-            //     'choices' => [
-            //         'Standaard tariefplan' => 1,
-            //         'Tariefplan met voorwaarden' => 0
-            //     ],
-            //     // 'data' => $tarievenplan['is_default'], TODO eerst dat amigreren
-            //     'expanded' => true,
-            //     'required' => true
-            // ]);
+            ->add('variant', TextType::class, [
+                'data' => Translations::VARIANTS[$tarievenplan['variant']],
+                'label' => 'Variant',
+                'disabled' => true,
+            ]);
 
-            // TODO uitzoeken tijdens testen met MB welke date range we willen
-            // Alle plannen die voor de date range vallen, worden niet lekker getoond..
-            ->add('dateFrom', DateType::class, [
-                'label' => 'Geldig vanaf',
-                'widget' => 'choice',
-                'years' => range(date('Y') - 5, date('Y') + 3),
-                'data' => $dateFrom,
-            ])
-            ->add('dateUntil', DateType::class, [
-                'label' => 'Geldig tot',
+        $builder->add('dateFrom', DateType::class, [
+            'label' => 'Geldig vanaf',
+            'widget' => 'choice',
+            'years' => range(date('Y') - 5, date('Y') + 3),
+            'data' => $dateFrom,
+        ]);
+
+        if ($isNonStandardPlan) {
+            $builder->add('dateUntil', DateType::class, [
+                'label' => 'Geldig tot en met',
                 'widget' => 'choice',
                 'required' => false,
                 'years' => range(date('Y') - 5, date('Y') + 3),
                 'data' => $dateUntil,
+            ]);
+        }
+
+        // We need to show the translated value, but we have to match the chosen days by key (which are english)
+        if ($tarievenplan['variant'] === self::VARIANTS['DAYS_OF_WEEK']) {
+            $builder->add('weekdays', ChoiceType::class, [
+                'label' => 'Dagen actief',
+                'multiple' => true,
+                'expanded' => true,
+                'choices' => self::WEEKDAYS,
+                'choice_label' => function ($choice, $key, $value) {
+                    return $value;
+                },
+                'data' => $chosen,
+            ]);
+        }
+
+        // Create a tarieven group in which all tarieven will be saved
+        $builder->add(
+            $builder->create('tarieven', FormType::class, [
+                'label' => false,
+                'required' => false,
             ])
-
-            // TODO toevoegen wanneer we flexibele tarievenplannen gaan introduceren
-            // ->add(
-            //     $builder->create('conditions', FormType::class, [
-            //         'label' => false
-            //     ])
-            // )
-            // ->get('conditions')->add('days', ChoiceType::class, [
-            //     'label' => 'Dagen in de week actief',
-            //     'multiple' => true,
-            //     'expanded' => true,
-
-            //     // Days of the week are mapped to bitwise operators
-            //     'choices' => [
-            //         'maandag' => 2,
-            //         'dinsdag' => 4,
-            //         'woensdag' => 8,
-            //         'donderdag' => 16,
-            //         'vrijdag' => 32,
-            //         'zaterdag' => 64,
-            //         'zondag' => 1
-            //     ]
-            // ])
-
-            // Create a tarieven group in which all tarieven will be saved
-            ->add(
-                $builder->create('tariefSoortIdWithTarief', FormType::class, [
-                    'label' => false,
-                    'required' => false,
-                ])
-            );
+        );
 
         // // Create elements for all the tariefsoorten that are possible in the plan
         foreach ($options['data']['tariefSoorten'] as $tariefSoort) {
             $index = array_search($tariefSoort['id'], $tariefSoortIdsInTarieven);
             $tarief = false !== $index ? $tarieven[$index]['tarief'] : 0;
 
-            $builder->get('tariefSoortIdWithTarief')->add($tariefSoort['id'], NumberType::class, [
+            $builder->get('tarieven')->add($tariefSoort['id'], NumberType::class, [
                 'label' => $tariefSoort['label'],
                 'data' => $tarief,
-
-                // Sort on tarief amount so that empty tarieven will go to the bottom
-                // The sorting cant handle floats so we multiply it by 100
-                // TODO tijdens testen met Marktbureau: welke sortering willen ze?
-                'priority' => (int) ($tarief * 100),
                 'required' => false,
             ]);
         }
