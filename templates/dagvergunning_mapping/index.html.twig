@@ -1,0 +1,61 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Dagvergunning Producten{% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Dagvergunning producten</h1>
+    <p>In dit scherm worden koppelingen gemaakt tussen tariefsoorten, Mercato en producten die je op de app kan zien.<br />
+       Alle producten zijn tevens knoppen in de Makkelijke Markt app.<br />
+       <strong>Let op!!</strong> Aanpassingen hieraan hebben gevolgen voor het aanmaken van facturen.
+    </p>
+    <a
+        class="nav-link btn btn-sm btn-success float-right"
+        href="{{ path('app_dagvergunningmapping_create') }}"
+    >
+        Nieuw dagvergunning product
+    </a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Label in MM App</th>
+                <th>Tarief type</th>
+                <th>Eenheid</th>
+                <th>Tariefsoort</th>
+                <th>Gearchiveerd op</th>
+                <th>Acties</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mapping in dagvergunningMapping %}
+            <tr>
+                <td>{{ mapping.appLabel }} </td>
+                <td>{{ mapping.tariefType }} </td>
+                <td>{{ mapping.unit }}</td>
+                <td>{{ mapping.tariefSoortLabel }}</td>
+                <td>{{ mapping.archivedOn }}</td>
+                <td>
+                    <a href={{ path('app_dagvergunningmapping_edit', {'id': mapping.id }) }}>
+                        <span class="bi bi-pencil-fill"></span>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

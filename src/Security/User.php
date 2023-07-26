@@ -18,13 +18,16 @@ class User implements UserInterface
 
     private $roles;
 
-    public function __construct($username, $password, $token, $salt, array $roles)
+    private $featureFlags;
+
+    public function __construct($username, $password, $token, $salt, array $roles, array $featureFlags)
     {
         $this->username = $username;
         $this->password = $password;
         $this->token = $token;
         $this->salt = $salt;
         $this->roles = $roles;
+        $this->featureFlags = $featureFlags;
     }
 
     /**
@@ -75,5 +78,21 @@ class User implements UserInterface
         $roles = $this->roles;
 
         return array_unique($roles);
+    }
+
+    public function getFeatureFlags(): array
+    {
+        return $this->featureFlags;
+    }
+
+    public function hasFeatureFlagEnabled(string $featureFlag): bool
+    {
+        $index = array_search($featureFlag, array_column($this->featureFlags, 'feature'));
+
+        if (false === $index) {
+            return false;
+        }
+
+        return $this->featureFlags[$index]['enabled'];
     }
 }

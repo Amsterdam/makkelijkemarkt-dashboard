@@ -34,7 +34,7 @@
                 <td>{{ markt.naam }}</td>
                 <td>
                     {% if has_feature('flexibele-tarieven') %}
-                        <a href="{{ path('app_tarievenplan_marktindex', {'marktId': markt.id}) }}" class="btn btn-primary">Tariefplannen</a>
+                        <a href="{{ path('app_tarievenplan_marktindex', {'marktId': markt.id}) }}" class="btn btn-primary">Tarievenplannen</a>
                     {% else %}
                         <a href="{{ path('app_tariefplan_marktindex', {'marktId': markt.id}) }}" class="btn btn-primary">Tariefplannen</a>
                     {% endif %}

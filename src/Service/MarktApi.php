@@ -259,9 +259,16 @@ class MarktApi
         return $content;
     }
 
+    // The following functions are V1 endpoints (before flexibele tarieven)
+    // TODO delete when V2 runs smoothly on PRD
     public function getTariefPlan(int $id): array
     {
         return $this->makeRequest('GET', '/tariefplannen/get/'.$id)->toArray();
+    }
+
+    public function deleteTariefPlan(int $id): void
+    {
+        $this->makeRequest('DELETE', '/tariefplannen/delete/'.$id);
     }
 
     public function getTariefplannenByMarktId(int $marktId): array
@@ -289,9 +296,61 @@ class MarktApi
         return $this->makeRequest('POST', '/tariefplannen/'.$tariefPlanId.'/update/concreet', ['json' => $data]);
     }
 
-    public function deleteTariefPlan(int $id): void
+    // Below here are all the V2 endpoints for Flexibele Tarieven
+    public function getTarievenplan(int $id): array
     {
-        $this->makeRequest('DELETE', '/tariefplannen/delete/'.$id);
+        return $this->makeRequest('GET', "/tarievenplan/$id")->toArray();
+    }
+
+    public function getTarievenplannenByMarktId(int $marktId): array
+    {
+        return $this->makeRequest('GET', "/tarievenplannen/markt/$marktId")->toArray();
+    }
+
+    public function updateTarievenplan(int $id, array $data)
+    {
+        return $this->makeRequest('PUT', "/tarievenplan/update/$id", ['json' => $data]);
+    }
+
+    public function deleteTarievenplan(int $id)
+    {
+        $this->makeRequest('DELETE', "/tarievenplan/$id")->toArray();
+    }
+
+    public function createTarievenplan(int $marktId, string $type, array $data): void
+    {
+        $this->makeRequest('POST', "/tarievenplan/create/$type/$marktId", ['json' => $data]);
+    }
+
+    public function getActiveTariefSoorten(string $type = ''): array
+    {
+        return $this->makeRequest('GET', "/tariefsoorten_active/$type")->toArray();
+    }
+
+    public function createTariefSoort(array $data = []): void
+    {
+        $this->makeRequest('POST', '/tariefsoort', ['json' => $data]);
+    }
+
+    public function getTariefSoortById(int $id): array
+    {
+        return $this->makeRequest('GET', "/tariefsoort/$id")->toArray();
+    }
+
+    public function updateTariefSoort(int $id, array $data): void
+    {
+        $this->makeRequest('PUT', "/tariefsoort/$id", ['json' => $data]);
+    }
+
+    public function simulateFactuur(array $data)
+    {
+        return $this->makeRequest('POST', '/flex/dagvergunning/', ['json' => $data])->toArray();
+    }
+
+    // TODO remove this temporary endpoint when we merged it with /markt/{id}
+    public function getMarktFlex(int $id): array
+    {
+        return $this->makeRequest('GET', "/flex/markt/$id")->toArray();
     }
 
     public function importTariefplan($data)
@@ -428,6 +487,51 @@ class MarktApi
     public function getBtwCreate($planType): array
     {
         return $this->makeRequest('GET', '/btw_plan/create/'.$planType)->toArray();
+    }
+
+    public function getTariefSoorten(): array
+    {
+        return $this->makeRequest('GET', '/tariefsoort')->toArray();
+    }
+
+    public function getDagvergunningMapping(string $type = ''): array
+    {
+        return $this->makeRequest('GET', '/dagvergunning_mapping', ['query' => ['type' => $type]])->toArray();
+    }
+
+    public function getDagvergunningMappingById(int $id): array
+    {
+        return $this->makeRequest('GET', '/dagvergunning_mapping/'.$id)->toArray();
+    }
+
+    public function updateDagvergunningMapping(int $id, array $data): void
+    {
+        $this->makeRequest('PUT', '/dagvergunning_mapping/'.$id, ['json' => $data]);
+    }
+
+    public function createDagvergunningMapping(array $data): void
+    {
+        $this->makeRequest('POST', '/dagvergunning_mapping', ['json' => $data]);
+    }
+
+    public function getFeatureFlags(): array
+    {
+        return $this->makeRequest('GET', '/feature_flags')->toArray();
+    }
+
+    public function createFeatureFlag($data): void
+    {
+        $this->makeRequest('POST', '/feature_flag', ['json' => $data]);
+    }
+
+    public function updateFeatureFlag($id, $data): void
+    {
+        $this->makeRequest('PATCH', "/feature_flag/$id", ['json' => $data]);
+    }
+
+    public function getFeatureFlag($id): array
+    {
+        return $this->makeRequest('GET', "/feature_flag/$id")->toArray();
     }
 
     public function getVersion(): array

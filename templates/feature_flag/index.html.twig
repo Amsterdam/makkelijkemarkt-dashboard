@@ -19,25 +19,32 @@
 {% endblock %}
 
 {% block document %}
-    <h1>Tariefplannen</h1>
+    <h1>Feature Flags</h1>
+
+    <div>
+        {# TODO later: interface kan iets mooier #}
+        <a class="btn btn-sm btn-success" href="{{ path('app_feature_flags_create') }}">
+            Feature flag toevoegen
+        </a>
+    </div>
 
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Markt</th>
-                <th colspan="2">Opties</th>
+                <th>Feature</th>
+                <th>Aan / Uit</th>
+                <th>Acties</th>
             </tr>
         </thead>
         <tbody>
-        {% for markt in markten %}
+        {% for featureFlag in featureFlags %}
             <tr>
-                <td>{{ markt.naam }}</td>
+                <td>{{ featureFlag.feature }}</td>
+                <td>{{ featureFlag.enabled ? 'AAN' : 'UIT' }}</td>
                 <td>
-                    {% if has_feature('flexibele-tarieven') %}
-                        <a href="{{ path('app_tarievenplan_marktindex', {'marktId': markt.id}) }}" class="btn btn-primary">Tariefplannen</a>
-                    {% else %}
-                        <a href="{{ path('app_tariefplan_marktindex', {'marktId': markt.id}) }}" class="btn btn-primary">Tariefplannen</a>
-                    {% endif %}
+                    <a href={{ path('app_feature_flag_update', {'id': featureFlag.id }) }}>
+                        <span class="bi bi-pencil-fill"></span>
+                    </a>
                 </td>
             </tr>
         {% endfor %}

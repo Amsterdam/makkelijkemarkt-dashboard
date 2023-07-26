@@ -7,9 +7,9 @@
  *  License, v. 2.0. If a copy of the MPL was not distributed with this
  *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #}
-{% extends 'base.html.twig' %}
+{% extends "base.html.twig" %}
 
-{% block title %}{{ formModel.markt.naam }} - Markt beheer - {% endblock %}
+{% block title %}Feature flag aanpassen{% endblock %}
 
 {% block css %}
         {{ encore_entry_link_tags('app') }}
@@ -19,13 +19,7 @@
 {% endblock %}
 
 {% block document %}
-    <h1>{{ formModel.markt.naam }}</h1>
-
-    <div class="btn-toolbar" role="toolbar" aria-label="...">
-        <div class="btn-group" role="group">
-            <a href="{{ path('app_markt_index') }}" class="btn btn-default">Terug naar overzicht</a>
-        </div>
-    </div>
+    <h1>Feature flag aanpassen</h1>
 
     {{ form(form) }}
 {% endblock %}

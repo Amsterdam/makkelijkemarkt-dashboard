@@ -1,0 +1,79 @@
+{#
+ *  Copyright (C) 2021 X Gemeente
+ *                     X Amsterdam
+ *                     X Onderzoek, Informatie en Statistiek
+ *
+ *  This Source Code Form is subject to the terms of the Mozilla Public
+ *  License, v. 2.0. If a copy of the MPL was not distributed with this
+ *  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#}
+{% extends "base.html.twig" %}
+
+{% block title %}Tariefplannen - {% endblock %}
+
+{% block css %}
+        {{ encore_entry_link_tags('app') }}
+{% endblock %}
+{% block javascript %}
+        {{ encore_entry_script_tags('app') }}
+{% endblock %}
+
+{% block document %}
+    <h1>Tariefplannen - {{ markt.naam }}</h1>
+    <div class="d-inline-flex mb-1">
+        <div class="mr-1">
+            <button class="btn btn-primary dropdown-toggle form-control" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Lineairplan toevoegen
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ path('app_tarievenplan_create', {'marktId': markt.id, 'type': 'lineair', 'variant': 'standard'}) }}">Standaard</a></li>
+                <li><a class="dropdown-item" href="{{ path('app_tarievenplan_create', {'marktId': markt.id, 'type': 'lineair', 'variant': 'daysOfWeek'}) }}">Weekdagen</a></li>
+            </ul>
+        </div>
+        <div class="mr-1">
+            <button class="btn btn-primary dropdown-toggle form-control" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Concreetplan toevoegen
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ path('app_tarievenplan_create', {'marktId': markt.id, 'type': 'concreet', 'variant': 'standard'}) }}">Standaard</a></li>
+                <li><a class="dropdown-item" href="{{ path('app_tarievenplan_create', {'marktId': markt.id, 'type': 'concreet', 'variant': 'daysOfWeek'}) }}">Weekdagen</a></li>
+            </ul>
+        </div>
+        <a class="btn btn-warning" href="{{ path('app_tarievenplan_simulate', {'marktId': markt.id, 'tarievenPlanType': 'lineair'}) }}">Simuleer Factuur</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>type</th>
+            <th>variant</th>
+            <th>naam</th>
+            <th>vanaf</th>
+            <th>tot</th>
+            <th>Opties</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for tariefplan in tariefplannen %}
+            <tr>
+                <td>{{ tariefplan.id }}</td>
+                <td>{{ tariefplan.type == 'concreet' ? 'Concreet' : 'Lineair' }}</td>
+                <td>{{ tariefplan.variant }}</td>
+                <td>{{ tariefplan.name }}</td>
+                <td>{{ tariefplan.dateFrom|date('d-m-Y') }}</td>
+                <td>{{ tariefplan.dateUntil ? tariefplan.dateUntil|date('d-m-Y') : null }}</td>
+                <td>
+                    <form method="post" action="{{ path('app_tarievenplan_delete', {'tarievenplanId': tariefplan.id}) }}">
+                        <a class="btn btn-primary" href="{{ path('app_tarievenplan_update', {'tarievenplanId': tariefplan.id}) }}">Bewerken</a>
+                        <input type="hidden" name="_csrf" value="{{ csrf_token('app_tarievenplan_delete') }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Weet u het dat u tariefplan met id {{ tariefplan.id }} wilt verwijderen?')">Verwijderen</a>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
