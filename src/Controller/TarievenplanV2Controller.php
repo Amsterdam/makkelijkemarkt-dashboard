@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class TarievenplanV2Controller extends AbstractController
 {
     /**
-     * @Route("/tariefplan", name="app_tarievenplan_index", methods={"GET"})
+     * @Route("/tarievenplan", name="app_tarievenplan_index", methods={"GET"})
      * @Template()
      * @Security("is_granted('ROLE_ADMIN')")
      */
