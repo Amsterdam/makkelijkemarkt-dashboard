@@ -81,7 +81,7 @@ class DagvergunningController extends AbstractController
             'status.?' => 0,
             'status.soll' => 0,
             'status.vpl' => 0,
-            'status.vkk' => 0,
+            'status.eb' => 0,
             'status.tvpl' => 0,
             'status.tvplz' => 0,
             'status.exp' => 0,

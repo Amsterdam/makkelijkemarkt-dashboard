@@ -1542,12 +1542,12 @@ class RapportController extends AbstractController
                         $activeSheet->setCellValueByColumnAndRow(13, 1, 'VPL. meters #');
                         $activeSheet->setCellValueByColumnAndRow(14, 1, 'VPL. meters %');
 
-                        $activeSheet->setCellValueByColumnAndRow(15, 1, 'VKK. dagv. #');
-                        $activeSheet->setCellValueByColumnAndRow(16, 1, 'VKK. dagv. %');
-                        $activeSheet->setCellValueByColumnAndRow(17, 1, 'VKK. kramen #');
-                        $activeSheet->setCellValueByColumnAndRow(18, 1, 'VKK. kramen %');
-                        $activeSheet->setCellValueByColumnAndRow(19, 1, 'VKK. meters #');
-                        $activeSheet->setCellValueByColumnAndRow(20, 1, 'VKK. meters %');
+                        $activeSheet->setCellValueByColumnAndRow(15, 1, 'EB. dagv. #');
+                        $activeSheet->setCellValueByColumnAndRow(16, 1, 'EB. dagv. %');
+                        $activeSheet->setCellValueByColumnAndRow(17, 1, 'EB. kramen #');
+                        $activeSheet->setCellValueByColumnAndRow(18, 1, 'EB. kramen %');
+                        $activeSheet->setCellValueByColumnAndRow(19, 1, 'EB. meters #');
+                        $activeSheet->setCellValueByColumnAndRow(20, 1, 'EB. meters %');
 
                         $activeSheet->setCellValueByColumnAndRow(21, 1, 'TVPL. dagv. #');
                         $activeSheet->setCellValueByColumnAndRow(22, 1, 'TVPL. dagv. %');
@@ -1627,14 +1627,14 @@ class RapportController extends AbstractController
                     $activeSheet->setCellValueByColumnAndRow(14, $i, $recordArray['vplAantalMeter%']);
                     $activeSheet->getCellByColumnAndRow(14, $i)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE);
 
-                    $activeSheet->setCellValueByColumnAndRow(15, $i, $recordArray['vkkAantalDagvergunningen']);
-                    $activeSheet->setCellValueByColumnAndRow(16, $i, $recordArray['vkkAantalDagvergunningen%']);
+                    $activeSheet->setCellValueByColumnAndRow(15, $i, $recordArray['ebAantalDagvergunningen']);
+                    $activeSheet->setCellValueByColumnAndRow(16, $i, $recordArray['ebAantalDagvergunningen%']);
                     $activeSheet->getCellByColumnAndRow(16, $i)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(17, $i, $recordArray['vkkAantalKramen']);
-                    $activeSheet->setCellValueByColumnAndRow(18, $i, $recordArray['vkkAantalKramen%']);
+                    $activeSheet->setCellValueByColumnAndRow(17, $i, $recordArray['ebAantalKramen']);
+                    $activeSheet->setCellValueByColumnAndRow(18, $i, $recordArray['ebAantalKramen%']);
                     $activeSheet->getCellByColumnAndRow(18, $i)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE);
-                    $activeSheet->setCellValueByColumnAndRow(19, $i, $recordArray['vkkAantalMeter']);
-                    $activeSheet->setCellValueByColumnAndRow(20, $i, $recordArray['vkkAantalMeter%']);
+                    $activeSheet->setCellValueByColumnAndRow(19, $i, $recordArray['ebAantalMeter']);
+                    $activeSheet->setCellValueByColumnAndRow(20, $i, $recordArray['ebAantalMeter%']);
                     $activeSheet->getCellByColumnAndRow(20, $i)->getStyle()->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE);
 
                     $activeSheet->setCellValueByColumnAndRow(21, $i, $recordArray['tvplAantalDagvergunningen']);
