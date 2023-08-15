@@ -49,9 +49,9 @@
                     <p>
                         Toon details:
                         <label><input type="checkbox" name="columns[vpl]" value="vpl" checked> VPL</label>
-                        <label><input type="checkbox" name="columns[vkk]" value="vkk" checked> VKK</label>
                         <label><input type="checkbox" name="columns[tvpl]" value="tvpl" checked> TVPL</label>
                         <label><input type="checkbox" name="columns[tvplz]" value="tvplz" checked> TVPLZ</label>
+                        <label><input type="checkbox" name="columns[eb]" value="eb" checked> EB</label>
                         <label><input type="checkbox" name="columns[exp]" value="exp" checked> EXP</label>
                         <label><input type="checkbox" name="columns[expf]" value="expf" checked> EXPF</label>
                         <label><input type="checkbox" name="columns[soll]" value="soll" checked> SOLL</label>
@@ -69,15 +69,15 @@
                             <th class="data-vpl" colspan="2">VPL<br>Dagv.</th>
                             <th class="data-vpl" colspan="2">VPL<br>Kramen</th>
                             <th class="data-vpl" colspan="2">VPL<br>Meters</th>
-                            <th class="data-vkk" colspan="2">VKK<br>Dagv.</th>
-                            <th class="data-vkk" colspan="2">VKK<br>Kramen</th>
-                            <th class="data-vkk" colspan="2">VKK<br>Meters</th>
                             <th class="data-tvpl" colspan="2">TVPL<br>Dagv.</th>
                             <th class="data-tvpl" colspan="2">TVPL<br>Kramen</th>
                             <th class="data-tvpl" colspan="2">TVPL<br>Meters</th>
                             <th class="data-tvplz" colspan="2">TVPLZ<br>Dagv.</th>
                             <th class="data-tvplz" colspan="2">TVPLZ<br>Kramen</th>
                             <th class="data-tvplz" colspan="2">TVPLZ<br>Meters</th>
+                            <th class="data-vpl" colspan="2">EB<br>Dagv.</th>
+                            <th class="data-vpl" colspan="2">EB<br>Kramen</th>
+                            <th class="data-vpl" colspan="2">EB<br>Meters</th>
                             <th class="data-exp" colspan="2">EXP<br>Dagv.</th>
                             <th class="data-exp" colspan="2">EXP<br>Kramen</th>
                             <th class="data-exp" colspan="2">EXP<br>Meters</th>
@@ -101,12 +101,6 @@
                             <th class="data-vpl">%</th>
                             <th class="data-vpl">#</th>
                             <th class="data-vpl">%</th>
-                            <th class="data-vkk">#</th>
-                            <th class="data-vkk">%</th>
-                            <th class="data-vkk">#</th>
-                            <th class="data-vkk">%</th>
-                            <th class="data-vkk">#</th>
-                            <th class="data-vkk">%</th>
                             <th class="data-tvpl">#</th>
                             <th class="data-tvpl">%</th>
                             <th class="data-tvpl">#</th>
@@ -119,6 +113,12 @@
                             <th class="data-tvplz">%</th>
                             <th class="data-tvplz">#</th>
                             <th class="data-tvplz">%</th>
+                            <th class="data-eb">#</th>
+                            <th class="data-eb">%</th>
+                            <th class="data-eb">#</th>
+                            <th class="data-eb">%</th>
+                            <th class="data-eb">#</th>
+                            <th class="data-eb">%</th>
                             <th class="data-exp">#</th>
                             <th class="data-exp">%</th>
                             <th class="data-exp">#</th>
@@ -161,63 +161,63 @@
                             <td>{{ row.marktNaam }}</td>
                             <td class="text-right">{{ row.capaciteitKramen }}</td>
                             <td class="text-right">{{ row.capaciteitMeter }}</td>
-                            
+
                             <td class="data-vpl text-right">{{ attribute(row, 'vplAantalDagvergunningen') }}</td>
                             <td class="data-vpl text-right">{{ (attribute(row, 'vplAantalDagvergunningen%') * 100)|round(1) }}</td>
                             <td class="data-vpl text-right">{{ attribute(row, 'vplAantalKramen') }}</td>
                             <td class="data-vpl text-right">{{ (attribute(row, 'vplAantalKramen%') * 100)|round(1) }}</td>
                             <td class="data-vpl text-right">{{ attribute(row, 'vplAantalMeter') }}</td>
                             <td class="data-vpl text-right">{{ (attribute(row, 'vplAantalMeter%') * 100)|round(1) }}</td>
-                            
-                            <td class="data-vkk text-right">{{ attribute(row, 'vkkAantalDagvergunningen') }}</td>
-                            <td class="data-vkk text-right">{{ (attribute(row, 'vkkAantalDagvergunningen%') * 100)|round(1) }}</td>
-                            <td class="data-vkk text-right">{{ attribute(row, 'vkkAantalKramen') }}</td>
-                            <td class="data-vkk text-right">{{ (attribute(row, 'vkkAantalKramen%') * 100)|round(1) }}</td>
-                            <td class="data-vkk text-right">{{ attribute(row, 'vkkAantalMeter') }}</td>
-                            <td class="data-vkk text-right">{{ (attribute(row, 'vkkAantalMeter%') * 100)|round(1) }}</td>
-                            
+
                             <td class="data-tvpl text-right">{{ attribute(row, 'tvplAantalDagvergunningen') }}</td>
                             <td class="data-tvpl text-right">{{ (attribute(row, 'tvplAantalDagvergunningen%') * 100)|round(1) }}</td>
                             <td class="data-tvpl text-right">{{ attribute(row, 'tvplAantalKramen') }}</td>
                             <td class="data-tvpl text-right">{{ (attribute(row, 'tvplAantalKramen%') * 100)|round(1) }}</td>
                             <td class="data-tvpl text-right">{{ attribute(row, 'tvplAantalMeter') }}</td>
                             <td class="data-tvpl text-right">{{ (attribute(row, 'tvplAantalMeter%') * 100)|round(1) }}</td>
-                            
+
                             <td class="data-tvplz text-right">{{ attribute(row, 'tvplzAantalDagvergunningen') }}</td>
                             <td class="data-tvplz text-right">{{ (attribute(row, 'tvplzAantalDagvergunningen%') * 100)|round(1) }}</td>
                             <td class="data-tvplz text-right">{{ attribute(row, 'tvplzAantalKramen') }}</td>
                             <td class="data-tvplz text-right">{{ (attribute(row, 'tvplzAantalKramen%') * 100)|round(1) }}</td>
                             <td class="data-tvplz text-right">{{ attribute(row, 'tvplzAantalMeter') }}</td>
                             <td class="data-tvplz text-right">{{ (attribute(row, 'tvplzAantalMeter%') * 100)|round(1) }}</td>
-                            
+
+                            <td class="data-vpl text-right">{{ attribute(row, 'ebAantalDagvergunningen') }}</td>
+                            <td class="data-vpl text-right">{{ (attribute(row, 'ebAantalDagvergunningen%') * 100)|round(1) }}</td>
+                            <td class="data-vpl text-right">{{ attribute(row, 'ebAantalKramen') }}</td>
+                            <td class="data-vpl text-right">{{ (attribute(row, 'ebAantalKramen%') * 100)|round(1) }}</td>
+                            <td class="data-vpl text-right">{{ attribute(row, 'ebAantalMeter') }}</td>
+                            <td class="data-vpl text-right">{{ (attribute(row, 'ebAantalMeter%') * 100)|round(1) }}</td>
+
                             <td class="data-exp text-right">{{ attribute(row, 'expAantalDagvergunningen') }}</td>
                             <td class="data-exp text-right">{{ (attribute(row, 'expAantalDagvergunningen%') * 100)|round(1) }}</td>
                             <td class="data-exp text-right">{{ attribute(row, 'expAantalKramen') }}</td>
                             <td class="data-exp text-right">{{ (attribute(row, 'expAantalKramen%') * 100)|round(1) }}</td>
                             <td class="data-exp text-right">{{ attribute(row, 'expAantalMeter') }}</td>
                             <td class="data-exp text-right">{{ (attribute(row, 'expAantalMeter%') * 100)|round(1) }}</td>
-                            
+
                             <td class="data-expf text-right">{{ attribute(row, 'expfAantalDagvergunningen') }}</td>
                             <td class="data-expf text-right">{{ (attribute(row, 'expfAantalDagvergunningen%') * 100)|round(1) }}</td>
                             <td class="data-expf text-right">{{ attribute(row, 'expfAantalKramen') }}</td>
                             <td class="data-expf text-right">{{ (attribute(row, 'expfAantalKramen%') * 100)|round(1) }}</td>
                             <td class="data-expf text-right">{{ attribute(row, 'expfAantalMeter') }}</td>
                             <td class="data-expf text-right">{{ (attribute(row, 'expfAantalMeter%') * 100)|round(1) }}</td>
-                            
+
                             <td class="data-soll text-right">{{ attribute(row, 'sollAantalDagvergunningen') }}</td>
                             <td class="data-soll text-right">{{ (attribute(row, 'sollAantalDagvergunningen%') * 100)|round(1) }}</td>
                             <td class="data-soll text-right">{{ attribute(row, 'sollAantalKramen') }}</td>
                             <td class="data-soll text-right">{{ (attribute(row, 'sollAantalKramen%') * 100)|round(1) }}</td>
                             <td class="data-soll text-right">{{ attribute(row, 'sollAantalMeter') }}</td>
                             <td class="data-soll text-right">{{ (attribute(row, 'sollAantalMeter%') * 100)|round(1) }}</td>
-                            
+
                             <td class="data-lot text-right">{{ attribute(row, 'lotAantalDagvergunningen') }}</td>
                             <td class="data-lot text-right">{{ (attribute(row, 'lotAantalDagvergunningen%') * 100)|round(1) }}</td>
                             <td class="data-lot text-right">{{ attribute(row, 'lotAantalKramen') }}</td>
                             <td class="data-lot text-right">{{ (attribute(row, 'lotAantalKramen%') * 100)|round(1) }}</td>
                             <td class="data-lot text-right">{{ attribute(row, 'lotAantalMeter') }}</td>
                             <td class="data-lot text-right">{{ (attribute(row, 'lotAantalMeter%') * 100)|round(1) }}</td>
-                            
+
                             <td class="text-right">{{ attribute(row, 'aantalDagvergunningen') }}</td>
                             <td class="text-right">{{ attribute(row, 'totaalAantalKramen') }}</td>
                             <td class="text-right">{{ (attribute(row, 'totaalAantalKramen%') * 100)|round(1) }}</td>

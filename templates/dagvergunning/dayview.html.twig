@@ -9,7 +9,7 @@
 #}
 {% extends "base.html.twig" %}
 
-{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'lot': 'warning', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info'} %}
+{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'lot': 'warning', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info', 'eb': 'info'} %}
 
 {% block title %}{{ selectedMarkt.naam }} / {{ dag|date('d-m-Y') }} - {% endblock %}
 
@@ -58,7 +58,7 @@
             <h5>Vergunningen</h5>
             <p>
                 Vaste plaats houders <span class="badge badge-primary">{{ attribute(stats, 'status.vpl') }}</span><br>
-                Voorkeurskaart houders <span class="badge badge-info">{{ attribute(stats, 'status.vkk') }}</span><br>
+                Economische binding <span class="badge badge-info">{{ attribute(stats, 'status.eb') }}</span><br>
                 TVPL houders <span class="badge badge-info">{{ attribute(stats, 'status.tvpl') }}</span><br>
                 TVPLZ houders <span class="badge badge-info">{{ attribute(stats, 'status.tvplz') }}</span><br>
                 Experimentele zone houders <span class="badge badge-info">{{ attribute(stats, 'status.exp') }}</span><br>
