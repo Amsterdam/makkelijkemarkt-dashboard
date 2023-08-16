@@ -18,6 +18,7 @@ use App\Service\TarievenplanService;
 use App\Service\TranslationService;
 use DateTime;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -51,9 +52,9 @@ class TarievenplanType extends AbstractType
         $isNonStandardPlan = in_array(
             $tarievenplan['variant'],
             [
-                    self::VARIANTS['DAYS_OF_WEEK'],
-                    self::VARIANTS['SPECIFIC'],
-                ]
+                self::VARIANTS['DAYS_OF_WEEK'],
+                self::VARIANTS['SPECIFIC'],
+            ]
         );
 
         $builder
@@ -74,6 +75,14 @@ class TarievenplanType extends AbstractType
                 'disabled' => true,
             ]);
 
+        if ($isNonStandardPlan) {
+            $builder->add('ignoreVastePlaats', CheckboxType::class, [
+                'data' => $tarievenplan['ignoreVastePlaats'] ?? false,
+                'label' => 'Vergunde plaatsen negeren',
+                'required' => false,
+            ]);
+        }
+
         $builder->add('dateFrom', DateType::class, [
             'label' => 'Geldig vanaf',
             'widget' => 'choice',
@@ -85,9 +94,9 @@ class TarievenplanType extends AbstractType
             $builder->add('dateUntil', DateType::class, [
                 'label' => 'Geldig tot en met',
                 'widget' => 'choice',
-                'required' => false,
+                'required' => $isNonStandardPlan,
                 'years' => range(date('Y') - 5, date('Y') + 3),
-                'data' => $dateUntil,
+                'data' => $dateUntil ?? new DateTime('1 year'),
             ]);
         }
 
