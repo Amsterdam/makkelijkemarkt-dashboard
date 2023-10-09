@@ -1,0 +1,54 @@
+image:
+  registry: registry:5000 #TODO
+  imagePullPolicy: Always
+
+host: localhost
+
+securityContext:
+  container:
+    readOnlyRootFilesystem: false
+
+secrets:
+  certificate:
+    enabled: false
+
+deployments:
+  mm-dashboard:
+    env:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      MM_DASHBOARD__MAILER__TRANSPORT: smtp
+      MM_DASHBOARD__MAILER__HOST: mailhog
+      MM_DASHBOARD__MAILER__USER: salmagundi
+      MM_DASHBOARD__MAILER__PASSWORD: insecure
+      MM_DASHBOARD__MAILER__PORT: 25
+      MM_DASHBOARD__MAILER__ENCRYPTION: none
+      APP_SECRET: insecure
+      MARKT_API: http://mm-api-nginx-mm-api:80/api/1.1.0/
+      MM_APP_KEY: insecure
+services:
+  mm-dashboard-nginx:
+    selector:
+      component: nginx
+    ports:
+      - port: 80
+        targetPort: http
+
+ingress:
+  mm-dashboard-nginx-internal:
+    className: nginx
+    paths:
+      - path: /
+        pathType: Prefix
+        service: mm-dashboard-nginx
+        port: 80
+    volumes:
+      - name: cache
+        spec:
+          emptyDir: {}
+      - name: logs
+        spec:
+          emptyDir: {}
+      - name: tmp
+        spec:
+          emptyDir: {}
