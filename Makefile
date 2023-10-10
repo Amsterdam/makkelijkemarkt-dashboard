@@ -8,7 +8,7 @@ HELM_ARGS = manifests/chart \
 	-f manifests/env/${ENVIRONMENT}.yaml \
 	--set image.tag=${VERSION}
 
-REGISTRY ?= registry:5000 #TODO
+REGISTRY ?= 127.0.0.1:5001
 REPOSITORY ?= salmagundi/mm-dashboard
 VERSION ?= latest
 
