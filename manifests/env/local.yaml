@@ -49,6 +49,3 @@ ingress:
       - name: logs
         spec:
           emptyDir: {}
-      - name: tmp
-        spec:
-          emptyDir: {}

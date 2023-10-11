@@ -25,10 +25,6 @@ secrets:
 
 deployments:
   mm-dashboard:
-    env:
-      APP_ENV: dev
-      APP_DEBUG: 1
-      APP_SECRET: insecure
     image:
       repository: salmagundi/mm-dashboard
     securityContext:
@@ -45,16 +41,11 @@ deployments:
             mountPath: /var/www/var/cache
           - name: logs
             mountPath: /var/www/var/log
-          - name: tmp
-            mountPath: /tmp
     volumes:
       - name: cache
         spec:
           emptyDir: {}
       - name: logs
-        spec:
-          emptyDir: {}
-      - name: tmp
         spec:
           emptyDir: {}
 
