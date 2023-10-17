@@ -37,11 +37,12 @@ class ScanSpeedController extends AbstractController
         $marktId = $request->query->get('markt');
         $accountId = $request->query->get('account');
 
-        $datum = $request->query->get('datum');
+        $datumParam = $request->query->get('datum') ?? '';
+        $datum = \DateTime::createFromFormat('d-m-Y', $datumParam);
 
         $pauze = $request->query->get('pauze');
 
-        if (!is_null($marktId) && !is_null($accountId) && '' !== $datum && !is_null($pauze)) {
+        if (!is_null($marktId) && !is_null($accountId) && (bool) $datum && !is_null($pauze)) {
             $settings = (object) [
                 'marktId' => null,
                 'dag' => new \DateTime(),
@@ -51,7 +52,7 @@ class ScanSpeedController extends AbstractController
 
             $dagvergunningen = $api->getDagvergunningen([
                 'marktId' => $marktId,
-                'dag' => \DateTime::createFromFormat('d-m-Y', $datum)->format('Y-m-d'),
+                'dag' => $datum->format('Y-m-d'),
                 'accountId' => $accountId,
                 'doorgehaald' => -1,
             ], 0, 10000);
