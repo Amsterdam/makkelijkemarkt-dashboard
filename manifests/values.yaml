@@ -1,0 +1,104 @@
+name: mm-dashboard
+labels:
+  app: mm-dashboard
+
+image:
+  registry: saks01weuacrpgpgo5qvmwo.azurecr.io
+  tag: latest
+
+network:
+  allow-ingress:
+    selector: app == 'mm-dashboard'
+    ingress:
+      - action: Allow
+    egress:
+      - action: Allow
+
+serviceAccount: app
+serviceAccounts:
+  app: {}
+
+secrets:
+  certificate:
+    type: keyvault
+    tls: mm-dashboard
+
+deployments:
+  mm-dashboard:
+    image:
+      repository: salmagundi/mm-dashboard
+    securityContext:
+      runAsUser: 82
+    selectorLabels:
+      component: phpfpm
+    containers:
+      - name: main
+        ports:
+          - port: 9000
+            name: http
+        volumes:
+          - name: cache
+            mountPath: /var/www/var/cache
+          - name: logs
+            mountPath: /var/www/var/log
+    volumes:
+      - name: cache
+        spec:
+          emptyDir: {}
+      - name: logs
+        spec:
+          emptyDir: {}
+
+  mm-dashboard-nginx:
+    image:
+      repository: salmagundi/mm-dashboard-nginx
+    securityContext:
+      runAsUser: 101
+    selectorLabels:
+      component: nginx
+    containers:
+      - name: main
+        ports:
+          - port: 8080
+            name: http
+        volumes:
+          - name: logs
+            mountPath: /var/log/nginx
+          - name: run
+            mountPath: /var/run
+          - name: cache
+            mountPath: /var/cache/nginx
+    volumes:
+      - name: logs
+        spec:
+          emptyDir: {}
+      - name: run
+        spec:
+          emptyDir: {}
+      - name: cache
+        spec:
+          emptyDir: {}
+
+services:
+  mm-dashboard-nginx:
+    selector:
+      component: nginx
+    ports:
+      - port: 8080
+        targetPort: http
+  mm-dashboard:
+    selector:
+      component: phpfpm
+    ports:
+      - port: 9000
+        targetPort: http
+
+ingress:
+  mm-dashboard-nginx-internal:
+    className: nginx-internal
+    paths:
+      - path: /
+        pathType: Prefix
+        service: mm-dashboard-nginx
+        port: 8080
+    tls: certificate

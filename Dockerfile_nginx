@@ -28,6 +28,9 @@ COPY --chown=nginx ./yarn.lock /var/www/yarn.lock
 COPY --chown=nginx ./webpack.config.js /var/www/webpack.config.js
 
 WORKDIR /var/www
+
+RUN chown -R nginx:nginx /etc/nginx
+
 RUN yarn config set strict-ssl false
 RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
