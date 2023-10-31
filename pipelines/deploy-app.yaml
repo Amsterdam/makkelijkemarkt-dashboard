@@ -1,0 +1,26 @@
+name: deploy-mm-dashboard
+
+trigger: none
+
+variables:
+  # Debugging
+  System.Debug: true
+
+resources:
+  repositories:
+    - repository: azure-templates
+      type: git
+      name: salmagundi/azure-templates
+      ref: refs/heads/tamm-late
+
+extends:
+  template: pipelines/aks/template.yaml@azure-templates
+  parameters:
+    name: deploy-mm-dashboard
+    build:
+      pool:
+        name: ContainerBuilder
+    dev:
+      pool: salmagundi
+      namespace: ns-ccc-mrkt-ont-01-markten
+      kubernetesServiceConnection: SCN-K8S-ns-ccc-mrkt-ont-01-markten
