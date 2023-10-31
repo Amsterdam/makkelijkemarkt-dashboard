@@ -1,0 +1,20 @@
+workloadIdentity: 82370263-90e0-4b27-9d8d-3f8d1689065a
+nodepool: cccmrktont01
+
+host: dashboard.makkelijkemarkt.mrkt-o.azure.amsterdam.nl
+
+secrets:
+  certificate:
+    keyVaultName: shared-o-jpc4hlk5yveei
+
+deployments:
+  mm-dashboard:
+    env:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      APP_SECRET: insecure
+    autoscale:
+      cpu: 70
+      memory: 90
+      min: 1
+      max: 2
