@@ -29,13 +29,15 @@ COPY --chown=nginx ./webpack.config.js /var/www/webpack.config.js
 
 WORKDIR /var/www
 
+RUN yarn config set strict-ssl false
+RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
+
 RUN chown -R nginx:nginx /etc/nginx
 
 USER nginx
 
-RUN yarn config set strict-ssl false
-RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
+RUN envsubst '$FASTCGI_PASS' < /tmp/default.template > /etc/nginx/conf.d/default.conf
 
-CMD envsubst '$FASTCGI_PASS' < /tmp/default.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'
+CMD exec nginx -g 'daemon off;'
 
 EXPOSE 80
