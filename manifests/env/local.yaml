@@ -12,6 +12,11 @@ secrets:
   certificate:
     enabled: false
 
+
+jobs:
+  certificate-init:
+    enabled: false
+
 deployments:
   mm-dashboard:
     env:

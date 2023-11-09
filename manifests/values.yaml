@@ -104,3 +104,20 @@ ingress:
         service: mm-dashboard-nginx
         port: 8080
     tls: certificate
+
+jobs:
+  certificate-init:
+    image:
+      repository: salmagundi/mm-dashboard-nginx
+    annotations:
+      helm.sh/hook: post-install,post-upgrade
+    labels:
+      component: certificate
+    secrets:
+      - certificate
+    containers:
+      - name: main
+        command:
+          - sleep
+        args:
+          - "1"
