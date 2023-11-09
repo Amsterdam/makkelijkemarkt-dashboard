@@ -23,7 +23,7 @@ serviceAccounts:
 secrets:
   certificate:
     type: keyvault
-    tls: mm-dashboard
+    tls: markten
 
 deployments:
   mm-dashboard:
