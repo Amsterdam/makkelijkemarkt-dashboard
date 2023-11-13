@@ -43,11 +43,16 @@ deployments:
             mountPath: /var/www/var/cache
           - name: logs
             mountPath: /var/www/var/log
+          - name: tmp # sessions
+            mountPath: /tmp
     volumes:
       - name: cache
         spec:
           emptyDir: {}
       - name: logs
+        spec:
+          emptyDir: {}
+      - name: tmp
         spec:
           emptyDir: {}
 
