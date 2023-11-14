@@ -24,7 +24,7 @@ secrets:
   certificate:
     type: keyvault
     tls: markten
-  php:
+  vault:
     type: keyvault
     secrets:
     # TODO rewrite to better env names?
@@ -52,7 +52,7 @@ deployments:
           - name: tmp # sessions
             mountPath: /tmp
         secrets:
-          - php
+          - vault
     volumes:
       - name: cache
         spec:
