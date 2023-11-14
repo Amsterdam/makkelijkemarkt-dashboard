@@ -24,6 +24,12 @@ secrets:
   certificate:
     type: keyvault
     tls: markten
+  php:
+    type: keyvault
+    secrets:
+    # TODO rewrite to better env names?
+      APP_KEY: api-key
+      MARKT_API: api-url
 
 deployments:
   mm-dashboard:
@@ -45,6 +51,8 @@ deployments:
             mountPath: /var/www/var/log
           - name: tmp # sessions
             mountPath: /tmp
+        secrets:
+          - php
     volumes:
       - name: cache
         spec:
