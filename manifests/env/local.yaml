@@ -11,6 +11,8 @@ securityContext:
 secrets:
   certificate:
     enabled: false
+  php:
+    enabled: false
 
 
 jobs:
