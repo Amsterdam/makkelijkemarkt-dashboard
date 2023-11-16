@@ -1,5 +1,60 @@
 # Changelog
 
+## [1.9.1](https://github.com/Amsterdam/helm-application/compare/1.9.0...1.9.1) (2023-11-02)
+
+
+### Bug Fixes
+
+* **temp dirs:** Fix for directories containing other special characters in the path like a dot ([#58](https://github.com/Amsterdam/helm-application/issues/58)) ([967d92a](https://github.com/Amsterdam/helm-application/commit/967d92aa86778bc68ae655a8b9c8301c9b1cbbcd))
+
+## [1.9.0](https://github.com/Amsterdam/helm-application/compare/1.8.1...1.9.0) (2023-10-31)
+
+
+### Features
+
+* Allow keyvault secrets to be renamed ([#56](https://github.com/Amsterdam/helm-application/issues/56)) ([8e20d57](https://github.com/Amsterdam/helm-application/commit/8e20d5764f2ddb3a55ef8e4abb1a12294896040c))
+
+## [1.8.1](https://github.com/Amsterdam/helm-application/compare/1.8.0...1.8.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* **pods:** Allow tempDirs to be defined in the pod containers ([#54](https://github.com/Amsterdam/helm-application/issues/54)) ([ddcc482](https://github.com/Amsterdam/helm-application/commit/ddcc48209edce2f62cf2a32bbe5123fcbd2edf19))
+
+## [1.8.0](https://github.com/Amsterdam/helm-application/compare/1.7.0...1.8.0) (2023-10-16)
+
+
+### Features
+
+* **pods:** Auto-mount temp dirs ([49b88dd](https://github.com/Amsterdam/helm-application/commit/49b88ddf5d7da52154dc04ed4b7b8eaa4533c9d1))
+
+## [1.7.0](https://github.com/Amsterdam/helm-application/compare/1.6.1...1.7.0) (2023-07-20)
+
+
+### Features
+
+* **configmaps:** Added configmaps functionality ([f79e999](https://github.com/Amsterdam/helm-application/commit/f79e999147895e7084862b8da9397e3f14cdfd0c))
+
+
+### Bug Fixes
+
+* **securityContext:** security context was in some cases merged without copy causing subsequent containers to have the same context ([a7b4a1c](https://github.com/Amsterdam/helm-application/commit/a7b4a1c3557c468601a76e4e6f77d4e9bd49262c))
+* **unittests:** Added more coverage for mounting secrets through volumes. fixes [#41](https://github.com/Amsterdam/helm-application/issues/41) ([a722bba](https://github.com/Amsterdam/helm-application/commit/a722bbac4baa7fa49c2070bfbe9b7becd5ec7b60))
+
+## [1.6.1](https://github.com/Amsterdam/helm-application/compare/1.6.0...1.6.1) (2023-06-29)
+
+
+### Bug Fixes
+
+* **serviceaccount:** Default serviceaccount was not set properly ([a9be2dd](https://github.com/Amsterdam/helm-application/commit/a9be2ddc482bf6786ee35f13d020750ffb636f77))
+
+## [1.6.0](https://github.com/Amsterdam/helm-application/compare/1.5.2...1.6.0) (2023-06-28)
+
+
+### Features
+
+* **serviceaccount:** Implement default serviceaccount for the deployment ([70e643e](https://github.com/Amsterdam/helm-application/commit/70e643e9b1e08e2ccbe5c544874392735bc0cc7c))
+
 ## [1.5.2](https://github.com/Amsterdam/helm-application/compare/1.5.1...1.5.2) (2023-06-14)
 
 

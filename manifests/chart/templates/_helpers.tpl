@@ -93,6 +93,16 @@ Create the name of the service account to use
 Volumes
 */}}
 {{- define "pod.volumes" -}}
+{{- include "pod.persistentVolumes" . }}
+{{- include "pod.secretVolumes" . }}
+{{- include "pod.configVolumes" . }}
+{{- include "pod.tempVolumes" . }}
+{{- end }}
+
+{{/*
+Pod persistent volumes
+*/}}
+{{- define "pod.persistentVolumes" -}}
 {{- $fullName := (include "helm.fullname" .root ) }}
 {{- range .local.volumes }}
 - name: {{ .name }}
@@ -104,15 +114,13 @@ Volumes
   {{- toYaml . | nindent 2}}
 {{- end }}
 {{- end }}
-{{- include "pod.secretVolumes" . }}
 {{- end }}
 
 {{/*
-Volumes
+Pod secret volumes
 */}}
 {{- define "pod.secretVolumes" -}}
-{{- $mountSecrets := .local.mountSecrets | default list }}
-{{- $secrets := concat (.local.secrets | default list) $mountSecrets }}
+{{- $secrets := .local.secrets | default list }}
 
 {{- range .local.containers }}
 {{- $secrets = concat $secrets (.secrets | default list) }}
@@ -128,7 +136,47 @@ Volumes
     readOnly: true
     volumeAttributes:
       secretProviderClass: "{{ . }}-{{ $fullName }}"
+{{- else }}
+- name: "{{ . }}"
+  secret:
+    secretName: {{ printf "%s-%s" . $fullName | quote }}
 {{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Pod config volumes
+*/}}
+{{- define "pod.configVolumes" -}}
+{{- $configMaps := .local.configMaps | default list }}
+
+{{- range .local.containers }}
+{{- $configMaps = concat $configMaps (.configMaps | default list) }}
+{{- end }}
+
+{{- $fullName := (include "helm.fullname" .root ) }}
+{{- range $configMaps | mustUniq }}
+{{- $configMap := get $.root.Values.configMaps . }}
+- name: "{{ . }}"
+  configMap:
+    name: {{ printf "%s-%s" . $fullName | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
+Pod temp volumes
+*/}}
+{{- define "pod.tempVolumes" -}}
+{{- $tempDirs := concat (.local.tempDirs | default list) .root.Values.tempDirs }}
+
+{{- range .local.containers }}
+{{- $tempDirs = concat $tempDirs (.tempDirs | default list) }}
+{{- end }}
+
+{{- range $tempDirs | mustUniq }}
+- name: {{ kebabcase (trimPrefix "_" (regexReplaceAll "\\W+" . "_")) }}
+  spec:
+    emptyDir: {}
 {{- end }}
 {{- end }}
 
@@ -137,7 +185,9 @@ Container volumeMounts
 */}}
 {{- define "container.volumeMounts" -}}
 {{- include "container.secretVolumes" . }}
+{{- include "container.configMapVolumes" . }}
 {{- include "container.volumes" . }}
+{{- include "container.tempVolumes" . }}
 {{- end }}
 
 {{/*
@@ -147,6 +197,19 @@ Container manual volumes
 {{- range .local.volumes }}
 - name: {{ .name }}
   mountPath: {{ .mountPath }}
+  readOnly: {{ .readOnly | default false }}
+{{- end }}
+{{- end }}
+
+{{/*
+Container temp volumes
+*/}}
+{{- define "container.tempVolumes" -}}
+{{- $tempDirs := concat (.local.tempDirs | default list) (.pod.tempDirs | default list) .root.Values.tempDirs }}
+{{- range $tempDirs | mustUniq }}
+- name: {{ kebabcase (trimPrefix "_" (regexReplaceAll "\\W+" . "_")) }}
+  mountPath: {{ . }}
+  readOnly: false
 {{- end }}
 {{- end }}
 
@@ -154,15 +217,25 @@ Container manual volumes
 Volumes secret volume mounts
 */}}
 {{- define "container.secretVolumes" -}}
-{{- $mountSecrets := .local.mountSecrets | default list }}
-{{- $secrets := concat (.local.secrets | default list) $mountSecrets | mustUniq }}
+{{- $secrets := .local.secrets | default list }}
 {{- range $secrets }}
 {{- $secret := get $.root.Values.secrets . }}
-{{- if eq (lower $secret.type) "keyvault" }}
 - name: {{ . }}
-  mountPath: /mnt/secrets/{{ . | replace "-" "_" }}
+  mountPath: {{ printf "/mnt/secrets/%s" . | quote }}
   readOnly: true
 {{- end }}
+{{- end }}
+
+{{/*
+ConfigMap volumeMounts
+*/}}
+{{- define "container.configMapVolumes" -}}
+{{- $configMaps := .local.configMaps | default list }}
+{{- range $configMaps }}
+{{- $configMap := get $.root.Values.configMaps . }}
+- name: {{ . }}
+  mountPath: {{ printf "/mnt/configs/%s" . | quote }}
+  readOnly: true
 {{- end }}
 {{- end }}
 
@@ -172,7 +245,6 @@ env
 {{- define "container.env" -}}
 {{- $fullName := (include "helm.fullname" .root ) }}
 {{- $env := merge (.local.env | default dict) .root.Values.env }}
-{{- if or $env .local.secrets }}
 {{- with $env }}
 {{- range $name, $value := . }}
 - name: {{ $name | upper | replace "-" "_" }}
@@ -190,18 +262,33 @@ If its a simple opaque secret its in the format of key:value
 Else its a list
 */}}
 {{- if not (eq $secret.type "opaque") }}
-{{- $key = . }}
+{{- if kindIs "int" $key }}
+{{- $key = $value }}
+{{- end }}
 {{- end -}}
 - name: {{ $key | upper | replace "-" "_" | quote }}
   valueFrom:
     secretKeyRef:
       name: {{ printf "%s-%s" $secretName $fullName | quote }}
       key: {{ $key | quote }}
+{{- end }} 
+{{- end }}
+{{- end }}
+
+{{- with .local.configMaps }}
+{{- range . }}
+{{- $configMapName := . }}
+{{- $configMap := required (printf "ConfigMap %s does not exist" $configMapName) (get $.root.Values.configMaps $configMapName) }}
+{{- range $key, $value := $configMap.data }}
+- name: {{ $key | upper | replace "-" "_" | quote }}
+  valueFrom:
+    configMapKeyRef:
+      name: {{ printf "%s-%s" $configMapName $fullName | quote }}
+      key: {{ $key | quote }}
 {{- end }}
 {{- end }}
 {{- end }}
 
-{{- end }}
 {{- end }}
 
 {{/*
@@ -245,7 +332,7 @@ tolerations
 pod.securityContext
 */}}
 {{- define "pod.securityContext" -}}
-{{- $context := mergeOverwrite .root.Values.securityContext.pod (.local.securityContext | default dict)  }}
+{{- $context := deepCopy (.local.securityContext | default dict) | mergeOverwrite (.root.Values.securityContext.pod | deepCopy)  }}
 {{- with $context }}
 {{- . | toYaml }}
 {{- end }}
@@ -255,7 +342,7 @@ pod.securityContext
 container.securityContext
 */}}
 {{- define "container.securityContext" -}}
-{{- $context := mergeOverwrite (.root.Values.securityContext.container) (.local.securityContext | default dict) }}
+{{- $context := deepCopy (.local.securityContext | default dict) | mergeOverwrite (.root.Values.securityContext.container | deepCopy)  }}
 {{- with $context }}
 {{- . | toYaml }}
 {{- end }}
@@ -310,8 +397,8 @@ containers
 {{- $context := . -}}
 
 {{- range .local.containers }}
-{{- $picked := pick $context.local "resources" "env" "secrets" "image" }}
-{{- $containerContext := dict "local" (merge . $picked) "root" $context.root }}
+{{- $picked := pick $context.local "resources" "env" "secrets" "configMaps" "image" "tempDirs" }}
+{{- $containerContext := dict "local" (merge . $picked) "pod" $context.local "root" $context.root }}
 - name: {{ .name }}
 {{- include "container" $containerContext | indent 2 }}
 {{- end }}
