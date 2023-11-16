@@ -28,8 +28,9 @@ secrets:
     type: keyvault
     secrets:
     # TODO rewrite to better env names?
-      APP_KEY: api-key
+      # APP_KEY: api-key
       MARKT_API: api-url
+      MM_APP_KEY: api-key
 
 deployments:
   mm-dashboard:
