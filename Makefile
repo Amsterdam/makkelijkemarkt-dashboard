@@ -12,6 +12,8 @@ REGISTRY ?= 127.0.0.1:5001
 REPOSITORY ?= salmagundi/mm-dashboard
 VERSION ?= latest
 
+all: build push deploy fixtures
+
 build:
 	$(dc) build
 
@@ -19,8 +21,9 @@ test:
 	echo "No tests available"
 
 migrate:
-	kubectl exec -it deploy/mm-dashboard-mm-dashboard -- sh -c "php bin/console --no-interaction doctrine:migrations:migrate"
-	kubectl exec -it deploy/mm-dashboard-mm-dashboard -- sh -c "php bin/console doc:fix:load  --no-interaction --purge-with-truncate"
+	echo "No fixtures"
+
+fixtures: migrate
 
 push:
 	$(dc) push
@@ -41,7 +44,7 @@ clean:
 	$(dc) down -v --remove-orphans
 
 reset:
-	kubectl delete deployments --all && helm uninstall mm-dashboard
+	kubectl delete deployment mm-dashboard-mm-dashboard && kubectl delete deployment mm-dashboard-nginx-mm-dashboard && kubectl delete ingress mm-dashboard-nginx-internal-mm-dashboard && helm uninstall mm-dashboard
 
 refresh: reset build push deploy
 

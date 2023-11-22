@@ -2,7 +2,7 @@ image:
   registry: 127.0.0.1:5001
   imagePullPolicy: Always
 
-host: localhost
+host: makkelijkemarkt-dashboard.local
 
 securityContext:
   container:
@@ -31,6 +31,7 @@ deployments:
       APP_SECRET: insecure
       MARKT_API: http://mm-api-nginx-mm-api:80/api/1.1.0/
       MM_APP_KEY: insecure
+
 services:
   mm-dashboard-nginx:
     selector:
