@@ -122,82 +122,6 @@ tests:
           value:
             - command2
 
-  - it: should set env from secrets
-    set:
-      image:
-        repository: defaultrepo
-      secrets:
-        mysecrets:
-          type: opaque
-          secrets:
-            secret1: value1
-            secret2: value2
-      deployments:
-        main:
-          containers:
-            - name: main
-              secrets:
-                - mysecrets
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='main')].env
-          value:
-            - name: "SECRET1"
-              valueFrom:
-                secretKeyRef:
-                  name: "mysecrets-test"
-                  key: "secret1"
-            - name: "SECRET2"
-              valueFrom:
-                secretKeyRef:
-                  name: "mysecrets-test"
-                  key: "secret2"
-
-  - it: should use env defined on deployment level
-    set:
-      image:
-        repository: defaultrepo
-      secrets:
-        mysecrets:
-          type: opaque
-          secrets:
-            secret1: value1
-            secret2: value2
-      deployments:
-        main:
-          secrets:
-            - mysecrets
-          containers:
-            - name: main
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='main')].env
-          value:
-            - name: "SECRET1"
-              valueFrom:
-                secretKeyRef:
-                  name: "mysecrets-test"
-                  key: "secret1"
-            - name: "SECRET2"
-              valueFrom:
-                secretKeyRef:
-                  name: "mysecrets-test"
-                  key: "secret2"
-
-  - it: should give an error if the reference to a secret does not exist
-    set:
-      image:
-        repository: defaultrepo
-      deployments:
-        main:
-          containers:
-            - name: main
-              secrets:
-                - mysecret
-    asserts:
-      - failedTemplate:
-          errorMessage: "Secret mysecret does not exist"
-
   - it: should use env vars defined at the deployment in the container
     set:
       image:
@@ -252,56 +176,6 @@ tests:
               cpu: 4
               memory: 512Mi
 
-  - it: should have securityContext in pods and containers
-    set:
-      image:
-        repository: defaultrepo
-      deployments:
-        main:
-          containers:
-            - name: main
-    asserts:
-      - equal:
-          path: spec.template.spec.securityContext
-          value:
-            runAsNonRoot: true
-            runAsUser: 1000
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='main')].securityContext
-          value:
-            privileged: false
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-
-  - it: should allow for securityContext to overWrite
-    set:
-      image:
-        repository: defaultrepo
-
-      deployments:
-        main:
-          securityContext:
-            runAsNonRoot: false
-            runAsUser: 2000
-          containers:
-            - name: main
-              securityContext:
-                allowPrivilegeEscalation: true
-                privileged: true
-                readOnlyRootFilesystem: false
-    asserts:
-      - equal:
-          path: spec.template.spec.securityContext
-          value:
-            runAsNonRoot: false
-            runAsUser: 2000
-      - equal:
-          path: spec.template.spec.containers[?(@.name=='main')].securityContext
-          value:
-            allowPrivilegeEscalation: true
-            privileged: true
-            readOnlyRootFilesystem: false
-
   - it: should use the default serviceAccount
     set:
       image:
@@ -344,3 +218,59 @@ tests:
           path: spec.template.metadata.labels
           content:
             azure.workload.identity/use: "true"
+  - it: should be able to mount configured temp volumes
+    set:
+      tempDirs:
+      - /var/global
+      image:
+        repository: defaultrepo
+      deployments:
+        main:
+          tempDirs:
+          - /var/deploy
+          containers:
+            - name: main
+              tempDirs:
+              - /var/container
+              - /home/foo-bar/.config
+            - name: another
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='main')].volumeMounts
+          value:
+            - name: var-container
+              mountPath: /var/container
+              readOnly: false
+            - name: home-foo-bar-config
+              mountPath: /home/foo-bar/.config
+              readOnly: false
+            - name: var-deploy
+              mountPath: /var/deploy
+              readOnly: false
+            - name: var-global
+              mountPath: /var/global
+              readOnly: false
+      - equal:
+          path: spec.template.spec.containers[?(@.name=='another')].volumeMounts
+          value:
+            - name: var-deploy
+              mountPath: /var/deploy
+              readOnly: false
+            - name: var-global
+              mountPath: /var/global
+              readOnly: false
+      - equal:
+          path: spec.template.spec.volumes
+          value:
+            - name: var-deploy
+              spec:
+                emptyDir: {}
+            - name: var-global
+              spec:
+                emptyDir: {}
+            - name: var-container
+              spec:
+                emptyDir: {}
+            - name: home-foo-bar-config
+              spec:
+                emptyDir: {}

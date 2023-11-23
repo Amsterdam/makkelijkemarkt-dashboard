@@ -1,4 +1,5 @@
 workloadIdentity: 82370263-90e0-4b27-9d8d-3f8d1689065a
+keyVaultName: markten-o-l5ct7bz3yelys
 nodepool: cccmrktont01
 
 host: dashboard.makkelijkemarkt.mrkt-o.azure.amsterdam.nl

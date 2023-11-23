@@ -11,6 +11,7 @@ HELM_ARGS = manifests/chart \
 REGISTRY ?= 127.0.0.1:5001
 REPOSITORY ?= salmagundi/mm-dashboard
 VERSION ?= latest
+CHART_VERSION?=1.9.1
 
 all: build push deploy fixtures
 
@@ -37,7 +38,7 @@ deploy: manifests
 
 update-chart:
 	rm -rf manifests/chart
-	git clone --branch 1.5.2 --depth 1 git@github.com:Amsterdam/helm-application.git manifests/chart
+	git clone --branch $(CHART_VERSION) --depth 1 git@github.com:Amsterdam/helm-application.git manifests/chart
 	rm -rf manifests/chart/.git
 
 clean:

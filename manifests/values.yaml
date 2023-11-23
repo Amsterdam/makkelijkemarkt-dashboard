@@ -24,6 +24,11 @@ secrets:
   certificate:
     type: keyvault
     tls: markten
+  vault:
+    type: keyvault
+    secrets:
+      MARKT_API: api-url
+      MM_APP_KEY: api-key
 
 deployments:
   mm-dashboard:
@@ -45,6 +50,8 @@ deployments:
             mountPath: /var/www/var/log
           - name: tmp # sessions
             mountPath: /tmp
+        secrets:
+          - vault
     volumes:
       - name: cache
         spec:
