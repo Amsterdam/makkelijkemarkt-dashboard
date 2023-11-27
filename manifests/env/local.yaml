@@ -21,6 +21,19 @@ jobs:
 
 deployments:
   mm-dashboard:
+    containers:
+      - name: main
+        ports:
+          - port: 9000
+            name: http
+        volumes:
+          - name: cache
+            mountPath: /var/www/var/cache
+          - name: logs
+            mountPath: /var/www/var/log
+          - name: tmp # sessions
+            mountPath: /tmp
+        secrets: []
     env:
       APP_ENV: dev
       APP_DEBUG: 1
