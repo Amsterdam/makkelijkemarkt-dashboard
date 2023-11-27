@@ -10,7 +10,7 @@
 
 {% extends 'base.html.twig' %}
 
-{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info', 'lot': 'warning', 'eb': 'primary'} %}
+{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'vkk': 'info', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info', 'lot': 'warning', 'eb': 'info'} %}
 
 {% set activeTab = app.request.query.get('tab', 'sollicitaties') %}
 

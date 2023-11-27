@@ -9,7 +9,7 @@
 #}
 {% extends "base.html.twig" %}
 
-{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'lot': 'warning', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info', 'eb': 'primary'} %}
+{% set statusLabelClass = {'?': 'danger', 'soll': 'success', 'vpl': 'primary', 'lot': 'warning', 'tvpl': 'info', 'tvplz': 'info', 'exp': 'info', 'expf': 'info', 'eb': 'info'} %}
 
 {% block title %}{{ selectedMarkt.naam }} / {{ dag|date('d-m-Y') }} - {% endblock %}
 

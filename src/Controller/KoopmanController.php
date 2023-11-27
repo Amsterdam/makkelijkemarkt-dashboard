@@ -124,7 +124,8 @@ class KoopmanController extends AbstractController
             return $carry;
         });
 
-        $staanverplichtingRapport = $api->getRapportStaanverplichting([$marktId], $dagvergunningenStartDatum->format('Y-m-d'), $dagvergunningenEindDatum->format('Y-m-d'), 'alle');
+        $marktIds = $marktId ? [$marktId] : [];
+        $staanverplichtingRapport = $api->getRapportStaanverplichting($marktIds, $dagvergunningenStartDatum->format('Y-m-d'), $dagvergunningenEindDatum->format('Y-m-d'), 'alle');
         $rapportVanKoopman = current(array_filter($staanverplichtingRapport['output'], function ($record) use ($koopman) {
             return $record['koopman']['erkenningsnummer'] == $koopman['erkenningsnummer'];
         }));
@@ -153,8 +154,8 @@ class KoopmanController extends AbstractController
             'aanwezig.vervanger_met_toestemming' => 0,
             'aanwezig.vervanger_zonder_toestemming' => 0,
             'aanwezig.niet_aanwezig' => 0,
-            'aanwezig.zelf_aanw_na_controle' => $rapportVanKoopman['aantalActieveDagvergunningenZelfAanwezigNaControle'],
-            'aanwezig.niet_zelf_aanw_na_controle' => $rapportVanKoopman['aantalActieveDagvergunningenNietZelfAanwezigNaControle'],
+            'aanwezig.zelf_aanw_na_controle' => 0,
+            'aanwezig.niet_zelf_aanw_na_controle' => 0,
             'meters.aantal_3m' => 0,
             'meters.aantal_4m' => 0,
             'meters.aantal_1m' => 0,
@@ -164,6 +165,10 @@ class KoopmanController extends AbstractController
             'extra.krachtstroom' => 0,
             'extra.reiniging' => 0,
         ];
+        if ($rapportVanKoopman) {
+            $stats['aanwezig.zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenZelfAanwezigNaControle'];
+            $stats['aanwezig.niet_zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenNietZelfAanwezigNaControle'];
+        }
         foreach ($dagvergunningen as $dagvergunning) {
             if (false === $dagvergunning['doorgehaald']) {
                 // totaal dagvergunningen (actief)
