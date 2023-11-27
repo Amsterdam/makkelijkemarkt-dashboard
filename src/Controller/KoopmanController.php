@@ -124,11 +124,12 @@ class KoopmanController extends AbstractController
             return $carry;
         });
 
-        $marktIds = $marktId ? [$marktId] : [];
-        $staanverplichtingRapport = $api->getRapportStaanverplichting($marktIds, $dagvergunningenStartDatum->format('Y-m-d'), $dagvergunningenEindDatum->format('Y-m-d'), 'alle');
-        $rapportVanKoopman = current(array_filter($staanverplichtingRapport['output'], function ($record) use ($koopman) {
-            return $record['koopman']['erkenningsnummer'] == $koopman['erkenningsnummer'];
-        }));
+        if ($marktId) {
+            $staanverplichtingRapport = $api->getRapportStaanverplichting([$marktId], $dagvergunningenStartDatum->format('Y-m-d'), $dagvergunningenEindDatum->format('Y-m-d'), 'alle');
+            $rapportVanKoopman = current(array_filter($staanverplichtingRapport['output'], function ($record) use ($koopman) {
+                return $record['koopman']['erkenningsnummer'] == $koopman['erkenningsnummer'];
+            }));
+        }
 
         $params = ['koopmanId' => $koopman['id'], 'dagStart' => $dagvergunningenStartDatum->format('Y-m-d'), 'dagEind' => $dagvergunningenEindDatum->format('Y-m-d')];
         if (null !== $markt) {
@@ -165,7 +166,7 @@ class KoopmanController extends AbstractController
             'extra.krachtstroom' => 0,
             'extra.reiniging' => 0,
         ];
-        if ($rapportVanKoopman) {
+        if (isset($rapportVanKoopman)) {
             $stats['aanwezig.zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenZelfAanwezigNaControle'];
             $stats['aanwezig.niet_zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenNietZelfAanwezigNaControle'];
         }
