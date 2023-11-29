@@ -268,8 +268,20 @@
         <div class="col-sm-5 col-md-3">
             <h4>Aanwezigheid</h4>
             <p>
-                Zelf aanwezig na controle <strong>{{ attribute(stats, 'aanwezig.zelf_aanw_na_controle') }}</strong><br>
-                Niet zelf aanwezig na controle <strong>{{ attribute(stats, 'aanwezig.niet_zelf_aanw_na_controle') }}</strong><br>
+                Zelf <strong>{{ attribute(stats, 'aanwezig.zelf') }}</strong><br>
+                Partner <strong>{{ attribute(stats, 'aanwezig.partner') }}</strong><br>
+                Vervanger met toestemming
+                <strong>{{ attribute(stats, 'aanwezig.vervanger_met_toestemming') }}</strong><br>
+                Vervanger zonder toestemming
+                <strong>{{ attribute(stats, 'aanwezig.vervanger_zonder_toestemming') }}</strong><br>
+                Niet aanwezig <strong>{{ attribute(stats, 'aanwezig.niet_aanwezig') }}</strong><br>
+                {% if attribute(stats, 'aanwezig.?') > 0 %}ONBEKEND
+                    <strong>{{ attribute(stats, 'aanwezig.?') }}</strong><br>{% endif %}
+            </p>
+            <h5>Aanwezigheid na controle</h5>
+            <p>
+                Zelf aanwezig<strong>{{ attribute(stats, 'aanwezig.zelf_aanw_na_controle') }}</strong><br>
+                Niet zelf aanwezig<strong>{{ attribute(stats, 'aanwezig.niet_zelf_aanw_na_controle') }}</strong><br>
 
             </p>
         </div>
