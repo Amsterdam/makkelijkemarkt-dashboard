@@ -1,0 +1,21 @@
+workloadIdentity: 7fb05b70-0c2a-4d8c-823d-18e3cd9de9f7
+keyVaultName: markten-t-43vb6bx3n4rgq
+nodepool: cccmrkttst01
+
+host: dashboard.makkelijkemarkt.mrkt-t.azure.amsterdam.nl
+
+secrets:
+  certificate:
+    keyVaultName: shared-t-te3lhrptbiube
+
+deployments:
+  mm-api:
+    env:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      APP_SECRET: insecure
+    autoscale:
+      cpu: 70
+      memory: 90
+      min: 1
+      max: 2
