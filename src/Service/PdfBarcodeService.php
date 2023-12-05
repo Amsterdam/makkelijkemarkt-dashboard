@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use TCPDF;
-
 class PdfBarcodeService
 {
     /**
@@ -25,9 +23,9 @@ class PdfBarcodeService
         $this->projectDir = $projectDir;
     }
 
-    public function generate(string $markt, string $naam, array $parts): TCPDF
+    public function generate(string $markt, string $naam, array $parts): \TCPDF
     {
-        $this->pdf = new TCPDF();
+        $this->pdf = new \TCPDF();
 
         // set document information
         $this->pdf->SetCreator('Gemeente Amsterdam');
@@ -154,7 +152,7 @@ class PdfBarcodeService
             'hpadding' => 'auto',
             'vpadding' => 'auto',
             'fgcolor' => [0, 0, 0],
-            'bgcolor' => false, //array(255,255,255),
+            'bgcolor' => false, // array(255,255,255),
             'text' => false,
             'font' => 'helvetica',
             'fontsize' => 8,
@@ -165,7 +163,7 @@ class PdfBarcodeService
             $this->lastY = $this->pdf->GetY();
         }
 
-        $this->pdf->write1DBarcode($koopman['erkenningsnummer'], 'C39', ($break ? 100 : 10), $this->lastY, '', 18, 0.4, $style, 'N');
+        $this->pdf->write1DBarcode($koopman['erkenningsnummer'], 'C39', $break ? 100 : 10, $this->lastY, '', 18, 0.4, $style, 'N');
         if ($break) {
             $this->pdf->Ln();
         }

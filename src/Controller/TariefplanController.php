@@ -19,7 +19,9 @@ class TariefplanController extends AbstractController
 {
     /**
      * @Route("/tariefplan")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function indexAction(MarktApi $api)
@@ -33,7 +35,9 @@ class TariefplanController extends AbstractController
 
     /**
      * @Route("/tariefplan/{marktId}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function marktindexAction(MarktApi $api, int $marktId): array
@@ -54,7 +58,9 @@ class TariefplanController extends AbstractController
 
     /**
      * @Route("/tariefplan/{marktId}/create/lineair")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createLineairAction(Request $request, MarktApi $api, int $marktId)
@@ -83,6 +89,7 @@ class TariefplanController extends AbstractController
 
     /**
      * @Route("/tariefplan/{tariefPlanId}/delete")
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function deleteAction(Request $request, MarktApi $api, int $tariefPlanId): RedirectResponse
@@ -99,7 +106,9 @@ class TariefplanController extends AbstractController
 
     /**
      * @Route("/tariefplan/{tariefPlanId}/update/lineair")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function updateLineairAction(Request $request, MarktApi $api, int $tariefPlanId)
@@ -216,7 +225,9 @@ class TariefplanController extends AbstractController
 
     /**
      * @Route("/tariefplan/{marktId}/create/concreet")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createConcreetAction(Request $request, MarktApi $api, int $marktId)
@@ -245,7 +256,9 @@ class TariefplanController extends AbstractController
 
     /**
      * @Route("/tariefplan/{tariefPlanId}/update/concreet")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function updateConcreetAction(Request $request, MarktApi $api, int $tariefPlanId)
@@ -276,7 +289,9 @@ class TariefplanController extends AbstractController
 
     /**
      * @Route("import/tariefplan", name="app_import_tariefplan")
+     *
      * @Template("tariefplan/import_form.html.twig")
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function import(Request $request, MarktApi $api)

@@ -16,7 +16,9 @@ class TariefSoortController extends AbstractController
 {
     /**
      * @Route("/tariefsoort", name="app_tariefsoort_index", methods={"GET"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function indexAction(MarktApi $api)
@@ -33,7 +35,9 @@ class TariefSoortController extends AbstractController
 
     /**
      * @Route("/tariefsoort/create", name="app_tariefsoort_create", methods={"GET", "POST"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createAction(MarktApi $api, Request $request)
@@ -67,7 +71,9 @@ class TariefSoortController extends AbstractController
 
     /**
      * @Route("/tariefsoort/{id}/edit", name="app_tariefsoort_edit", methods={"GET", "POST"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function editAction(MarktApi $api, Request $request, int $id)
