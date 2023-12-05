@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -61,7 +60,7 @@ class BtwPlanType extends AbstractType
             ->add('dateFrom', DateType::class, [
                 'label' => 'Ingangsdatum',
                 'widget' => 'choice',
-                'data' => $isUpdating ? new DateTimeImmutable($btwPlan['dateFrom']) : null,
+                'data' => $isUpdating ? new \DateTimeImmutable($btwPlan['dateFrom']) : null,
                 'required' => true,
                 'years' => range(date('Y') - 1, date('Y') + 5),
             ])

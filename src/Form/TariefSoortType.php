@@ -25,7 +25,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class TariefSoortType extends AbstractType
 {
-    const TARIEFPLAN_TYPES = [
+    public const TARIEFPLAN_TYPES = [
         'lineair',
         'concreet',
     ];

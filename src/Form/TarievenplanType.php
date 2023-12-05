@@ -16,7 +16,6 @@ namespace App\Form;
 use App\Constants\Translations;
 use App\Service\TarievenplanService;
 use App\Service\TranslationService;
-use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -29,8 +28,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class TarievenplanType extends AbstractType
 {
-    const VARIANTS = TarievenplanService::VARIANTS;
-    const WEEKDAYS = Translations::WEEKDAYS;
+    public const VARIANTS = TarievenplanService::VARIANTS;
+    public const WEEKDAYS = Translations::WEEKDAYS;
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -38,15 +37,15 @@ class TarievenplanType extends AbstractType
         $tarievenplan = $options['data']['tarievenplan'];
         $tarieven = $tarievenplan['tarieven'] ?? [];
 
-        $currentWeekdays = ($tarievenplan['weekdays']) ?? [];
+        $currentWeekdays = $tarievenplan['weekdays'] ?? [];
         $chosen = TranslationService::translateArray($currentWeekdays, self::WEEKDAYS, false);
 
         $tariefSoortIdsInTarieven = array_column($tarieven, 'tariefSoortId');
         $dateFrom = (isset($tarievenplan['dateFrom']) && $tarievenplan['dateFrom'])
-            ? new DateTime($tarievenplan['dateFrom'])
-            : new DateTime();
+            ? new \DateTime($tarievenplan['dateFrom'])
+            : new \DateTime();
         $dateUntil = (isset($tarievenplan['dateUntil']) && $tarievenplan['dateUntil'])
-            ? new DateTime($tarievenplan['dateUntil'])
+            ? new \DateTime($tarievenplan['dateUntil'])
             : null;
 
         $isNonStandardPlan = in_array(
@@ -96,7 +95,7 @@ class TarievenplanType extends AbstractType
                 'widget' => 'choice',
                 'required' => $isNonStandardPlan,
                 'years' => range(date('Y') - 5, date('Y') + 3),
-                'data' => $dateUntil ?? new DateTime('1 year'),
+                'data' => $dateUntil ?? new \DateTime('1 year'),
             ]);
         }
 

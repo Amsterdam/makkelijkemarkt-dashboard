@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Constants\Translations;
-use DateTimeImmutable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -25,12 +24,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class DagvergunningMappingType extends AbstractType
 {
-    const TARIEFPLAN_TYPES = [
+    public const TARIEFPLAN_TYPES = [
         'lineair',
         'concreet',
     ];
 
-    const APP_INPUT_TYPES = [
+    public const APP_INPUT_TYPES = [
         'number',
         'toggle',
     ];
@@ -108,7 +107,7 @@ class DagvergunningMappingType extends AbstractType
             ->add('archivedOn', DateType::class, [
                 'label' => 'Archiveren vanaf',
                 'widget' => 'choice',
-                'data' => $isUpdate && $mapping['archivedOn'] ? new DateTimeImmutable($mapping['archivedOn']) : null,
+                'data' => $isUpdate && $mapping['archivedOn'] ? new \DateTimeImmutable($mapping['archivedOn']) : null,
                 'years' => range(date('Y') - 1, date('Y') + 5),
                 'required' => false,
             ])

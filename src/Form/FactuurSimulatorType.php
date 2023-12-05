@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -27,7 +26,7 @@ class FactuurSimulatorType extends AbstractType
     {
         $builder
             ->add('dag', DateType::class, [
-                'data' => new DateTime(),
+                'data' => new \DateTime(),
                 'label' => 'Dag aangemaakt',
                 'required' => true,
             ])

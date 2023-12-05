@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use DateTime;
-
 class BtwPlanEditingService
 {
     // Takes the form data and the current BTW Plan and determine if we need to send a PUT request to the API.
@@ -106,7 +104,7 @@ class BtwPlanEditingService
     // Update the market plans array with active BTW plan id's if one of these checks pass
     private function mutateMarketPlansIfActive(array $marketPlans, array $plans, array $plan): array
     {
-        $today = (new DateTime())->format('Y-m-d');
+        $today = (new \DateTime())->format('Y-m-d');
         $tariefSoortId = $plan['tariefSoortId'];
 
         if ($plan['dateFrom'] > $today) {
@@ -136,7 +134,7 @@ class BtwPlanEditingService
     // Update the market plans array with active BTW plan id's if one of these checks pass
     private function mutateGenericPlansIfActive(array $genericPlans, array $plans, array $plan): array
     {
-        $today = (new DateTime())->format('Y-m-d');
+        $today = (new \DateTime())->format('Y-m-d');
         $tariefSoortId = $plan['tariefSoortId'];
 
         if ($plan['dateFrom'] > $today) {
