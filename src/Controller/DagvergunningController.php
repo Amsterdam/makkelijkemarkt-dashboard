@@ -25,7 +25,9 @@ class DagvergunningController extends AbstractController
     /**
      * @Route("/dagvergunningen")
      * @Route("/dagvergunningen/")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function indexAction(Request $request, MarktApi $api)
@@ -47,7 +49,9 @@ class DagvergunningController extends AbstractController
 
     /**
      * @Route("/dagvergunningen/{marktId}/{dag}")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function dayviewAction(MarktApi $api, int $marktId, string $dag): array
@@ -75,6 +79,8 @@ class DagvergunningController extends AbstractController
             'doorgehaald' => -1,
         ], 0, 1000);
 
+        $staanverplichtingRapport = $api->getRapportStaanverplichting([$marktId], $dag, $dag, 'alle');
+
         $stats = [
             'total' => 0,
             'doorgehaald' => 0,
@@ -90,9 +96,12 @@ class DagvergunningController extends AbstractController
             'aanwezig.?' => 0,
             'aanwezig.zelf' => 0,
             'aanwezig.partner' => 0,
+            'aanwezig.niet_aanwezig' => 0,
             'aanwezig.vervanger_met_toestemming' => 0,
             'aanwezig.vervanger_zonder_toestemming' => 0,
             'aanwezig.vervanger_met_ontheffing' => 0,
+            'aanwezig.zelf_aanw_na_controle' => 0,
+            'aanwezig.niet_zelf_aanw_na_controle' => 0,
             'meters.aantal_3m' => 0,
             'meters.aantal_4m' => 0,
             'meters.aantal_1m' => 0,
@@ -113,6 +122,14 @@ class DagvergunningController extends AbstractController
             'first' => 0,
             'second' => 0,
         ];
+
+        $stats['aanwezig.zelf_aanw_na_controle'] = array_reduce($staanverplichtingRapport['output'], function ($acc, $rapport) {
+            return $acc += $rapport['aantalActieveDagvergunningenZelfAanwezigNaControle'];
+        }, 0);
+
+        $stats['aanwezig.niet_zelf_aanw_na_controle'] = array_reduce($staanverplichtingRapport['output'], function ($acc, $rapport) {
+            return $acc += $rapport['aantalActieveDagvergunningenNietZelfAanwezigNaControle'];
+        }, 0);
 
         foreach ($dagvergunningen as &$dagvergunning) {
             if (false === $dagvergunning['doorgehaald']) {
@@ -229,7 +246,9 @@ class DagvergunningController extends AbstractController
 
     /**
      * @Route("/dagvergunningen/controlelijst_delete/{marktId}/{date}", methods={"POST"})
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function deleteControlelijstAction(Request $client, MarktApi $api, int $marktId, string $date): array
