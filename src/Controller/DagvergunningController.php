@@ -79,7 +79,11 @@ class DagvergunningController extends AbstractController
             'doorgehaald' => -1,
         ], 0, 1000);
 
-        $staanverplichtingRapport = $api->getRapportStaanverplichting([$marktId], $dag, $dag, 'alle');
+        try {
+            $staanverplichtingRapport = $api->getRapportStaanverplichting([$marktId], $dag, $dag, 'alle');
+        } catch (\Exception $e) {
+            // Ignore staanverplichtingRapport if not allowed
+        }
 
         $stats = [
             'total' => 0,
@@ -123,13 +127,15 @@ class DagvergunningController extends AbstractController
             'second' => 0,
         ];
 
-        $stats['aanwezig.zelf_aanw_na_controle'] = array_reduce($staanverplichtingRapport['output'], function ($acc, $rapport) {
-            return $acc += $rapport['aantalActieveDagvergunningenZelfAanwezigNaControle'];
-        }, 0);
+        if (isset($staanverplichtingRapport)) {
+            $stats['aanwezig.zelf_aanw_na_controle'] = array_reduce($staanverplichtingRapport['output'], function ($acc, $rapport) {
+                return $acc += $rapport['aantalActieveDagvergunningenZelfAanwezigNaControle'];
+            }, 0);
 
-        $stats['aanwezig.niet_zelf_aanw_na_controle'] = array_reduce($staanverplichtingRapport['output'], function ($acc, $rapport) {
-            return $acc += $rapport['aantalActieveDagvergunningenNietZelfAanwezigNaControle'];
-        }, 0);
+            $stats['aanwezig.niet_zelf_aanw_na_controle'] = array_reduce($staanverplichtingRapport['output'], function ($acc, $rapport) {
+                return $acc += $rapport['aantalActieveDagvergunningenNietZelfAanwezigNaControle'];
+            }, 0);
+        }
 
         foreach ($dagvergunningen as &$dagvergunning) {
             if (false === $dagvergunning['doorgehaald']) {
