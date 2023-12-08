@@ -52,8 +52,9 @@
             <th>variant</th>
             <th>naam</th>
             <th>vanaf</th>
-            <th>tot</th>
-            <th>Opties</th>
+            <th>t/m</th>
+            <th>negeer VPH</th>
+            <th>opties</th>
         </tr>
         </thead>
         <tbody>
@@ -65,12 +66,19 @@
                 <td>{{ tariefplan.name }}</td>
                 <td>{{ tariefplan.dateFrom|date('d-m-Y') }}</td>
                 <td>{{ tariefplan.dateUntil ? tariefplan.dateUntil|date('d-m-Y') : null }}</td>
+                <td class="text-center">{{ tariefplan.ignoreVastePlaats ? '&#10004;' : ''}}</td>
                 <td>
-                    <form method="post" action="{{ path('app_tarievenplan_delete', {'tarievenplanId': tariefplan.id}) }}">
-                        <a class="btn btn-primary" href="{{ path('app_tarievenplan_update', {'tarievenplanId': tariefplan.id}) }}">Bewerken</a>
-                        <input type="hidden" name="_csrf" value="{{ csrf_token('app_tarievenplan_delete') }}">
-                        <button type="submit" class="btn btn-danger" onclick="return confirm('Weet u het dat u tariefplan met id {{ tariefplan.id }} wilt verwijderen?')">Verwijderen</a>
-                    </form>
+                    <div class="d-inline-flex">
+                        <a class="btn btn-primary mr-1" href={{ path('app_tarievenplan_update', {'tarievenplanId': tariefplan.id}) }}>
+                            <span class="bi bi-pencil-fill"></span>
+                        </a>
+                        <form method="post" action="{{ path('app_tarievenplan_delete', {'tarievenplanId': tariefplan.id}) }}">
+                            <input type="hidden" name="_csrf" value="{{ csrf_token('app_tarievenplan_delete') }}">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Weet u zeker dat u het tariefplan {{ tariefplan.name }} wilt verwijderen?')">
+                                <span class="bi bi-trash"></span>
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         {% endfor %}
