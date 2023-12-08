@@ -24,3 +24,7 @@ extends:
       pool: salmagundi
       namespace: ns-ccc-mrkt-ont-01-markten
       kubernetesServiceConnection: SCN-K8S-ns-ccc-mrkt-ont-01-markten
+    test:
+      pool: salmagundi
+      namespace: ns-ccc-mrkt-tst-01-markten
+      kubernetesServiceConnection: SCN-K8S-ns-ccc-mrkt-tst-01-markten
