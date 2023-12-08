@@ -29,7 +29,9 @@ class KoopmanController extends AbstractController
 {
     /**
      * @Route("/koopmannen")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function indexAction(Request $request, MarktApi $api): array
@@ -53,7 +55,9 @@ class KoopmanController extends AbstractController
 
     /**
      * @Route("/koopmannen/detail/{id}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function detailAction(Request $request, MarktApi $api, int $id)
@@ -120,6 +124,13 @@ class KoopmanController extends AbstractController
             return $carry;
         });
 
+        if ($marktId) {
+            $staanverplichtingRapport = $api->getRapportStaanverplichting([$marktId], $dagvergunningenStartDatum->format('Y-m-d'), $dagvergunningenEindDatum->format('Y-m-d'), 'alle');
+            $rapportVanKoopman = current(array_filter($staanverplichtingRapport['output'], function ($record) use ($koopman) {
+                return $record['koopman']['erkenningsnummer'] == $koopman['erkenningsnummer'];
+            }));
+        }
+
         $params = ['koopmanId' => $koopman['id'], 'dagStart' => $dagvergunningenStartDatum->format('Y-m-d'), 'dagEind' => $dagvergunningenEindDatum->format('Y-m-d')];
         if (null !== $markt) {
             $params['marktId'] = $markt['id'];
@@ -141,9 +152,11 @@ class KoopmanController extends AbstractController
             'aanwezig.?' => 0,
             'aanwezig.zelf' => 0,
             'aanwezig.partner' => 0,
+            'aanwezig.niet_aanwezig' => 0,
             'aanwezig.vervanger_met_toestemming' => 0,
             'aanwezig.vervanger_zonder_toestemming' => 0,
-            'aanwezig.niet_aanwezig' => 0,
+            'aanwezig.zelf_aanw_na_controle' => 0,
+            'aanwezig.niet_zelf_aanw_na_controle' => 0,
             'meters.aantal_3m' => 0,
             'meters.aantal_4m' => 0,
             'meters.aantal_1m' => 0,
@@ -153,6 +166,10 @@ class KoopmanController extends AbstractController
             'extra.krachtstroom' => 0,
             'extra.reiniging' => 0,
         ];
+        if (isset($rapportVanKoopman)) {
+            $stats['aanwezig.zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenZelfAanwezigNaControle'];
+            $stats['aanwezig.niet_zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenNietZelfAanwezigNaControle'];
+        }
         foreach ($dagvergunningen as $dagvergunning) {
             if (false === $dagvergunning['doorgehaald']) {
                 // totaal dagvergunningen (actief)
@@ -241,7 +258,9 @@ class KoopmanController extends AbstractController
 
     /**
      * @Route("/koopmannen/controle/{id}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function controleAction(Request $request, int $id, MarktApi $api): array
@@ -291,7 +310,9 @@ class KoopmanController extends AbstractController
 
     /**
      * @Route("/koopmannen/toggle_handhavingsverzoek/{id}")
+     *
      * @Method("POST")
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function toggleHandhavingsVerzoek(Request $request, int $id, MarktApi $api): RedirectResponse
@@ -306,6 +327,7 @@ class KoopmanController extends AbstractController
     /**
      * @Route("/koopmannen/factuur/{id}/{startDate}/{endDate}")
      * @Route("/koopmannen/factuur/", name="factuur_blank")
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function factuurOverzichtAction(MarktApi $api, int $id, string $startDate, string $endDate, PdfFactuurService $pdfFactuur): void
@@ -327,7 +349,7 @@ class KoopmanController extends AbstractController
     protected function getQuarter(\DateTime $date): array
     {
         $startMonth = 1 + (ceil($date->format('m') / 3) - 1) * 3;
-        $startDate = new \DateTime($date->format('Y').'-'.$startMonth.'-'.'01');
+        $startDate = new \DateTime($date->format('Y').'-'.$startMonth.'-01');
         $endDate = clone $startDate;
         $endDate->modify('+2 months');
         $endDate->modify('last day of this month');

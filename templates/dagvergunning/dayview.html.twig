@@ -86,8 +86,15 @@
                 <strong>{{ attribute(stats, 'aanwezig.vervanger_zonder_toestemming') }}</strong><br>
                 Vervanger met ontheffing
                 <strong>{{ attribute(stats, 'aanwezig.vervanger_met_ontheffing') }}</strong><br>
+                Niet aanwezig <strong>{{ attribute(stats, 'aanwezig.niet_aanwezig') }}</strong><br>
                 {% if attribute(stats, 'aanwezig.?') > 0 %}ONBEKEND
                     <strong>{{ attribute(stats, 'aanwezig.?') }}</strong><br>{% endif %}
+            </p>
+            <h5>Aanwezigheid na controle</h5>
+            <p>
+                Zelf aanwezig<strong> {{ attribute(stats, 'aanwezig.zelf_aanw_na_controle') }}</strong><br>
+                Niet zelf aanwezig<strong> {{ attribute(stats, 'aanwezig.niet_zelf_aanw_na_controle') }}</strong><br>
+
             </p>
             <br>
         </div>
@@ -297,22 +304,25 @@
                                         {% endif %}
                                     </td>
                                     <td>
-                                        <span class="bi bi-{% if 'vervanger_zonder_toestemming' == dagvergunning.aanwezig %}x-circle-fill text-red{% else %}check-circle-fill text-green{% endif %}"></span>
-                                        <strong>{{ dagvergunning.aanwezig|replace({'_' : ' '})|capitalize }}</strong><br/>
-                                        {% if dagvergunning.vervanger is defined and dagvergunning.vervanger is not empty %}
-                                            Gescand:
-                                            <a href="{{ path('app_koopman_detail', {'id': dagvergunning.vervanger.id}) }}">{{ dagvergunning.vervanger.voorletters }} {{ dagvergunning.vervanger.achternaam }}</a>
-                                            <br/>
-                                            Erkenningsnr.: {{ dagvergunning.vervanger.erkenningsnummer }}<br/>
-                                        {% endif %}
-                                        {% if methodes[dagvergunning.erkenningsnummerInvoerMethode] is defined %}
-                                            <span class="label {% if 'handmatig' != dagvergunning.erkenningsnummerInvoerMethode %}label-default{% else %}label-danger{% endif %}">{{ methodes[dagvergunning.erkenningsnummerInvoerMethode]|default('...') }}</span>
-                                        {% endif %}
-                                        {{ dagvergunning.registratieDatumtijd|date('H:i:s') }}<br/>
-                                        Door: {{ dagvergunning.registratieAccount.naam }}
-                                        {% if dagvergunning.notitie is not empty %}
-                                            <br/>
-                                            <i class="bi bi-chat-left-fill"></i> {{ dagvergunning.notitie }}
+                                        {% if dagvergunning.registratieAccount %}
+                                            
+                                            <span class="bi bi-{% if 'vervanger_zonder_toestemming' == dagvergunning.aanwezig %}x-circle-fill text-red{% else %}check-circle-fill text-green{% endif %}"></span>
+                                            <strong>{{ dagvergunning.aanwezig|replace({'_' : ' '})|capitalize }}</strong><br/>
+                                            {% if dagvergunning.vervanger is defined and dagvergunning.vervanger is not empty %}
+                                                Gescand:
+                                                <a href="{{ path('app_koopman_detail', {'id': dagvergunning.vervanger.id}) }}">{{ dagvergunning.vervanger.voorletters }} {{ dagvergunning.vervanger.achternaam }}</a>
+                                                <br/>
+                                                Erkenningsnr.: {{ dagvergunning.vervanger.erkenningsnummer }}<br/>
+                                            {% endif %}
+                                            {% if methodes[dagvergunning.erkenningsnummerInvoerMethode] is defined %}
+                                                <span class="label {% if 'handmatig' != dagvergunning.erkenningsnummerInvoerMethode %}label-default{% else %}label-danger{% endif %}">{{ methodes[dagvergunning.erkenningsnummerInvoerMethode]|default('...') }}</span>
+                                            {% endif %}
+                                            {{ dagvergunning.registratieDatumtijd|date('H:i:s') }}<br/>
+                                            Door: {{ dagvergunning.registratieAccount.naam }}
+                                            {% if dagvergunning.notitie is not empty %}
+                                                <br/>
+                                                <i class="bi bi-chat-left-fill"></i> {{ dagvergunning.notitie }}
+                                            {% endif %}
                                         {% endif %}
                                     </td>
                                     <td>
