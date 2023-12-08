@@ -9,7 +9,7 @@ secrets:
     keyVaultName: shared-t-te3lhrptbiube
 
 deployments:
-  mm-api:
+  mm-dashboard:
     env:
       APP_ENV: dev
       APP_DEBUG: 1
