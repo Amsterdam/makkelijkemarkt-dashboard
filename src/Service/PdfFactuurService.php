@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use TCPDF;
-
 class PdfFactuurService
 {
     /**
@@ -37,9 +35,9 @@ class PdfFactuurService
         );
     }
 
-    public function generate(array $koopman, array $dagvergunningen, \DateTime $startDate, \Datetime $endDate): TCPDF
+    public function generate(array $koopman, array $dagvergunningen, \DateTime $startDate, \DateTime $endDate): \TCPDF
     {
-        $this->pdf = new TCPDF();
+        $this->pdf = new \TCPDF();
 
         // set document information
         $this->pdf->SetCreator('Gemeente Amsterdam');
@@ -249,7 +247,7 @@ class PdfFactuurService
                 $this->pdf->Cell(90, 6, $product->naam, $top, 1, '' , $fillColor);
         */
 
-//        $this->pdf->Cell(90, 6, $vergunning->factuur->totaal, 'T', 0, '' , $fillColor);
-//        $this->pdf->Cell(90, 6, 'Totaal', 'T', 1, '' , $fillColor);
+        //        $this->pdf->Cell(90, 6, $vergunning->factuur->totaal, 'T', 0, '' , $fillColor);
+        //        $this->pdf->Cell(90, 6, 'Totaal', 'T', 1, '' , $fillColor);
     }
 }
