@@ -39,7 +39,9 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/meervoudig_staan/{dag}", name="app_rapport_meervoudig_staan", methods={"GET"})
+     *
      * @Template("/rapport/meervoudig_staan.html.twig")
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function meervoudigStaanAction(MarktApi $api, string $dag = null): array
@@ -62,7 +64,9 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/staanverplichting/")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function staanverplichtingAction(Request $request, MarktApi $api)
@@ -169,7 +173,7 @@ class RapportController extends AbstractController
                     $activeSheet->setCellValueByColumnAndRow(13, $i, $record['aantalActieveDagvergunningenZelfAanwezigNaControle']);
                     $activeSheet->setCellValueByColumnAndRow(14, $i, $record['aantalActieveDagvergunningenNietZelfAanwezigNaControle']);
                     $activeSheet->setCellValueByColumnAndRow(15, $i, $record['aantalActieveDagvergunningen'] > 0 ? $record['percentageAanwezigNaControle'] : '');
-                    //$activeSheet->getCellByColumnAndRow(13, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
+                    // $activeSheet->getCellByColumnAndRow(13, $i)->getStyle()->getNumberFormat()->setFormatCode(\PHPExcel_Style_NumberFormat::FORMAT_PERCENTAGE);
                 }
                 $spreadsheet->getActiveSheet()->setAutoFilter($spreadsheet->getActiveSheet()->calculateWorksheetDimension());
                 // $activeSheet->freezePaneByColumnAndRow(1,3);
@@ -199,7 +203,9 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/facturen/")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function facturenAction(Request $request, MarktApi $api)
@@ -281,7 +287,9 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/frequentie/markten")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function frequentieMarktenAction(MarktApi $api): array
@@ -353,8 +361,8 @@ class RapportController extends AbstractController
 
         foreach ($koopmannen as &$koopman) {
             foreach ($emptyWeek as $weeknumber => $text) {
-                if (!isset($koopman['weken_aanwezig'][$weeknumber]) &&
-                    !isset($koopman['weken_afwezig'][$weeknumber])
+                if (!isset($koopman['weken_aanwezig'][$weeknumber])
+                    && !isset($koopman['weken_afwezig'][$weeknumber])
                 ) {
                     $koopman['weken_afwezig'][$weeknumber] = $text;
                 }
@@ -377,7 +385,9 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/frequentie/markten/dag/{marktId}/{datum}")
      * @Route("/rapport/frequentie/markten/dag/{marktId}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function frequentieMarktenDagAction(MarktApi $api, int $marktId, $datum = null): array
@@ -387,6 +397,7 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/frequentie/markten/excel/dag/{marktId}/{datum}")
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function frequentieMarktenDagExcelAction(int $marktId, MarktApi $api, string $datum = null): StreamedResponse
@@ -501,6 +512,7 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/frequentie/markten/excel/soll/{marktId}/{datum}")
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function frequentieMarktenSollExcelAction(MarktApi $api, int $marktId, $datum = null): StreamedResponse
@@ -613,6 +625,7 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/frequentie/markten/excel/week/{marktId}/{datum}")
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function frequentieMarktenWeekExcelAction(MarktApi $api, int $marktId, $datum = null): StreamedResponse
@@ -788,7 +801,9 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/frequentie/markten/soll/{marktId}/{datum}")
      * @Route("/rapport/frequentie/markten/soll/{marktId}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function frequentieMarktenSollAction(MarktApi $api, int $marktId, string $datum = null): array
@@ -802,7 +817,7 @@ class RapportController extends AbstractController
     protected function getQuarter(\DateTime $date): array
     {
         $startMonth = 1 + (ceil($date->format('m') / 3) - 1) * 3;
-        $startDate = new \DateTime($date->format('Y').'-'.$startMonth.'-'.'01');
+        $startDate = new \DateTime($date->format('Y').'-'.$startMonth.'-01');
         $endDate = clone $startDate;
         $endDate->modify('+2 months');
         $endDate->modify('last day of this month');
@@ -833,7 +848,7 @@ class RapportController extends AbstractController
         $dagen = explode('|', $string);
         $output = '';
         foreach ($dagen as $dag) {
-            $date = new \Datetime($dag);
+            $date = new \DateTime($dag);
             if (strlen($output) >= 1) {
                 $output .= ', ';
             }
@@ -976,8 +991,8 @@ class RapportController extends AbstractController
 
                 foreach ($koopmannen as &$koopman) {
                     foreach ($emptyWeek as $weeknumber => $text) {
-                        if (!isset($koopman['weken_aanwezig'][$weeknumber]) &&
-                            !isset($koopman['weken_afwezig'][$weeknumber])
+                        if (!isset($koopman['weken_aanwezig'][$weeknumber])
+                            && !isset($koopman['weken_afwezig'][$weeknumber])
                         ) {
                             $koopman['weken_afwezig'][$weeknumber] = $text;
                         }
@@ -1005,8 +1020,8 @@ class RapportController extends AbstractController
 
         foreach ($koopmannen as &$koopman) {
             foreach ($emptyWeek as $weeknumber => $text) {
-                if (!isset($koopman['weken_aanwezig'][$weeknumber]) &&
-                    !isset($koopman['weken_afwezig'][$weeknumber])
+                if (!isset($koopman['weken_aanwezig'][$weeknumber])
+                    && !isset($koopman['weken_afwezig'][$weeknumber])
                 ) {
                     $koopman['weken_afwezig'][$weeknumber] = $text;
                 }
@@ -1029,7 +1044,9 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/frequentie/markten/week/{marktId}/{datum}")
      * @Route("/rapport/frequentie/markten/week/{marktId}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function frequentieMarktenWeekAction(MarktApi $api, int $marktId, string $datum = null): array
@@ -1040,7 +1057,9 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/invoer/{marktId}/{datum}")
      * @Route("/rapport/invoer/{marktId}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function invoerAction(MarktApi $api, int $marktId, string $datum = null): array
@@ -1165,6 +1184,7 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/aanwezigheid/markten/excel/week/{marktId}/{datum}")
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function persoonlijkeAanwezigheidExcelAction(MarktApi $api, int $marktId, string $datum = null): StreamedResponse
@@ -1266,7 +1286,9 @@ class RapportController extends AbstractController
     /**
      * @Route("/rapport/aanwezigheid/markten/{marktId}/{datum}")
      * @Route("/rapport/aanwezigheid/markten/{marktId}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function persoonlijkeAanwezigheidAction(MarktApi $api, int $marktId, string $datum = null): array
@@ -1276,7 +1298,9 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/factuurdetail/")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR') or is_granted('ROLE_ACCOUNTANT')")
      */
     public function factuurDetailAction(MarktApi $api, Request $request)
@@ -1455,7 +1479,9 @@ class RapportController extends AbstractController
 
     /**
      * @Route("/rapport/capaciteit")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function capaciteitAction(Request $request, MarktApi $client)

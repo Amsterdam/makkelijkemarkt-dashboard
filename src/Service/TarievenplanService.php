@@ -8,7 +8,7 @@ use App\Constants\Translations;
 
 class TarievenplanService
 {
-    const VARIANTS = [
+    public const VARIANTS = [
         'STANDARD' => 'standard',
         'DAYS_OF_WEEK' => 'daysOfWeek',
         'SPECIFIC' => 'specific',

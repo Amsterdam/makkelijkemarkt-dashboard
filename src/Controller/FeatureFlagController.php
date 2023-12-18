@@ -16,7 +16,9 @@ class FeatureFlagController extends AbstractController
 {
     /**
      * @Route("/feature_flags", name="app_feature_flags_index", methods={"GET"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function indexAction(MarktApi $api)
@@ -30,7 +32,9 @@ class FeatureFlagController extends AbstractController
 
     /**
      * @Route("/feature_flag/create", name="app_feature_flags_create", methods={"GET", "POST"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createFeatureFlagAction(Request $request, MarktApi $api)
@@ -63,7 +67,9 @@ class FeatureFlagController extends AbstractController
 
     /**
      * @Route("/feature_flag/{id}", name="app_feature_flag_update", methods={"GET", "POST"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function updateFeatureFlagAction(Request $request, MarktApi $api, $id)

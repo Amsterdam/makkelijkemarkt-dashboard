@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use TCPDF;
-
 class PdfLijstService
 {
     /**
@@ -19,9 +17,9 @@ class PdfLijstService
         $this->projectDir = $projectDir;
     }
 
-    public function generate(string $markt, string $naam, array $parts): TCPDF
+    public function generate(string $markt, string $naam, array $parts): \TCPDF
     {
-        $this->pdf = new TCPDF();
+        $this->pdf = new \TCPDF();
 
         // set document information
         $this->pdf->SetCreator('Gemeente Amsterdam');

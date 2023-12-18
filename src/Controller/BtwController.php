@@ -28,7 +28,9 @@ class BtwController extends AbstractController
 {
     /**
      * @Route("/btw/create/{planType}", name="app_btw_plan_create", methods={"GET", "POST"})
+     *
      * @Template("/btw/create.html.twig")
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createBtwPlan(
@@ -58,7 +60,9 @@ class BtwController extends AbstractController
 
     /**
      * @Route("/btw/update/{planType}/{btwPlanId?}", name="app_btw_plan_update", methods={"GET", "POST"})
+     *
      * @Template("/btw/create.html.twig")
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function updateBtwPlan(
@@ -97,7 +101,9 @@ class BtwController extends AbstractController
 
     /**
      * @Route("import/btw", name="app_import_btw", methods={"GET", "POST"})
+     *
      * @Template("btw/import_form.html.twig")
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function import(Request $request, MarktApi $api)
@@ -128,7 +134,9 @@ class BtwController extends AbstractController
 
     /**
      * @Route("btw/{planType?lineair}", name="app_btw_overview", methods={"GET"})
+     *
      * @Template("btw/btw_plan_overview.html.twig")
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function getPlans(string $planType, MarktApi $api, BtwPlanEditingService $planEditingService)
@@ -140,6 +148,7 @@ class BtwController extends AbstractController
 
     /**
      * @Route("btw/archive_plan/{id}", name="app_btw_plan_archive", methods={"GET"})
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function archivePlan(int $id, MarktApi $api): RedirectResponse

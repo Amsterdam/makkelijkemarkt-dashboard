@@ -16,7 +16,9 @@ class DagvergunningMappingController extends AbstractController
 {
     /**
      * @Route("/dagvergunning_mapping", name="app_dagvergunningmapping_index", methods={"GET"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function indexAction(MarktApi $api)
@@ -30,7 +32,9 @@ class DagvergunningMappingController extends AbstractController
 
     /**
      * @Route("/dagvergunning_mapping/{id}/edit", name="app_dagvergunningmapping_edit", methods={"GET", "POST"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function editAction(MarktApi $api, Request $request, int $id)
@@ -63,7 +67,9 @@ class DagvergunningMappingController extends AbstractController
 
     /**
      * @Route("/dagvergunning_mapping/create", name="app_dagvergunningmapping_create", methods={"GET", "POST"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createAction(MarktApi $api, Request $request)

@@ -28,7 +28,9 @@ class AccountController extends AbstractController
 {
     /**
      * @Route("/accounts")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_SENIOR')")
      */
     public function indexAction(Request $request, MarktApi $api): array
@@ -40,7 +42,9 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/accounts/edit/{id}")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function editAction(Request $request, int $id, MarktApi $api)
@@ -74,7 +78,9 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/accounts_password/{id}")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_SENIOR')")
      */
     public function updatePasswordAction(Request $request, int $id, MarktApi $api)
@@ -108,7 +114,9 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/accounts/create")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createAction(Request $request, MarktApi $api)
@@ -143,6 +151,7 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/accounts/unlock/{id}",  methods={"POST"})
+     *
      * @Security("is_granted('ROLE_ADMIN') or is_granted('ROLE_SENIOR')")
      */
     public function unlockAction(MarktApi $api, int $id, Request $client): RedirectResponse
@@ -158,7 +167,9 @@ class AccountController extends AbstractController
 
     /**
      * @Route("/accounts/detail/{id}/tokens")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function showTokensAction(Request $request, MarktApi $api, int $id): array
