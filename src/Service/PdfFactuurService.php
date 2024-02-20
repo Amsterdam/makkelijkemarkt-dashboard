@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use TCPDF;
+use Qipsius\TCPDFBundle\Controller\TCPDFController;
+
 class PdfFactuurService
 {
     /**
@@ -17,8 +20,10 @@ class PdfFactuurService
 
     protected $projectDir;
 
-    public function __construct(string $projectDir)
-    {
+    public function __construct(
+        string $projectDir,
+        private TCPDFController $tcpdfController
+    ) {
         $this->projectDir = $projectDir;
 
         $this->fontname = \TCPDF_FONTS::addTTFfont(
@@ -37,7 +42,7 @@ class PdfFactuurService
 
     public function generate(array $koopman, array $dagvergunningen, \DateTime $startDate, \DateTime $endDate): \TCPDF
     {
-        $this->pdf = new \TCPDF();
+        $this->pdf = $this->tcpdfController->create();
 
         // set document information
         $this->pdf->SetCreator('Gemeente Amsterdam');

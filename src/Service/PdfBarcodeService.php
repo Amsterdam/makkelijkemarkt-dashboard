@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use TCPDF;
+use Qipsius\TCPDFBundle\Controller\TCPDFController;
+
 class PdfBarcodeService
 {
     /**
-     * @var \TCPDF
+     * @var TCPDF
      */
     protected $pdf;
 
@@ -18,14 +21,24 @@ class PdfBarcodeService
 
     protected $projectDir;
 
-    public function __construct(string $projectDir)
-    {
+    public function __construct(
+        string $projectDir,
+        private TCPDFController $tcpdfController
+    ) {
         $this->projectDir = $projectDir;
     }
 
     public function generate(string $markt, string $naam, array $parts): \TCPDF
     {
-        $this->pdf = new \TCPDF();
+
+        $fontname = \TCPDF_FONTS::addTTFfont(
+            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
+            'TrueTypeUnicode',
+            '',
+            96
+        );
+
+        $this->pdf = $this->tcpdfController->create();
 
         // set document information
         $this->pdf->SetCreator('Gemeente Amsterdam');
@@ -40,12 +53,7 @@ class PdfBarcodeService
 
         $this->pdf->AddPage();
 
-        $fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
-            'TrueTypeUnicode',
-            '',
-            96
-        );
+
 
         $this->pdf->Image(
             $this->projectDir.'/public/resources/images/GASD_1.png',

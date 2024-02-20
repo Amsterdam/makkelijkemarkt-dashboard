@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use TCPDF;
+use Qipsius\TCPDFBundle\Controller\TCPDFController;
+
 class PdfLijstService
 {
     /**
@@ -12,15 +15,16 @@ class PdfLijstService
     protected $pdf;
     protected $projectDir;
 
-    public function __construct(string $projectDir)
-    {
+    public function __construct(
+        string $projectDir,
+        private TCPDFController $tcpdfController
+    ) {
         $this->projectDir = $projectDir;
     }
 
     public function generate(string $markt, string $naam, array $parts): \TCPDF
     {
-        $this->pdf = new \TCPDF();
-
+        $this->pdf = $this->tcpdfController->create();
         // set document information
         $this->pdf->SetCreator('Gemeente Amsterdam');
         $this->pdf->SetAuthor('Gemeente Amsterdam');
