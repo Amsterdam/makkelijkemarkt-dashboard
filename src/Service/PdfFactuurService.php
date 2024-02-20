@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use TCPDF;
 use Qipsius\TCPDFBundle\Controller\TCPDFController;
 
 class PdfFactuurService

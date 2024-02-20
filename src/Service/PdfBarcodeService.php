@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use TCPDF;
 use Qipsius\TCPDFBundle\Controller\TCPDFController;
 
 class PdfBarcodeService
 {
     /**
-     * @var TCPDF
+     * @var \TCPDF
      */
     protected $pdf;
 
@@ -30,7 +29,6 @@ class PdfBarcodeService
 
     public function generate(string $markt, string $naam, array $parts): \TCPDF
     {
-
         $fontname = \TCPDF_FONTS::addTTFfont(
             $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
             'TrueTypeUnicode',
@@ -52,8 +50,6 @@ class PdfBarcodeService
         $this->pdf->SetAutoPageBreak(false, 0);
 
         $this->pdf->AddPage();
-
-
 
         $this->pdf->Image(
             $this->projectDir.'/public/resources/images/GASD_1.png',
