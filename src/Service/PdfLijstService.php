@@ -8,6 +8,8 @@ use Qipsius\TCPDFBundle\Controller\TCPDFController;
 
 class PdfLijstService
 {
+    public const FONT_NAME = 'helvetica';
+
     /**
      * @var \TCPDF
      */
@@ -37,24 +39,10 @@ class PdfLijstService
 
         $this->pdf->AddPage();
 
-        $fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
-            'TrueTypeUnicode',
-            '',
-            96
-        );
-
-        $this->pdf->Image(
-            $this->projectDir.'/public/resources/images/GASD_1.png',
-            10,
-            10,
-            50
-        );
-
         $this->pdf->Ln(30);
 
         // set font
-        $this->pdf->SetFont($fontname, 'b', 20);
+        $this->pdf->SetFont(self::FONT_NAME, 'b', 20);
         $this->pdf->Cell(180, 6, $markt, 0, 1);
         $this->pdf->Cell(180, 6, $naam, 0, 1);
         $this->pdf->Ln(4);
@@ -93,12 +81,12 @@ class PdfLijstService
             } else {
                 $this->pdf->AddPage();
             }
-            $this->pdf->SetFont($fontname, 'b', 15);
+            $this->pdf->SetFont(self::FONT_NAME, 'b', 15);
             $this->pdf->Cell(180, 6, $title, 0, 1);
 
             $this->pdf->Ln(4);
 
-            $this->pdf->SetFont($fontname, '', 12);
+            $this->pdf->SetFont(self::FONT_NAME, '', 12);
 
             $even = false;
             foreach ($page as $key => $cols) {

@@ -8,6 +8,8 @@ use Qipsius\TCPDFBundle\Controller\TCPDFController;
 
 class PdfBarcodeService
 {
+    public const FONT = 'helvetica';
+
     /**
      * @var \TCPDF
      */
@@ -29,13 +31,6 @@ class PdfBarcodeService
 
     public function generate(string $markt, string $naam, array $parts): \TCPDF
     {
-        $fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
-            'TrueTypeUnicode',
-            '',
-            96
-        );
-
         $this->pdf = $this->tcpdfController->create();
 
         // set document information
@@ -61,7 +56,7 @@ class PdfBarcodeService
         $this->pdf->Ln(30);
 
         // set font
-        $this->pdf->SetFont($fontname, 'b', 20);
+        $this->pdf->SetFont(self::FONT, 'b', 20);
         $this->pdf->Cell(180, 6, $markt, 0, 1);
         $this->pdf->Cell(180, 6, $naam, 0, 1);
         $this->pdf->Ln(4);
@@ -100,12 +95,12 @@ class PdfBarcodeService
             } else {
                 $this->pdf->AddPage();
             }
-            $this->pdf->SetFont($fontname, 'b', 15);
+            $this->pdf->SetFont(self::FONT, 'b', 15);
             $this->pdf->Cell(180, 6, $title, 0, 1);
 
             $this->pdf->Ln(4);
 
-            $this->pdf->SetFont($fontname, '', 12);
+            $this->pdf->SetFont(self::FONT, '', 12);
 
             $even = false;
             foreach ($page as $key => $cols) {

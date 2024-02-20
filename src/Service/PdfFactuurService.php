@@ -8,14 +8,14 @@ use Qipsius\TCPDFBundle\Controller\TCPDFController;
 
 class PdfFactuurService
 {
+    public const FONT = 'helvetica';
+
+    public const FONT_BOLD = 'helveticab';
+
     /**
      * @var \TCPDF
      */
     protected $pdf;
-
-    protected $fontname;
-
-    protected $fontnameBold;
 
     protected $projectDir;
 
@@ -24,19 +24,6 @@ class PdfFactuurService
         private TCPDFController $tcpdfController
     ) {
         $this->projectDir = $projectDir;
-
-        $this->fontname = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Regular.ttf',
-            'TrueTypeUnicode',
-            '',
-            96
-        );
-        $this->fontnameBold = \TCPDF_FONTS::addTTFfont(
-            $this->projectDir.'/public/resources/fonts/AmsterdamSans-Bold.ttf',
-            'TrueTypeUnicode',
-            '',
-            96
-        );
     }
 
     public function generate(array $koopman, array $dagvergunningen, \DateTime $startDate, \DateTime $endDate): \TCPDF
@@ -66,10 +53,10 @@ class PdfFactuurService
         $this->pdf->Ln(60);
 
         // set font
-        $this->pdf->SetFont($this->fontname, 'b', 20);
+        $this->pdf->SetFont(self::FONT, 'b', 20);
         $this->pdf->Cell(180, 6, 'Factuur overzicht marktbureau', 0, 1);
         $this->pdf->Ln(2);
-        $this->pdf->SetFont($this->fontname, '', 14);
+        $this->pdf->SetFont(self::FONT, '', 14);
         $this->pdf->SetFillColor(220, 220, 220);
         $this->pdf->Cell(50, 6, 'Erkenningsnummer:', 0, 0, '', true);
         $this->pdf->Cell(130, 6, $koopman['erkenningsnummer'], 0, 1, '', true);
@@ -97,10 +84,10 @@ class PdfFactuurService
 
         $this->pdf->Ln(4);
 
-        $this->pdf->SetFont($this->fontname, '', 16);
+        $this->pdf->SetFont(self::FONT, '', 16);
         $this->pdf->Cell(180, 6, 'Totalen:', 0, 1);
         $this->pdf->Ln(2);
-        $this->pdf->SetFont($this->fontname, '', 14);
+        $this->pdf->SetFont(self::FONT, '', 14);
         $this->pdf->SetFillColor(220, 220, 220);
         $this->pdf->Cell(50, 6, 'Producten:', 0, 0, '', true);
         $this->pdf->Cell(130, 6, $totaalProducten, 0, 1, '', true);
@@ -130,19 +117,19 @@ class PdfFactuurService
 
         $this->pdf->Ln(40);
 
-        $this->pdf->SetFont($this->fontname, 'b', 8);
+        $this->pdf->SetFont(self::FONT, 'b', 8);
         $this->pdf->Cell(16, 6, '', 0, 0);
         $this->pdf->Cell(164, 6, 'Retouradres: Postbus 2813, 1000 CV Amsterdam', 0, 0);
 
         $this->pdf->Ln(10);
 
-        $this->pdf->SetFont($this->fontname, 'b', 11);
+        $this->pdf->SetFont(self::FONT, 'b', 11);
         $this->pdf->Cell(16, 6, '', 0, 0);
         $this->pdf->Cell(164, 6, $koopman['achternaam'].' '.$koopman['voorletters'], 0, 1);
 
         $this->pdf->SetY(10);
 
-        $this->pdf->SetFont($this->fontname, 'b', 10);
+        $this->pdf->SetFont(self::FONT, 'b', 10);
         $this->pdf->Cell(130, 6, '', 0, 0);
         $this->pdf->Cell(50, 6, 'Stadswerken', 0, 0);
         $this->pdf->Ln(5);
@@ -184,22 +171,22 @@ class PdfFactuurService
         $this->pdf->Ln(10);
 
         $this->pdf->Cell(16, 6, '', 0, 0);
-        $this->pdf->SetFont($this->fontnameBold, 'b', 9);
+        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
         $this->pdf->Cell(26, 6, 'Factuurnummer', 0, 0);
-        $this->pdf->SetFont($this->fontname, 'b', 9);
+        $this->pdf->SetFont(self::FONT, 'b', 9);
         $this->pdf->Cell(26, 6, 'mm'.$vergunning['factuur']['id'], 0, 0);
-        $this->pdf->SetFont($this->fontnameBold, 'b', 9);
+        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
         $this->pdf->Cell(26, 6, 'Factuurdatum', 0, 0);
-        $this->pdf->SetFont($this->fontname, 'b', 9);
+        $this->pdf->SetFont(self::FONT, 'b', 9);
         $dag = implode('-', array_reverse(explode('-', $vergunning['dag'])));
         $this->pdf->Cell(26, 6, $dag, 0, 1);
 
         $this->pdf->Cell(16, 6, '', 0, 0);
-        $this->pdf->SetFont($this->fontnameBold, 'b', 9);
+        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
         $this->pdf->Cell(144, 6, 'Omschrijving', 'B', 0);
         $this->pdf->Cell(20, 6, 'Bedrag €', 'B', 1, 'R');
 
-        $this->pdf->SetFont($this->fontname, 'b', 9);
+        $this->pdf->SetFont(self::FONT, 'b', 9);
 
         $this->pdf->Cell(16, 6, '', 0, 0);
         $this->pdf->Cell(164, 6, 'Markt: '.$vergunning['markt']['naam'], '', 1);
@@ -236,7 +223,7 @@ class PdfFactuurService
             $this->pdf->Ln(5);
         }
 
-        $this->pdf->SetFont($this->fontnameBold, 'b', 9);
+        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
         $this->pdf->Cell(98, 6, '', 0, 0);
         $this->pdf->Cell(41, 6, 'Totaal', 'T', 0);
         $this->pdf->Cell(41, 6, $vergunning['factuur']['totaal'], 'T', 0, 'R');
