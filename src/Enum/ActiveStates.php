@@ -15,8 +15,8 @@ namespace App\Enum;
 
 class ActiveStates
 {
-    const ROLE_ACTIVE = '1';
-    const ROLE_INACTIVE = '0';
+    public const ROLE_ACTIVE = '1';
+    public const ROLE_INACTIVE = '0';
 
     public static function all(): array
     {

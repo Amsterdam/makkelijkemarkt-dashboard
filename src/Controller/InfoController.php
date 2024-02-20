@@ -25,7 +25,9 @@ class InfoController extends AbstractController
 {
     /**
      * @Route("/info/version")
+     *
      * @Template()
+     *
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function versionAction(MarktApi $api, KernelInterface $kernel, string $marktApi): array

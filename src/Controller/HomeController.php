@@ -23,7 +23,9 @@ class HomeController extends AbstractController
 {
     /**
      * @Route("/")
+     *
      * @Template()
+     *
      * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
      */
     public function indexAction(): RedirectResponse

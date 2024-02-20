@@ -22,7 +22,9 @@ class TarievenplanV2Controller extends AbstractController
 {
     /**
      * @Route("/tarievenplan", name="app_tarievenplan_index", methods={"GET"})
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function indexAction(MarktApi $api)
@@ -40,7 +42,9 @@ class TarievenplanV2Controller extends AbstractController
      *      methods={"GET"},
      *      requirements={"marktId"="\d+"}
      * )
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function marktindexAction(MarktApi $api, int $marktId): array
@@ -68,7 +72,9 @@ class TarievenplanV2Controller extends AbstractController
      *          "variant"="standard|daysOfWeek|specific"
      *      }
      * )
+     *
      * @Template("tarievenplan_v2/update.html.twig")
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function createTarievenplanAction(Request $request, MarktApi $api, int $marktId, string $type, string $variant)
@@ -120,6 +126,7 @@ class TarievenplanV2Controller extends AbstractController
      *      methods={"POST"},
      *      requirements={"tarievenplanId"="\d+"}
      * )
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function deleteAction(Request $request, MarktApi $api, int $tarievenplanId): RedirectResponse
@@ -145,7 +152,9 @@ class TarievenplanV2Controller extends AbstractController
      *      methods={"GET", "POST"},
      *      requirements={"tarievenplanId"="\d+"}
      * )
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function updateAction(Request $request, MarktApi $api, int $tarievenplanId)
@@ -175,7 +184,9 @@ class TarievenplanV2Controller extends AbstractController
 
     /**
      * @Route("/tarievenplan/simulate/{tarievenPlanType}/{marktId}", name="app_tarievenplan_simulate", methods={"GET", "POST"})
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_ADMIN')")
      */
     public function simulateFactuurAction(Request $request, MarktApi $api, string $tarievenPlanType, int $marktId)

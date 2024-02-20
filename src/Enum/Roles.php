@@ -15,10 +15,10 @@ namespace App\Enum;
 
 class Roles
 {
-    const ROLE_USER = 'Gebruiker';
-    const ROLE_SENIOR = 'Senior gebruiker';
-    const ROLE_ADMIN = 'Beheerder';
-    const ROLE_ACCOUNTANT = 'Accountant';
+    public const ROLE_USER = 'Gebruiker';
+    public const ROLE_SENIOR = 'Senior gebruiker';
+    public const ROLE_ADMIN = 'Beheerder';
+    public const ROLE_ACCOUNTANT = 'Accountant';
 
     public static function all(): array
     {

@@ -18,7 +18,7 @@ web/iirf.ini
 .hg/*
 .env.*
 ###> friendsofphp/php-cs-fixer ###
-/.php-cs-fixer.php
+# /.php-cs-fixer.php
 /.php-cs-fixer.cache
 ###< friendsofphp/php-cs-fixer ###
 
@@ -30,3 +30,10 @@ web/iirf.ini
 ###> friendsofphp/php-cs-fixer ###
 /.php_cs.cache
 ###< friendsofphp/php-cs-fixer ###
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###

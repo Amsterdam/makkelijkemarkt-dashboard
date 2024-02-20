@@ -25,7 +25,9 @@ class MarktController extends AbstractController
 {
     /**
      * @Route("/markten")
+     *
      * @Template()
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function indexAction(MarktApi $api): array
@@ -37,7 +39,9 @@ class MarktController extends AbstractController
 
     /**
      * @Route("/markten/archief")
+     *
      * @Template("markt/index.html.twig")
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function archiveAction(MarktApi $api): array
@@ -49,7 +53,9 @@ class MarktController extends AbstractController
 
     /**
      * @Route("/markten/edit/{id}")
+     *
      * @Template
+     *
      * @Security("is_granted('ROLE_USER')")
      */
     public function editAction(Request $request, int $id, MarktApi $api)
