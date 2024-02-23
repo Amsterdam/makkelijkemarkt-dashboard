@@ -155,7 +155,7 @@
                             <tr>
                                 <td>
                                     {% if dagvergunning.koopman is not empty %}
-                                        <img src="{{ dagvergunning.koopman.fotoUrl }}" alt="" width="50">
+                                        <img src="{{ get_image(dagvergunning.koopman.fotoUrl) }}" alt="" width="50">
                                     {% endif %}
                                 </td>
                                 <td>
@@ -274,7 +274,7 @@
                                 <tr>
                                     <td>
                                         {% if dagvergunning.koopman is not empty %}
-                                            <img src="{{ dagvergunning.koopman.fotoUrl }}" alt="" width="50">
+                                            <img src="{{ get_image(dagvergunning.koopman.fotoUrl) }}" alt="" width="50">
                                         {% endif %}
                                     </td>
                                     <td>
