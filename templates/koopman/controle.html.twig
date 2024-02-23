@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block document %}
-    <h1><img src="{{ get_image(koopman.fotoUrl) }}" alt=""width="50"> {{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }}</h1>
+    <h1><img src="{{ koopman.fotoUrl }}" alt=""width="50"> {{ koopman.voorletters }} {{ koopman.tussenvoegsels }}{{ koopman.tussenvoegsels ? ' ' }}{{ koopman.achternaam }}</h1>
 
 
     <div class="row">
@@ -49,7 +49,7 @@
             <strong>Achternaam</strong> {{ koopman.achternaam }}<br>
             <br>
         </div>
- 
+
             <div class="col-sm-6 col-md-3">
                 <strong>E-mail</strong> {{ koopman.email is not empty ? koopman.email : 'onbekend' }}<br>
                 <strong>Telefoon</strong> {{ koopman.telefoon is not empty ? koopman.telefoon : 'onbekend' }}

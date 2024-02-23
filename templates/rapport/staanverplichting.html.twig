@@ -82,7 +82,7 @@
                     <td>{{ record.koopman.erkenningsnummer }}</td>
                     <td>
                         {% if record.koopman is not empty %}
-                            <img src="{{ get_image(record.koopman.fotoUrl) }}" alt="" width="50">
+                            <img src="{{ record.koopman.fotoUrl }}" alt="" width="50">
                         {% else %}
                             Onbekend
                         {% endif %}

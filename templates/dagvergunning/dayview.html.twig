@@ -155,7 +155,7 @@
                             <tr>
                                 <td>
                                     {% if dagvergunning.koopman is not empty %}
-                                        <img src="{{ get_image(dagvergunning.koopman.fotoUrl) }}" alt="" width="50">
+                                        <img src="{{ dagvergunning.koopman.fotoUrl }}" alt="" width="50">
                                     {% endif %}
                                 </td>
                                 <td>
@@ -274,7 +274,7 @@
                                 <tr>
                                     <td>
                                         {% if dagvergunning.koopman is not empty %}
-                                            <img src="{{ get_image(dagvergunning.koopman.fotoUrl) }}" alt="" width="50">
+                                            <img src="{{ dagvergunning.koopman.fotoUrl }}" alt="" width="50">
                                         {% endif %}
                                     </td>
                                     <td>
@@ -305,7 +305,7 @@
                                     </td>
                                     <td>
                                         {% if dagvergunning.registratieAccount %}
-                                            
+
                                             <span class="bi bi-{% if 'vervanger_zonder_toestemming' == dagvergunning.aanwezig %}x-circle-fill text-red{% else %}check-circle-fill text-green{% endif %}"></span>
                                             <strong>{{ dagvergunning.aanwezig|replace({'_' : ' '})|capitalize }}</strong><br/>
                                             {% if dagvergunning.vervanger is defined and dagvergunning.vervanger is not empty %}
