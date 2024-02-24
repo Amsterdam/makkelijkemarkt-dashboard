@@ -538,11 +538,4 @@ class MarktApi
     {
         return $this->makeRequest('GET', '/version/')->toArray();
     }
-
-    public function getImage($name)
-    {
-        $response = $this->makeRequest('GET', "/image/open/$name")->toArray();
-
-        return $response['url'];
-    }
 }
