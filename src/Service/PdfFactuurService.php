@@ -10,8 +10,6 @@ class PdfFactuurService
 {
     public const FONT = 'helvetica';
 
-    public const FONT_BOLD = 'helveticab';
-
     /**
      * @var \TCPDF
      */
@@ -171,18 +169,18 @@ class PdfFactuurService
         $this->pdf->Ln(10);
 
         $this->pdf->Cell(16, 6, '', 0, 0);
-        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
+        $this->pdf->SetFont(self::FONT, 'b', 9);
         $this->pdf->Cell(26, 6, 'Factuurnummer', 0, 0);
         $this->pdf->SetFont(self::FONT, 'b', 9);
         $this->pdf->Cell(26, 6, 'mm'.$vergunning['factuur']['id'], 0, 0);
-        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
+        $this->pdf->SetFont(self::FONT, 'b', 9);
         $this->pdf->Cell(26, 6, 'Factuurdatum', 0, 0);
         $this->pdf->SetFont(self::FONT, 'b', 9);
         $dag = implode('-', array_reverse(explode('-', $vergunning['dag'])));
         $this->pdf->Cell(26, 6, $dag, 0, 1);
 
         $this->pdf->Cell(16, 6, '', 0, 0);
-        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
+        $this->pdf->SetFont(self::FONT, 'b', 9);
         $this->pdf->Cell(144, 6, 'Omschrijving', 'B', 0);
         $this->pdf->Cell(20, 6, 'Bedrag €', 'B', 1, 'R');
 
@@ -223,7 +221,7 @@ class PdfFactuurService
             $this->pdf->Ln(5);
         }
 
-        $this->pdf->SetFont(self::FONT_BOLD, 'b', 9);
+        $this->pdf->SetFont(self::FONT, 'b', 9);
         $this->pdf->Cell(98, 6, '', 0, 0);
         $this->pdf->Cell(41, 6, 'Totaal', 'T', 0);
         $this->pdf->Cell(41, 6, $vergunning['factuur']['totaal'], 'T', 0, 'R');
