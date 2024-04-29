@@ -28,6 +28,7 @@ RUN docker-php-ext-install \
     zip
 
 COPY docker-phpfpm/php-ini-overrides.ini /usr/local/etc/php/conf.d/
+COPY docker-phpfpm/zz-pm-overrides.conf /usr/local/etc/php-fpm.d/
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
