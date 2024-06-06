@@ -2,6 +2,7 @@ version: "3"
 services:
   mm-dashboard_phpfpm:
     build:
+      context: .
       dockerfile: Dockerfile_phpfpm
     image: ${REGISTRY:-127.0.0.1:5001}/${REPOSITORY:-salmagundi/mm-dashboard}:${VERSION:-latest}
     command: >
@@ -17,6 +18,7 @@ services:
              php-fpm -e"
   mm-dashboard_nginx:
     build:
+      context: .
       dockerfile: Dockerfile_nginx
     container_name: salmagundi_markten_mm-dashboard_nginx
     image: ${REGISTRY:-127.0.0.1:5001}/${REPOSITORY:-salmagundi/mm-dashboard-nginx}:${VERSION:-latest}
