@@ -166,7 +166,7 @@ class KoopmanController extends AbstractController
             'extra.krachtstroom' => 0,
             'extra.reiniging' => 0,
         ];
-        if (isset($rapportVanKoopman)) {
+        if (isset($rapportVanKoopman) && $rapportVanKoopman) {
             $stats['aanwezig.zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenZelfAanwezigNaControle'];
             $stats['aanwezig.niet_zelf_aanw_na_controle'] = $rapportVanKoopman['aantalActieveDagvergunningenNietZelfAanwezigNaControle'];
         }
