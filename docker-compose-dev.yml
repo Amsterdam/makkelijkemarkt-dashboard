@@ -43,6 +43,11 @@ services:
       context: .
       dockerfile: Dockerfile_nginx
     container_name: mm-dashboard-nginx
+    # quick fix to prevent permission errors.
+    # Would be better to use nginx-unpriviliged or create a seperate Dockerfile.dev with root user
+    user: root
+
+    # Fixes fastcgi_pass for nginx without changing the default.template
     links:
       - mm-dashboard:mm-dashboard-mm-dashboard
     depends_on:
@@ -50,8 +55,6 @@ services:
     command: >
       sh -c "sed -i /'fastcgi_param HTTPS on'/d /tmp/default.template;\
              exec nginx -g 'daemon off;'"
-    # environment:
-    #   - FASTCGI_PASS=mm-dashboard:9000
     networks:
       - markten
     ports:
@@ -63,8 +66,6 @@ services:
     volumes:
       - nginx_cache:/var/cache/nginx
       - nginx_logs:/var/log/nginx
-    # quick fix to prevent permission errors. But would be to use nginx-unpriviliged docker image
-    user: root
 
 networks:
   markten:
