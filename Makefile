@@ -53,6 +53,7 @@ build-dev:
 	$(dc) -f docker-compose-dev.yml build
 
 dev:
+	-docker network create markten
 	$(dc) -f docker-compose-dev.yml up -d
 
 dev-down:

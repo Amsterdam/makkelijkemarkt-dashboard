@@ -1,7 +1,7 @@
 services:
   mm-dashboard:
     build:
-      context: .
+      context: ${MM_DASHBOARD_CONTEXT:-.}
       dockerfile: Dockerfile_phpfpm
     container_name: mm-dashboard
     user: root
@@ -18,11 +18,11 @@ services:
              echo 'xdebug.log=/var/www/xdebug.log' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ;\
              php-fpm -e"
     volumes:
-      - $PWD/src:/var/www/src
-      - $PWD/config:/var/www/config
-      - $PWD/tests:/var/www/tests
-      - $PWD/templates:/var/www/templates
-      - $PWD/assets:/var/www/assets
+      - ./src:/var/www/src
+      - ./config:/var/www/config
+      - ./tests:/var/www/tests
+      - ./templates:/var/www/templates
+      - ./assets:/var/www/assets
     environment:
       - APP_ENV=dev
       - APP_DEBUG=1
@@ -44,7 +44,7 @@ services:
       dockerfile: Dockerfile_nginx
     container_name: mm-dashboard-nginx
     # quick fix to prevent permission errors.
-    # Would be better to use nginx-unpriviliged or create a seperate Dockerfile.dev with root user
+    # Better to use nginx-unpriviliged or create a seperate Dockerfile.dev with root user
     user: root
 
     # Fixes fastcgi_pass for nginx without changing the default.template
