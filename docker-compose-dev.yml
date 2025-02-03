@@ -1,7 +1,7 @@
 services:
   mm-dashboard:
     build:
-      context: ${MM_DASHBOARD_CONTEXT:-.}
+      context: .
       dockerfile: Dockerfile_phpfpm
     container_name: mm-dashboard
     user: root
