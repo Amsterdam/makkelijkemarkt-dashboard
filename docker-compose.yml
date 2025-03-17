@@ -5,6 +5,17 @@ services:
       context: .
       dockerfile: Dockerfile_phpfpm
     image: ${REGISTRY:-127.0.0.1:5001}/${REPOSITORY:-salmagundi/mm-dashboard}:${VERSION:-latest}
+    command: >
+      sh -c "apk add --no-cache $$PHPIZE_DEPS ;\
+             nslookup host.docker.internal || echo '172.172.0.1 host.docker.internal' >> /etc/hosts ;\
+             pecl install xdebug-3.1.6 ;\
+             docker-php-ext-enable xdebug ;\
+             echo 'xdebug.mode=debug' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ;\
+             echo 'xdebug.client_host=host.docker.internal' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ;\
+             echo 'xdebug.client_port=9003' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ;\
+             echo 'xdebug.start_with_request=yes' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ;\
+             echo 'xdebug.log=/var/www/xdebug.log' >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini ;\
+             php-fpm -e"
   mm-dashboard_nginx:
     build:
       context: .
