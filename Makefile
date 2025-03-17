@@ -49,5 +49,12 @@ reset:
 
 refresh: reset build push deploy
 
+build-dev:
+	$(dc) -f docker-compose-dev.yml build
+
 dev:
-	nohup kubycat kubycat-config.yaml > /dev/null 2>&1&
+	-docker network create markten
+	$(dc) -f docker-compose-dev.yml up -d
+
+dev-down:
+	$(dc) -f docker-compose-dev.yml down
