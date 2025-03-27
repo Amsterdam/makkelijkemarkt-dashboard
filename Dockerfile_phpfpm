@@ -46,6 +46,7 @@ RUN chown -R www-data: /var/www
 RUN yarn --ignore-scripts --ignore-platform && yarn encore prod
 
 RUN composer dump-autoload --strict-psr
+# Dont run linter in Dockerfile, because it is not necessary
 # RUN vendor/bin/grumphp run -n
 
 CMD ["php-fpm"]

@@ -63,16 +63,9 @@ services:
       - /var/cache/nginx
       - /var/run
       - /var/log/nginx
-    volumes:
-      - nginx_cache:/var/cache/nginx
-      - nginx_logs:/var/log/nginx
 
 networks:
   markten:
     external: true
-volumes:
-  php_cache:
-  php_logs:
-  nginx_cache:
-  nginx_logs:
+
 

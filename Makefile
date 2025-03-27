@@ -50,11 +50,11 @@ reset:
 refresh: reset build push deploy
 
 build-dev:
-	$(dc) -f docker-compose-dev.yml build
+	$(dc) -f docker-compose.yml build
 
 dev:
 	-docker network create markten
-	$(dc) -f docker-compose-dev.yml up -d
+	$(dc) -f docker-compose.yml up -d
 
 dev-down:
-	$(dc) -f docker-compose-dev.yml down
+	$(dc) -f docker-compose.yml down
