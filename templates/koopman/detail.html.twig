@@ -101,7 +101,7 @@
                     <tr>
                         <td>{{ sollicitatie.markt.naam }}</td>
                         <td>
-                            <abbr title="Koppelveld: {{ sollicitatie.koppelveld }}">{{ sollicitatie.sollicitatieNummer }}</abbr>
+                            <abbr title="Koppelveld: {{ sollicitatie.koppelveld }} ID: {{ sollicitatie.id }}">{{ sollicitatie.sollicitatieNummer }}</abbr>
                             <span class="badge badge-{{ attribute(statusLabelClass, sollicitatie.status) }}">{{ sollicitatie.status }}</span>
                         </td>
                         <td>
