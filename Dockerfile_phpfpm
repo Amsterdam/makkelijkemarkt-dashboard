@@ -1,7 +1,7 @@
 FROM php:8.3.0-fpm-alpine3.18
 
 COPY certificates/adp_rootca.crt /usr/local/share/ca-certificates/adp_rootca.crt
-RUN update-ca-certificates --fresh
+# RUN update-ca-certificates --fresh
 
 RUN apk update && apk upgrade
 

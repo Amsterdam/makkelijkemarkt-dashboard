@@ -12,7 +12,7 @@ COPY --from=node /usr/local/bin /usr/local/bin
 
 
 COPY certificates/adp_rootca.crt /usr/local/share/ca-certificates/adp_rootca.crt
-RUN update-ca-certificates --fresh
+# RUN update-ca-certificates --fresh
 
 RUN apk update && apk upgrade
 
